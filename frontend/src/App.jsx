@@ -2,19 +2,72 @@ import { useState } from 'react'
 import './App.css'
 
 function App() {
+  const [modoCadastro, setModoCadastro] = useState(false)
+  const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
+  const [confirmarSenha, setConfirmarSenha] = useState('')
   const [mensagem, setMensagem] = useState('')
+  const [tipoMensagem, setTipoMensagem] = useState('')
+
+  function limparFormulario() {
+    setNome('')
+    setEmail('')
+    setSenha('')
+    setConfirmarSenha('')
+    setMensagem('')
+    setTipoMensagem('')
+  }
+
+  function alternarTela() {
+    setModoCadastro((valorAtual) => !valorAtual)
+    limparFormulario()
+  }
+
+  function exibirErro(texto) {
+    setMensagem(texto)
+    setTipoMensagem('erro')
+  }
+
+  function exibirSucesso(texto) {
+    setMensagem(texto)
+    setTipoMensagem('sucesso')
+  }
 
   function handleSubmit(event) {
     event.preventDefault()
 
-    if (!email || !senha) {
-      setMensagem('Preencha o e-mail e a senha.')
+    if (modoCadastro) {
+      if (!nome || !email || !senha || !confirmarSenha) {
+        exibirErro('Preencha todos os campos.')
+        return
+      }
+
+      if (nome.trim().length < 3) {
+        exibirErro('O nome precisa ter pelo menos 3 caracteres.')
+        return
+      }
+
+      if (senha.length < 6) {
+        exibirErro('A senha precisa ter pelo menos 6 caracteres.')
+        return
+      }
+
+      if (senha !== confirmarSenha) {
+        exibirErro('As senhas não são iguais.')
+        return
+      }
+
+      exibirSucesso('Cadastro visual realizado com sucesso.')
       return
     }
 
-    setMensagem('Login visual funcionando. A API será adicionada depois.')
+    if (!email || !senha) {
+      exibirErro('Preencha o e-mail e a senha.')
+      return
+    }
+
+    exibirSucesso('Login visual realizado com sucesso.')
   }
 
   return (
@@ -68,14 +121,35 @@ function App() {
         <div className="login-card">
           <div className="mobile-logo">RT</div>
 
-          <p className="eyebrow">Bem-vindo</p>
-          <h2>Entre na sua conta</h2>
+          <p className="eyebrow">
+            {modoCadastro ? 'Nova conta' : 'Bem-vindo'}
+          </p>
+
+          <h2>
+            {modoCadastro ? 'Crie sua conta' : 'Entre na sua conta'}
+          </h2>
 
           <p className="login-description">
-            Informe seus dados para acessar o painel do Ronas Desk.
+            {modoCadastro
+              ? 'Preencha os dados para começar a usar o Ronas Desk.'
+              : 'Informe seus dados para acessar o painel do Ronas Desk.'}
           </p>
 
           <form onSubmit={handleSubmit}>
+            {modoCadastro && (
+              <div className="field">
+                <label htmlFor="nome">Nome completo</label>
+
+                <input
+                  id="nome"
+                  type="text"
+                  placeholder="Digite seu nome"
+                  value={nome}
+                  onChange={(event) => setNome(event.target.value)}
+                />
+              </div>
+            )}
+
             <div className="field">
               <label htmlFor="email">E-mail</label>
 
@@ -91,9 +165,12 @@ function App() {
             <div className="field">
               <div className="label-row">
                 <label htmlFor="senha">Senha</label>
-                <button className="forgot-button" type="button">
-                  Esqueci minha senha
-                </button>
+
+                {!modoCadastro && (
+                  <button className="forgot-button" type="button">
+                    Esqueci minha senha
+                  </button>
+                )}
               </div>
 
               <input
@@ -105,16 +182,41 @@ function App() {
               />
             </div>
 
+            {modoCadastro && (
+              <div className="field">
+                <label htmlFor="confirmarSenha">Confirmar senha</label>
+
+                <input
+                  id="confirmarSenha"
+                  type="password"
+                  placeholder="Digite a senha novamente"
+                  value={confirmarSenha}
+                  onChange={(event) =>
+                    setConfirmarSenha(event.target.value)
+                  }
+                />
+              </div>
+            )}
+
             <button className="login-button" type="submit">
-              Entrar
+              {modoCadastro ? 'Criar conta' : 'Entrar'}
             </button>
 
-            {mensagem && <p className="form-message">{mensagem}</p>}
+            {mensagem && (
+              <p className={`form-message ${tipoMensagem}`}>
+                {mensagem}
+              </p>
+            )}
           </form>
 
           <p className="register-text">
-            Ainda não possui conta?
-            <button type="button">Criar conta</button>
+            {modoCadastro
+              ? 'Já possui uma conta?'
+              : 'Ainda não possui conta?'}
+
+            <button type="button" onClick={alternarTela}>
+              {modoCadastro ? 'Entrar' : 'Criar conta'}
+            </button>
           </p>
         </div>
       </section>
