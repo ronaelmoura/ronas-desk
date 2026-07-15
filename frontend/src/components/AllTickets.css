@@ -1,0 +1,137 @@
+.all-tickets-page {
+  width: 100%;
+}
+
+.all-tickets-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.all-tickets-header h1 {
+  margin: 0;
+  color: #101b2d;
+  font-size: 2rem;
+  letter-spacing: -0.035em;
+}
+
+.all-tickets-header p {
+  margin-top: 8px;
+  color: #738197;
+}
+
+.all-tickets-panel {
+  margin-top: 32px;
+  padding: 26px;
+  border: 1px solid #e1e7ef;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 14px 40px rgba(20, 40, 70, 0.05);
+}
+
+.all-tickets-filters {
+  display: grid;
+  grid-template-columns:
+    minmax(240px, 2fr)
+    repeat(3, minmax(125px, 1fr))
+    auto;
+  align-items: end;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #e5eaf1;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.all-search-field,
+.all-filter-field {
+  min-width: 0;
+}
+
+.all-search-field label,
+.all-filter-field label {
+  display: block;
+  margin-bottom: 7px;
+  color: #536176;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.all-search-field input,
+.all-filter-field select {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid #d8e0e9;
+  border-radius: 10px;
+  outline: none;
+  background: #ffffff;
+  color: #17263a;
+  font: inherit;
+  font-size: 0.84rem;
+}
+
+.all-search-field input:focus,
+.all-filter-field select:focus {
+  border-color: #1682ff;
+  box-shadow: 0 0 0 3px rgba(22, 130, 255, 0.1);
+}
+
+.all-clear-button {
+  height: 44px;
+  padding: 0 18px;
+  border: 1px solid #d8e0e9;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #536176;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.all-clear-button:hover {
+  border-color: #1682ff;
+  color: #147ee8;
+}
+
+.all-tickets-result {
+  margin: 16px 0;
+  color: #7a8799;
+  font-size: 0.82rem;
+}
+
+.all-tickets-result strong {
+  color: #147ee8;
+}
+
+@media (max-width: 1150px) {
+  .all-tickets-filters {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .all-clear-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .all-tickets-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .all-tickets-header .new-ticket-button {
+    width: 100%;
+  }
+
+  .all-tickets-panel {
+    padding: 18px 14px;
+  }
+
+  .all-tickets-filters {
+    grid-template-columns: 1fr;
+    padding: 14px;
+  }
+}

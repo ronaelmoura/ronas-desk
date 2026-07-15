@@ -87,7 +87,11 @@ function App() {
     <main className="page">
       <section className="presentation">
         <div className="brand">
-          <div className="brand-logo">RT</div>
+          <img
+  className="brand-logo-image"
+  src="/logo-ronas-desk.png"
+  alt="Logo Ronas Desk"
+/>
 
           <div>
             <strong>Ronas Desk</strong>
@@ -132,7 +136,11 @@ function App() {
 
       <section className="login-area">
         <div className="login-card">
-          <div className="mobile-logo">RT</div>
+          <img
+  className="mobile-logo-image"
+  src="/logo-ronas-desk.png"
+  alt="Logo Ronas Desk"
+/>
 
           <p className="eyebrow">
             {modoCadastro ? 'Nova conta' : 'Bem-vindo'}

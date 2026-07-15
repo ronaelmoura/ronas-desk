@@ -22,16 +22,11 @@
   gap: 14px;
 }
 
-.brand-logo,
-.mobile-logo {
-  width: 52px;
-  height: 52px;
-  display: grid;
-  place-items: center;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #1682ff, #00c6ff);
-  color: #ffffff;
-  font-weight: 900;
+.brand-logo-image {
+  width: 58px;
+  height: 58px;
+  object-fit: cover;
+  border-radius: 50%;
   box-shadow: 0 12px 35px rgba(22, 130, 255, 0.35);
 }
 
@@ -121,9 +116,14 @@
   box-shadow: 0 24px 80px rgba(22, 45, 77, 0.12);
 }
 
-.mobile-logo {
+.mobile-logo-image {
   display: none;
+  width: 82px;
+  height: 82px;
   margin-bottom: 28px;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 0 12px 35px rgba(22, 130, 255, 0.25);
 }
 
 .login-card h2 {
@@ -253,8 +253,8 @@
     display: none;
   }
 
-  .mobile-logo {
-    display: grid;
+  .mobile-logo-image {
+    display: block;
   }
 
   .login-area {
