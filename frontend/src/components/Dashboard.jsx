@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './Dashboard.css'
 import NewTicketModal from './NewTicketModal'
 import TicketDetailsModal from './TicketDetailsModal'
@@ -33,9 +33,23 @@ const chamadosIniciais = [
   },
 ]
 
+function carregarChamados() {
+  try {
+    const dadosSalvos = localStorage.getItem('ronas-desk-chamados')
+
+    if (!dadosSalvos) {
+      return chamadosIniciais
+    }
+
+    return JSON.parse(dadosSalvos)
+  } catch {
+    return chamadosIniciais
+  }
+}
+
 function Dashboard({ onLogout }) {
   const [chamados, setChamados] =
-    useState(chamadosIniciais)
+  useState(carregarChamados)
 
   const [modalAberto, setModalAberto] =
     useState(false)
@@ -44,6 +58,13 @@ function Dashboard({ onLogout }) {
     chamadoSelecionado,
     setChamadoSelecionado,
   ] = useState(null)
+
+  useEffect(() => {
+  localStorage.setItem(
+    'ronas-desk-chamados',
+    JSON.stringify(chamados),
+  )
+}, [chamados])
 
   const totalChamados = chamados.length
 
