@@ -1,12 +1,16 @@
 import { useState } from 'react'
 import './App.css'
+import Dashboard from './components/Dashboard'
 
 function App() {
   const [modoCadastro, setModoCadastro] = useState(false)
+  const [autenticado, setAutenticado] = useState(false)
+
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [confirmarSenha, setConfirmarSenha] = useState('')
+
   const [mensagem, setMensagem] = useState('')
   const [tipoMensagem, setTipoMensagem] = useState('')
 
@@ -67,7 +71,16 @@ function App() {
       return
     }
 
-    exibirSucesso('Login visual realizado com sucesso.')
+    setAutenticado(true)
+  }
+
+  function sairDoSistema() {
+    setAutenticado(false)
+    limparFormulario()
+  }
+
+  if (autenticado) {
+    return <Dashboard onLogout={sairDoSistema} />
   }
 
   return (
