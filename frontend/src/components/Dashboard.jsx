@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './Dashboard.css'
 import NewTicketModal from './NewTicketModal'
+import TicketDetailsModal from './TicketDetailsModal'
 
 const chamadosIniciais = [
   {
@@ -9,7 +10,8 @@ const chamadosIniciais = [
     categoria: 'Rede',
     prioridade: 'Alta',
     status: 'Aberto',
-    descricao: 'O computador perdeu a conexão com a rede.',
+    descricao:
+      'O computador perdeu a conexão com a rede e não encontra nenhuma rede Wi-Fi disponível.',
   },
   {
     id: 2,
@@ -17,7 +19,8 @@ const chamadosIniciais = [
     categoria: 'Software',
     prioridade: 'Média',
     status: 'Em andamento',
-    descricao: 'O instalador apresenta erro durante a execução.',
+    descricao:
+      'O instalador apresenta uma mensagem de erro durante a execução e não conclui a instalação.',
   },
   {
     id: 3,
@@ -25,7 +28,8 @@ const chamadosIniciais = [
     categoria: 'Hardware',
     prioridade: 'Baixa',
     status: 'Concluído',
-    descricao: 'A impressora não aparece entre os dispositivos.',
+    descricao:
+      'A impressora está conectada, mas não aparece entre os dispositivos disponíveis do computador.',
   },
 ]
 
@@ -35,6 +39,11 @@ function Dashboard({ onLogout }) {
 
   const [modalAberto, setModalAberto] =
     useState(false)
+
+  const [
+    chamadoSelecionado,
+    setChamadoSelecionado,
+  ] = useState(null)
 
   const totalChamados = chamados.length
 
@@ -72,6 +81,19 @@ function Dashboard({ onLogout }) {
     ])
 
     setModalAberto(false)
+  }
+
+  function atualizarStatus(id, novoStatus) {
+    setChamados((chamadosAtuais) =>
+      chamadosAtuais.map((chamado) =>
+        chamado.id === id
+          ? {
+              ...chamado,
+              status: novoStatus,
+            }
+          : chamado,
+      ),
+    )
   }
 
   function formatarId(id) {
@@ -225,8 +247,7 @@ function Dashboard({ onLogout }) {
               <h2>Chamados recentes</h2>
 
               <p>
-                Últimas solicitações registradas no
-                sistema.
+                Últimas solicitações registradas no sistema.
               </p>
             </div>
 
@@ -286,6 +307,9 @@ function Dashboard({ onLogout }) {
                       <button
                         className="details-button"
                         type="button"
+                        onClick={() =>
+                          setChamadoSelecionado(chamado)
+                        }
                       >
                         Ver detalhes
                       </button>
@@ -302,6 +326,14 @@ function Dashboard({ onLogout }) {
         <NewTicketModal
           onClose={() => setModalAberto(false)}
           onSave={criarChamado}
+        />
+      )}
+
+      {chamadoSelecionado && (
+        <TicketDetailsModal
+          chamado={chamadoSelecionado}
+          onClose={() => setChamadoSelecionado(null)}
+          onUpdateStatus={atualizarStatus}
         />
       )}
     </div>
