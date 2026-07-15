@@ -1,30 +1,83 @@
+import { useState } from 'react'
 import './Dashboard.css'
+import NewTicketModal from './NewTicketModal'
 
-const chamados = [
+const chamadosIniciais = [
   {
-    id: '#001',
+    id: 1,
     titulo: 'Computador não conecta à internet',
     categoria: 'Rede',
     prioridade: 'Alta',
     status: 'Aberto',
+    descricao: 'O computador perdeu a conexão com a rede.',
   },
   {
-    id: '#002',
+    id: 2,
     titulo: 'Erro ao instalar programa',
     categoria: 'Software',
     prioridade: 'Média',
     status: 'Em andamento',
+    descricao: 'O instalador apresenta erro durante a execução.',
   },
   {
-    id: '#003',
+    id: 3,
     titulo: 'Impressora não reconhecida',
     categoria: 'Hardware',
     prioridade: 'Baixa',
     status: 'Concluído',
+    descricao: 'A impressora não aparece entre os dispositivos.',
   },
 ]
 
 function Dashboard({ onLogout }) {
+  const [chamados, setChamados] =
+    useState(chamadosIniciais)
+
+  const [modalAberto, setModalAberto] =
+    useState(false)
+
+  const totalChamados = chamados.length
+
+  const chamadosAbertos = chamados.filter(
+    (chamado) => chamado.status === 'Aberto',
+  ).length
+
+  const chamadosEmAndamento = chamados.filter(
+    (chamado) => chamado.status === 'Em andamento',
+  ).length
+
+  const chamadosConcluidos = chamados.filter(
+    (chamado) => chamado.status === 'Concluído',
+  ).length
+
+  function criarChamado(dados) {
+    const maiorId = chamados.reduce(
+      (maior, chamado) =>
+        Math.max(maior, chamado.id),
+      0,
+    )
+
+    const novoChamado = {
+      id: maiorId + 1,
+      titulo: dados.titulo.trim(),
+      descricao: dados.descricao.trim(),
+      categoria: dados.categoria,
+      prioridade: dados.prioridade,
+      status: 'Aberto',
+    }
+
+    setChamados((chamadosAtuais) => [
+      novoChamado,
+      ...chamadosAtuais,
+    ])
+
+    setModalAberto(false)
+  }
+
+  function formatarId(id) {
+    return `#${String(id).padStart(3, '0')}`
+  }
+
   return (
     <div className="dashboard-page">
       <aside className="sidebar">
@@ -38,22 +91,35 @@ function Dashboard({ onLogout }) {
         </div>
 
         <nav className="sidebar-menu">
-          <button className="menu-item active" type="button">
+          <button
+            className="menu-item active"
+            type="button"
+          >
             <span>⌂</span>
             Visão geral
           </button>
 
-          <button className="menu-item" type="button">
+          <button
+            className="menu-item"
+            type="button"
+          >
             <span>▤</span>
             Chamados
           </button>
 
-          <button className="menu-item" type="button">
+          <button
+            className="menu-item"
+            type="button"
+            onClick={() => setModalAberto(true)}
+          >
             <span>＋</span>
             Novo chamado
           </button>
 
-          <button className="menu-item" type="button">
+          <button
+            className="menu-item"
+            type="button"
+          >
             <span>⚙</span>
             Configurações
           </button>
@@ -69,7 +135,11 @@ function Dashboard({ onLogout }) {
             </div>
           </div>
 
-          <button className="logout-button" type="button" onClick={onLogout}>
+          <button
+            className="logout-button"
+            type="button"
+            onClick={onLogout}
+          >
             Sair
           </button>
         </div>
@@ -78,56 +148,72 @@ function Dashboard({ onLogout }) {
       <main className="dashboard-content">
         <header className="dashboard-header">
           <div>
-            <p className="dashboard-eyebrow">Painel de controle</p>
+            <p className="dashboard-eyebrow">
+              Painel de controle
+            </p>
+
             <h1>Olá, Ronael 👋</h1>
 
             <p>
-              Acompanhe os chamados e as atividades recentes do suporte.
+              Acompanhe os chamados e as atividades
+              recentes do suporte.
             </p>
           </div>
 
-          <button className="new-ticket-button" type="button">
+          <button
+            className="new-ticket-button"
+            type="button"
+            onClick={() => setModalAberto(true)}
+          >
             + Novo chamado
           </button>
         </header>
 
         <section className="summary-grid">
           <article className="summary-card">
-            <div className="summary-icon blue">▤</div>
+            <div className="summary-icon blue">
+              ▤
+            </div>
 
             <div>
               <span>Total de chamados</span>
-              <strong>12</strong>
+              <strong>{totalChamados}</strong>
               <small>Todos os registros</small>
             </div>
           </article>
 
           <article className="summary-card">
-            <div className="summary-icon red">!</div>
+            <div className="summary-icon red">
+              !
+            </div>
 
             <div>
               <span>Chamados abertos</span>
-              <strong>4</strong>
+              <strong>{chamadosAbertos}</strong>
               <small>Aguardando atendimento</small>
             </div>
           </article>
 
           <article className="summary-card">
-            <div className="summary-icon orange">◷</div>
+            <div className="summary-icon orange">
+              ◷
+            </div>
 
             <div>
               <span>Em andamento</span>
-              <strong>3</strong>
+              <strong>{chamadosEmAndamento}</strong>
               <small>Sendo analisados</small>
             </div>
           </article>
 
           <article className="summary-card">
-            <div className="summary-icon green">✓</div>
+            <div className="summary-icon green">
+              ✓
+            </div>
 
             <div>
               <span>Concluídos</span>
-              <strong>5</strong>
+              <strong>{chamadosConcluidos}</strong>
               <small>Problemas resolvidos</small>
             </div>
           </article>
@@ -137,10 +223,17 @@ function Dashboard({ onLogout }) {
           <div className="panel-header">
             <div>
               <h2>Chamados recentes</h2>
-              <p>Últimas solicitações registradas no sistema.</p>
+
+              <p>
+                Últimas solicitações registradas no
+                sistema.
+              </p>
             </div>
 
-            <button className="text-button" type="button">
+            <button
+              className="text-button"
+              type="button"
+            >
               Ver todos
             </button>
           </div>
@@ -161,8 +254,14 @@ function Dashboard({ onLogout }) {
               <tbody>
                 {chamados.map((chamado) => (
                   <tr key={chamado.id}>
-                    <td className="ticket-id">{chamado.id}</td>
-                    <td className="ticket-title">{chamado.titulo}</td>
+                    <td className="ticket-id">
+                      {formatarId(chamado.id)}
+                    </td>
+
+                    <td className="ticket-title">
+                      {chamado.titulo}
+                    </td>
+
                     <td>{chamado.categoria}</td>
 
                     <td>
@@ -184,7 +283,10 @@ function Dashboard({ onLogout }) {
                     </td>
 
                     <td>
-                      <button className="details-button" type="button">
+                      <button
+                        className="details-button"
+                        type="button"
+                      >
                         Ver detalhes
                       </button>
                     </td>
@@ -195,6 +297,13 @@ function Dashboard({ onLogout }) {
           </div>
         </section>
       </main>
+
+      {modalAberto && (
+        <NewTicketModal
+          onClose={() => setModalAberto(false)}
+          onSave={criarChamado}
+        />
+      )}
     </div>
   )
 }

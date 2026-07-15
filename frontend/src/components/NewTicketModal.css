@@ -1,0 +1,187 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(3, 12, 24, 0.7);
+  backdrop-filter: blur(6px);
+}
+
+.ticket-modal {
+  width: min(650px, 100%);
+  max-height: 92vh;
+  overflow-y: auto;
+  border: 1px solid #dfe6ef;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 30px 100px rgba(3, 17, 35, 0.35);
+}
+
+.ticket-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 28px 30px 22px;
+  border-bottom: 1px solid #e9edf3;
+}
+
+.ticket-modal-eyebrow {
+  margin-bottom: 6px;
+  color: #1682ff;
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ticket-modal-header h2 {
+  margin: 0;
+  color: #101b2d;
+  font-size: 1.65rem;
+}
+
+.ticket-modal-header p {
+  margin-top: 7px;
+  color: #758399;
+  font-size: 0.9rem;
+}
+
+.close-modal-button {
+  min-width: 40px;
+  height: 40px;
+  border: 1px solid #e0e6ee;
+  border-radius: 11px;
+  background: #f7f9fc;
+  color: #536176;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.close-modal-button:hover {
+  border-color: #cbd5e1;
+  background: #eef3f8;
+}
+
+.ticket-form {
+  padding: 26px 30px 30px;
+}
+
+.ticket-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.ticket-field {
+  margin-bottom: 20px;
+}
+
+.ticket-field label {
+  display: block;
+  margin-bottom: 8px;
+  color: #2a384c;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.ticket-field input,
+.ticket-field select,
+.ticket-field textarea {
+  width: 100%;
+  border: 1px solid #d7dfe9;
+  border-radius: 11px;
+  outline: none;
+  background: #ffffff;
+  color: #17263a;
+  font: inherit;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.ticket-field input,
+.ticket-field select {
+  height: 50px;
+  padding: 0 14px;
+}
+
+.ticket-field textarea {
+  min-height: 140px;
+  padding: 14px;
+  resize: vertical;
+}
+
+.ticket-field input:focus,
+.ticket-field select:focus,
+.ticket-field textarea:focus {
+  border-color: #1682ff;
+  box-shadow: 0 0 0 4px rgba(22, 130, 255, 0.12);
+}
+
+.ticket-form-error {
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  border: 1px solid #ffd0d0;
+  border-radius: 10px;
+  background: #fff1f1;
+  color: #ad2929;
+  font-size: 0.86rem;
+}
+
+.ticket-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancel-ticket-button,
+.save-ticket-button {
+  min-width: 135px;
+  height: 48px;
+  border-radius: 11px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.cancel-ticket-button {
+  border: 1px solid #d8e0ea;
+  background: #ffffff;
+  color: #536176;
+}
+
+.save-ticket-button {
+  border: 0;
+  background: linear-gradient(90deg, #147ee8, #00a9ee);
+  color: #ffffff;
+  box-shadow: 0 12px 28px rgba(20, 126, 232, 0.22);
+}
+
+@media (max-width: 600px) {
+  .modal-backdrop {
+    padding: 10px;
+  }
+
+  .ticket-modal-header,
+  .ticket-form {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .ticket-form-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .ticket-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .cancel-ticket-button,
+  .save-ticket-button {
+    width: 100%;
+  }
+}
