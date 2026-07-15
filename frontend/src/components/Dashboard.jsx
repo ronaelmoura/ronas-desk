@@ -59,6 +59,11 @@ function Dashboard({ onLogout }) {
     setChamadoSelecionado,
   ] = useState(null)
 
+  const [busca, setBusca] = useState('')
+  const [filtroStatus, setFiltroStatus] = useState('Todos')
+  const [filtroPrioridade, setFiltroPrioridade] = useState('Todas')
+  const [filtroCategoria, setFiltroCategoria] = useState('Todas')
+
   useEffect(() => {
   localStorage.setItem(
     'ronas-desk-chamados',
@@ -79,6 +84,35 @@ function Dashboard({ onLogout }) {
   const chamadosConcluidos = chamados.filter(
     (chamado) => chamado.status === 'Concluído',
   ).length
+
+  const chamadosFiltrados = chamados.filter((chamado) => {
+  const textoBusca = busca.trim().toLowerCase()
+
+  const correspondeBusca =
+    !textoBusca ||
+    chamado.titulo.toLowerCase().includes(textoBusca) ||
+    chamado.descricao.toLowerCase().includes(textoBusca) ||
+    chamado.categoria.toLowerCase().includes(textoBusca)
+
+  const correspondeStatus =
+    filtroStatus === 'Todos' ||
+    chamado.status === filtroStatus
+
+  const correspondePrioridade =
+    filtroPrioridade === 'Todas' ||
+    chamado.prioridade === filtroPrioridade
+
+  const correspondeCategoria =
+    filtroCategoria === 'Todas' ||
+    chamado.categoria === filtroCategoria
+
+  return (
+    correspondeBusca &&
+    correspondeStatus &&
+    correspondePrioridade &&
+    correspondeCategoria
+  )
+})
 
   function criarChamado(dados) {
     const maiorId = chamados.reduce(
@@ -116,6 +150,13 @@ function Dashboard({ onLogout }) {
       ),
     )
   }
+   
+  function limparFiltros() {
+  setBusca('')
+  setFiltroStatus('Todos')
+  setFiltroPrioridade('Todas')
+  setFiltroCategoria('Todas')
+}
 
   function formatarId(id) {
     return `#${String(id).padStart(3, '0')}`
@@ -279,6 +320,96 @@ function Dashboard({ onLogout }) {
               Ver todos
             </button>
           </div>
+          
+          <div className="ticket-filters">
+  <div className="search-field">
+    <label htmlFor="ticket-search">
+      Buscar chamado
+    </label>
+
+    <input
+      id="ticket-search"
+      type="search"
+      placeholder="Digite um título, descrição ou categoria"
+      value={busca}
+      onChange={(event) => setBusca(event.target.value)}
+    />
+  </div>
+
+  <div className="filter-field">
+    <label htmlFor="status-filter">
+      Status
+    </label>
+
+    <select
+      id="status-filter"
+      value={filtroStatus}
+      onChange={(event) =>
+        setFiltroStatus(event.target.value)
+      }
+    >
+      <option value="Todos">Todos</option>
+      <option value="Aberto">Aberto</option>
+      <option value="Em andamento">Em andamento</option>
+      <option value="Concluído">Concluído</option>
+    </select>
+  </div>
+
+  <div className="filter-field">
+    <label htmlFor="priority-filter">
+      Prioridade
+    </label>
+
+    <select
+      id="priority-filter"
+      value={filtroPrioridade}
+      onChange={(event) =>
+        setFiltroPrioridade(event.target.value)
+      }
+    >
+      <option value="Todas">Todas</option>
+      <option value="Baixa">Baixa</option>
+      <option value="Média">Média</option>
+      <option value="Alta">Alta</option>
+    </select>
+  </div>
+
+  <div className="filter-field">
+    <label htmlFor="category-filter">
+      Categoria
+    </label>
+
+    <select
+      id="category-filter"
+      value={filtroCategoria}
+      onChange={(event) =>
+        setFiltroCategoria(event.target.value)
+      }
+    >
+      <option value="Todas">Todas</option>
+      <option value="Hardware">Hardware</option>
+      <option value="Software">Software</option>
+      <option value="Rede">Rede</option>
+      <option value="Acesso">Acesso</option>
+      <option value="Outro">Outro</option>
+    </select>
+  </div>
+
+  <button
+    className="clear-filters-button"
+    type="button"
+    onClick={limparFiltros}
+  >
+    Limpar filtros
+  </button>
+</div>
+
+<p className="filter-result">
+  {chamadosFiltrados.length}{' '}
+  {chamadosFiltrados.length === 1
+    ? 'chamado encontrado'
+    : 'chamados encontrados'}
+</p>
 
           <div className="ticket-table-wrapper">
             <table className="ticket-table">
@@ -294,50 +425,58 @@ function Dashboard({ onLogout }) {
               </thead>
 
               <tbody>
-                {chamados.map((chamado) => (
-                  <tr key={chamado.id}>
-                    <td className="ticket-id">
-                      {formatarId(chamado.id)}
-                    </td>
+  {chamadosFiltrados.length > 0 ? (
+    chamadosFiltrados.map((chamado) => (
+      <tr key={chamado.id}>
+        <td className="ticket-id">
+          {formatarId(chamado.id)}
+        </td>
 
-                    <td className="ticket-title">
-                      {chamado.titulo}
-                    </td>
+        <td className="ticket-title">
+          {chamado.titulo}
+        </td>
 
-                    <td>{chamado.categoria}</td>
+        <td>{chamado.categoria}</td>
 
-                    <td>
-                      <span
-                        className={`priority priority-${chamado.prioridade.toLowerCase()}`}
-                      >
-                        {chamado.prioridade}
-                      </span>
-                    </td>
+        <td>
+          <span
+            className={`priority priority-${chamado.prioridade.toLowerCase()}`}
+          >
+            {chamado.prioridade}
+          </span>
+        </td>
 
-                    <td>
-                      <span
-                        className={`status status-${chamado.status
-                          .toLowerCase()
-                          .replace(' ', '-')}`}
-                      >
-                        {chamado.status}
-                      </span>
-                    </td>
+        <td>
+          <span
+            className={`status status-${chamado.status
+              .toLowerCase()
+              .replace(' ', '-')}`}
+          >
+            {chamado.status}
+          </span>
+        </td>
 
-                    <td>
-                      <button
-                        className="details-button"
-                        type="button"
-                        onClick={() =>
-                          setChamadoSelecionado(chamado)
-                        }
-                      >
-                        Ver detalhes
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+        <td>
+          <button
+            className="details-button"
+            type="button"
+            onClick={() =>
+              setChamadoSelecionado(chamado)
+            }
+          >
+            Ver detalhes
+          </button>
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td className="empty-table" colSpan="6">
+        Nenhum chamado encontrado com esses filtros.
+      </td>
+    </tr>
+  )}
+</tbody>
             </table>
           </div>
         </section>
