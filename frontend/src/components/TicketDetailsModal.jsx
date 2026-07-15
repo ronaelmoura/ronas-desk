@@ -4,19 +4,49 @@ import './TicketDetailsModal.css'
 function TicketDetailsModal({
   chamado,
   onClose,
-  onUpdateStatus,
+  onUpdate,
+  onDelete,
 }) {
+  const [titulo, setTitulo] = useState(chamado.titulo)
+  const [descricao, setDescricao] = useState(chamado.descricao)
+  const [categoria, setCategoria] = useState(chamado.categoria)
+  const [prioridade, setPrioridade] = useState(chamado.prioridade)
   const [status, setStatus] = useState(chamado.status)
+
+  const [erro, setErro] = useState('')
+  const [confirmandoExclusao, setConfirmandoExclusao] =
+    useState(false)
+
+  function formatarId(id) {
+    return `#${String(id).padStart(3, '0')}`
+  }
 
   function handleSubmit(event) {
     event.preventDefault()
 
-    onUpdateStatus(chamado.id, status)
-    onClose()
+    if (
+      !titulo.trim() ||
+      !descricao.trim() ||
+      !categoria ||
+      !prioridade ||
+      !status
+    ) {
+      setErro('Preencha todos os campos.')
+      return
+    }
+
+    onUpdate({
+      ...chamado,
+      titulo: titulo.trim(),
+      descricao: descricao.trim(),
+      categoria,
+      prioridade,
+      status,
+    })
   }
 
-  function formatarId(id) {
-    return `#${String(id).padStart(3, '0')}`
+  function confirmarExclusao() {
+    onDelete(chamado.id)
   }
 
   return (
@@ -38,11 +68,11 @@ function TicketDetailsModal({
             </p>
 
             <h2 id="ticket-details-title">
-              Detalhes do chamado
+              Editar chamado
             </h2>
 
             <p>
-              Consulte as informações e atualize o atendimento.
+              Atualize as informações do atendimento.
             </p>
           </div>
 
@@ -60,41 +90,105 @@ function TicketDetailsModal({
           className="ticket-details-content"
           onSubmit={handleSubmit}
         >
-          <div className="ticket-main-info">
-            <span>Título</span>
-            <h3>{chamado.titulo}</h3>
+          <div className="ticket-edit-field">
+            <label htmlFor="edit-title">
+              Título do chamado
+            </label>
+
+            <input
+              id="edit-title"
+              type="text"
+              value={titulo}
+              onChange={(event) =>
+                setTitulo(event.target.value)
+              }
+            />
           </div>
 
-          <div className="ticket-information-grid">
-            <div className="ticket-information">
-              <span>Categoria</span>
-              <strong>{chamado.categoria}</strong>
-            </div>
+          <div className="ticket-edit-grid">
+            <div className="ticket-edit-field">
+              <label htmlFor="edit-category">
+                Categoria
+              </label>
 
-            <div className="ticket-information">
-              <span>Prioridade</span>
-
-              <strong
-                className={`details-priority details-priority-${chamado.prioridade.toLowerCase()}`}
+              <select
+                id="edit-category"
+                value={categoria}
+                onChange={(event) =>
+                  setCategoria(event.target.value)
+                }
               >
-                {chamado.prioridade}
-              </strong>
+                <option value="Hardware">
+                  Hardware
+                </option>
+
+                <option value="Software">
+                  Software
+                </option>
+
+                <option value="Rede">
+                  Rede
+                </option>
+
+                <option value="Acesso">
+                  Acesso
+                </option>
+
+                <option value="Outro">
+                  Outro
+                </option>
+              </select>
+            </div>
+
+            <div className="ticket-edit-field">
+              <label htmlFor="edit-priority">
+                Prioridade
+              </label>
+
+              <select
+                id="edit-priority"
+                value={prioridade}
+                onChange={(event) =>
+                  setPrioridade(event.target.value)
+                }
+              >
+                <option value="Baixa">
+                  Baixa
+                </option>
+
+                <option value="Média">
+                  Média
+                </option>
+
+                <option value="Alta">
+                  Alta
+                </option>
+              </select>
             </div>
           </div>
 
-          <div className="ticket-description">
-            <span>Descrição do problema</span>
+          <div className="ticket-edit-field">
+            <label htmlFor="edit-description">
+              Descrição
+            </label>
 
-            <p>{chamado.descricao}</p>
+            <textarea
+              id="edit-description"
+              rows="6"
+              value={descricao}
+              onChange={(event) =>
+                setDescricao(event.target.value)
+              }
+            />
           </div>
 
-          <div className="ticket-status-field">
-            <label htmlFor="ticket-status">
-              Status do chamado
+          <div className="ticket-edit-field">
+            <label htmlFor="edit-status">
+              Status
             </label>
 
             <select
-              id="ticket-status"
+              id="edit-status"
               value={status}
               onChange={(event) =>
                 setStatus(event.target.value)
@@ -114,22 +208,72 @@ function TicketDetailsModal({
             </select>
           </div>
 
-          <div className="ticket-details-actions">
-            <button
-              className="details-cancel-button"
-              type="button"
-              onClick={onClose}
-            >
-              Cancelar
-            </button>
+          {erro && (
+            <p className="ticket-edit-error">
+              {erro}
+            </p>
+          )}
 
-            <button
-              className="details-save-button"
-              type="submit"
-            >
-              Salvar alteração
-            </button>
-          </div>
+          {confirmandoExclusao ? (
+            <div className="delete-confirmation">
+              <div>
+                <strong>Excluir este chamado?</strong>
+
+                <p>
+                  Essa ação não poderá ser desfeita.
+                </p>
+              </div>
+
+              <div className="delete-confirmation-actions">
+                <button
+                  className="delete-cancel-button"
+                  type="button"
+                  onClick={() =>
+                    setConfirmandoExclusao(false)
+                  }
+                >
+                  Não, cancelar
+                </button>
+
+                <button
+                  className="delete-confirm-button"
+                  type="button"
+                  onClick={confirmarExclusao}
+                >
+                  Sim, excluir
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="ticket-details-actions">
+              <button
+                className="details-delete-button"
+                type="button"
+                onClick={() =>
+                  setConfirmandoExclusao(true)
+                }
+              >
+                Excluir
+              </button>
+
+              <div className="details-main-actions">
+                <button
+                  className="details-cancel-button"
+                  type="button"
+                  onClick={onClose}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  className="details-save-button"
+                  type="submit"
+                >
+                  Salvar alterações
+                </button>
+              </div>
+            </div>
+          )}
         </form>
       </section>
     </div>

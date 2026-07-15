@@ -211,10 +211,20 @@
   margin-top: 16px;
   padding: 12px;
   border-radius: 10px;
-  background: #edf7ff;
-  color: #1769aa;
   font-size: 0.88rem;
   text-align: center;
+}
+
+.form-message.erro {
+  border: 1px solid #ffd1d1;
+  background: #fff0f0;
+  color: #b42318;
+}
+
+.form-message.sucesso {
+  border: 1px solid #b7ebc6;
+  background: #edfdf2;
+  color: #147a36;
 }
 
 .register-text {

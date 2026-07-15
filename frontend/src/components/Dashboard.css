@@ -451,13 +451,23 @@
 }
 
 @media (max-width: 1150px) {
+  .ticket-filters {
+  grid-template-columns: repeat(2, 1fr);
+}   
+  .clear-filters-button {
+  width: 100%;
+} 
   .summary-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 800px) {
-  .dashboard-page {
+    .ticket-filters {
+  grid-template-columns: 1fr;
+  padding: 14px;
+}
+    .dashboard-page {
     grid-template-columns: 1fr;
   }
 

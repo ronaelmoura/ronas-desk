@@ -138,18 +138,37 @@ function Dashboard({ onLogout }) {
     setModalAberto(false)
   }
 
-  function atualizarStatus(id, novoStatus) {
-    setChamados((chamadosAtuais) =>
-      chamadosAtuais.map((chamado) =>
-        chamado.id === id
-          ? {
-              ...chamado,
-              status: novoStatus,
-            }
-          : chamado,
-      ),
-    )
-  }
+  function atualizarChamado(chamadoAtualizado) {
+  setChamados((chamadosAtuais) =>
+    chamadosAtuais.map((chamado) =>
+      chamado.id === chamadoAtualizado.id
+        ? chamadoAtualizado
+        : chamado,
+    ),
+  )
+
+  setChamadoSelecionado(null)
+}
+
+function excluirChamado(id) {
+  setChamados((chamadosAtuais) =>
+    chamadosAtuais.filter(
+      (chamado) => chamado.id !== id,
+    ),
+  )
+
+  setChamadoSelecionado(null)
+}
+
+function excluirChamado(id) {
+  setChamados((chamadosAtuais) =>
+    chamadosAtuais.filter(
+      (chamado) => chamado.id !== id,
+    ),
+  )
+
+  setChamadoSelecionado(null)
+}
    
   function limparFiltros() {
   setBusca('')
@@ -491,10 +510,11 @@ function Dashboard({ onLogout }) {
 
       {chamadoSelecionado && (
         <TicketDetailsModal
-          chamado={chamadoSelecionado}
-          onClose={() => setChamadoSelecionado(null)}
-          onUpdateStatus={atualizarStatus}
-        />
+  chamado={chamadoSelecionado}
+  onClose={() => setChamadoSelecionado(null)}
+  onUpdate={atualizarChamado}
+  onDelete={excluirChamado}
+/>
       )}
     </div>
   )
