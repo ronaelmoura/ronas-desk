@@ -3,6 +3,7 @@ import './Dashboard.css'
 import NewTicketModal from './NewTicketModal'
 import TicketDetailsModal from './TicketDetailsModal'
 import AllTickets from './AllTickets'
+import ProfileSettings from './ProfileSettings'
 
 const chamadosIniciais = [
   {
@@ -34,6 +35,82 @@ const chamadosIniciais = [
   },
 ]
 
+const perfilInicial = {
+  nome: 'Ronael Moura',
+  email: 'ronael@email.com',
+  cargo: 'Administrador',
+  notificacoes: true,
+}
+
+function obterIniciais(nome = '') {
+  const nomeSeguro = typeof nome === 'string' ? nome : ''
+
+  return (
+    nomeSeguro
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((parte) => parte[0])
+      .join('')
+      .toUpperCase() || 'US'
+  )
+}
+
+function obterPrimeiroNome(nome = '') {
+  const nomeSeguro = typeof nome === 'string' ? nome : ''
+
+  return (
+    nomeSeguro.trim().split(/\s+/).filter(Boolean)[0] ||
+    'Usuário'
+  )
+}
+
+function carregarPerfil() {
+  try {
+    const perfilSalvo = localStorage.getItem(
+      'ronas-desk-perfil',
+    )
+  
+    if (!perfilSalvo) {
+      return perfilInicial
+    }
+
+    const perfilConvertido = JSON.parse(perfilSalvo)
+
+    if (
+      !perfilConvertido ||
+      typeof perfilConvertido !== 'object' ||
+      Array.isArray(perfilConvertido)
+    ) {
+      return perfilInicial
+    }
+
+    return {
+      nome:
+        typeof perfilConvertido.nome === 'string' &&
+        perfilConvertido.nome.trim()
+          ? perfilConvertido.nome
+          : perfilInicial.nome,
+      email:
+        typeof perfilConvertido.email === 'string' &&
+        perfilConvertido.email.trim()
+          ? perfilConvertido.email
+          : perfilInicial.email,
+      cargo:
+        typeof perfilConvertido.cargo === 'string' &&
+        perfilConvertido.cargo.trim()
+          ? perfilConvertido.cargo
+          : perfilInicial.cargo,
+      notificacoes:
+        typeof perfilConvertido.notificacoes === 'boolean'
+          ? perfilConvertido.notificacoes
+          : perfilInicial.notificacoes,
+    }
+  } catch {
+    return perfilInicial
+  }
+}
+
 function carregarChamados() {
   try {
     const dadosSalvos = localStorage.getItem('ronas-desk-chamados')
@@ -54,6 +131,7 @@ function carregarChamados() {
 
 function Dashboard({ onLogout }) {
   const [chamados, setChamados] = useState(carregarChamados)
+  const [perfil, setPerfil] = useState(carregarPerfil)
   const [modalAberto, setModalAberto] = useState(false)
   const [chamadoSelecionado, setChamadoSelecionado] = useState(null)
   const [paginaAtiva, setPaginaAtiva] = useState('visao-geral')
@@ -62,6 +140,7 @@ function Dashboard({ onLogout }) {
   const [filtroStatus, setFiltroStatus] = useState('Todos')
   const [filtroPrioridade, setFiltroPrioridade] = useState('Todas')
   const [filtroCategoria, setFiltroCategoria] = useState('Todas')
+  
 
   useEffect(() => {
     localStorage.setItem(
@@ -69,6 +148,13 @@ function Dashboard({ onLogout }) {
       JSON.stringify(chamados),
     )
   }, [chamados])
+
+  useEffect(() => {
+    localStorage.setItem(
+      'ronas-desk-perfil',
+      JSON.stringify(perfil),
+    )
+  }, [perfil])
 
   const totalChamados = chamados.length
 
@@ -217,7 +303,13 @@ function Dashboard({ onLogout }) {
             Novo chamado
           </button>
 
-          <button className="menu-item" type="button">
+          <button
+            className={`menu-item ${
+              paginaAtiva === 'configuracoes' ? 'active' : ''
+            }`}
+            type="button"
+            onClick={() => setPaginaAtiva('configuracoes')}
+          >
             <span>⚙</span>
             Configurações
           </button>
@@ -225,11 +317,13 @@ function Dashboard({ onLogout }) {
 
         <div className="sidebar-footer">
           <div className="sidebar-user">
-            <div className="user-avatar">RM</div>
+            <div className="user-avatar">
+              {obterIniciais(perfil.nome)}
+            </div>
 
             <div>
-              <strong>Ronael Moura</strong>
-              <span>Administrador</span>
+              <strong>{perfil.nome}</strong>
+              <span>{perfil.cargo}</span>
             </div>
           </div>
 
@@ -250,6 +344,11 @@ function Dashboard({ onLogout }) {
             onSelectTicket={setChamadoSelecionado}
             onNewTicket={() => setModalAberto(true)}
           />
+        ) : paginaAtiva === 'configuracoes' ? (
+          <ProfileSettings
+            perfil={perfil}
+            onSave={setPerfil}
+          />
         ) : (
           <>
             <header className="dashboard-header">
@@ -258,7 +357,9 @@ function Dashboard({ onLogout }) {
                   Painel de controle
                 </p>
 
-                <h1>Olá, Ronael 👋</h1>
+                <h1>
+                  Olá, {obterPrimeiroNome(perfil.nome)} 👋
+                </h1>
 
                 <p>
                   Acompanhe os chamados e as atividades recentes do
