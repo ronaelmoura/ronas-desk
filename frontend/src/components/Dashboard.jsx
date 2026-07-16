@@ -4,36 +4,12 @@ import NewTicketModal from './NewTicketModal'
 import TicketDetailsModal from './TicketDetailsModal'
 import AllTickets from './AllTickets'
 import ProfileSettings from './ProfileSettings'
-
-const chamadosIniciais = [
-  {
-    id: 1,
-    titulo: 'Computador não conecta à internet',
-    categoria: 'Rede',
-    prioridade: 'Alta',
-    status: 'Aberto',
-    descricao:
-      'O computador perdeu a conexão com a rede e não encontra nenhuma rede Wi-Fi disponível.',
-  },
-  {
-    id: 2,
-    titulo: 'Erro ao instalar programa',
-    categoria: 'Software',
-    prioridade: 'Média',
-    status: 'Em andamento',
-    descricao:
-      'O instalador apresenta uma mensagem de erro durante a execução e não conclui a instalação.',
-  },
-  {
-    id: 3,
-    titulo: 'Impressora não reconhecida',
-    categoria: 'Hardware',
-    prioridade: 'Baixa',
-    status: 'Concluído',
-    descricao:
-      'A impressora está conectada, mas não aparece entre os dispositivos disponíveis do computador.',
-  },
-]
+import {
+  criarChamadoApi,
+  excluirChamadoApi,
+  listarChamadosApi,
+  atualizarChamadoApi,
+} from '../services/chamadosApi'
 
 const perfilInicial = {
   nome: 'Ronael Moura',
@@ -111,27 +87,11 @@ function carregarPerfil() {
   }
 }
 
-function carregarChamados() {
-  try {
-    const dadosSalvos = localStorage.getItem('ronas-desk-chamados')
-
-    if (!dadosSalvos) {
-      return chamadosIniciais
-    }
-
-    const chamadosSalvos = JSON.parse(dadosSalvos)
-
-    return Array.isArray(chamadosSalvos)
-      ? chamadosSalvos
-      : chamadosIniciais
-  } catch {
-    return chamadosIniciais
-  }
-}
-
 function Dashboard({ onLogout }) {
-  const [chamados, setChamados] = useState(carregarChamados)
+  const [chamados, setChamados] = useState([])
   const [perfil, setPerfil] = useState(carregarPerfil)
+  const [carregando, setCarregando] = useState(true)
+  const [erroApi, setErroApi] = useState('')
   const [modalAberto, setModalAberto] = useState(false)
   const [chamadoSelecionado, setChamadoSelecionado] = useState(null)
   const [paginaAtiva, setPaginaAtiva] = useState('visao-geral')
@@ -143,11 +103,8 @@ function Dashboard({ onLogout }) {
   
 
   useEffect(() => {
-    localStorage.setItem(
-      'ronas-desk-chamados',
-      JSON.stringify(chamados),
-    )
-  }, [chamados])
+    carregarChamadosDaApi()
+  }, [])
 
   useEffect(() => {
     localStorage.setItem(
@@ -201,47 +158,68 @@ function Dashboard({ onLogout }) {
     )
   })
 
-  function criarChamado(dados) {
-    const maiorId = chamados.reduce(
-      (maior, chamado) => Math.max(maior, chamado.id),
-      0,
-    )
+  async function carregarChamadosDaApi() {
+    setCarregando(true)
+    setErroApi('')
 
-    const novoChamado = {
-      id: maiorId + 1,
-      titulo: dados.titulo.trim(),
-      descricao: dados.descricao.trim(),
-      categoria: dados.categoria,
-      prioridade: dados.prioridade,
-      status: 'Aberto',
+    try {
+      const dados = await listarChamadosApi()
+      setChamados(dados)
+    } catch (error) {
+      setErroApi(error.message)
+    } finally {
+      setCarregando(false)
     }
-
-    setChamados((chamadosAtuais) => [
-      novoChamado,
-      ...chamadosAtuais,
-    ])
-
-    setModalAberto(false)
   }
 
-  function atualizarChamado(chamadoAtualizado) {
-    setChamados((chamadosAtuais) =>
-      chamadosAtuais.map((chamado) =>
-        chamado.id === chamadoAtualizado.id
-          ? chamadoAtualizado
-          : chamado,
-      ),
-    )
+  async function criarChamado(dados) {
+    try {
+      const novoChamado = await criarChamadoApi(dados)
 
-    setChamadoSelecionado(null)
+      setChamados((chamadosAtuais) => [
+        novoChamado,
+        ...chamadosAtuais,
+      ])
+
+      setModalAberto(false)
+    } catch (error) {
+      window.alert(error.message)
+    }
   }
 
-  function excluirChamado(id) {
-    setChamados((chamadosAtuais) =>
-      chamadosAtuais.filter((chamado) => chamado.id !== id),
-    )
+  async function atualizarChamado(chamadoAtualizado) {
+    try {
+      const chamadoSalvo = await atualizarChamadoApi(
+        chamadoAtualizado.id,
+        chamadoAtualizado,
+      )
 
-    setChamadoSelecionado(null)
+      setChamados((chamadosAtuais) =>
+        chamadosAtuais.map((chamado) =>
+          chamado.id === chamadoSalvo.id
+            ? chamadoSalvo
+            : chamado,
+        ),
+      )
+
+      setChamadoSelecionado(null)
+    } catch (error) {
+      window.alert(error.message)
+    }
+  }
+
+  async function excluirChamado(id) {
+    try {
+      await excluirChamadoApi(id)
+
+      setChamados((chamadosAtuais) =>
+        chamadosAtuais.filter((chamado) => chamado.id !== id),
+      )
+
+      setChamadoSelecionado(null)
+    } catch (error) {
+      window.alert(error.message)
+    }
   }
 
   function limparFiltros() {
@@ -338,7 +316,25 @@ function Dashboard({ onLogout }) {
       </aside>
 
       <main className="dashboard-content">
-        {paginaAtiva === 'chamados' ? (
+        {carregando ? (
+          <section className="dashboard-panel">
+            <h2>Carregando chamados...</h2>
+            <p>Aguarde enquanto o Ronas Desk consulta a API.</p>
+          </section>
+        ) : erroApi ? (
+          <section className="dashboard-panel">
+            <h2>Não foi possível carregar os chamados</h2>
+            <p>{erroApi}</p>
+
+            <button
+              className="new-ticket-button"
+              type="button"
+              onClick={carregarChamadosDaApi}
+            >
+              Tentar novamente
+            </button>
+          </section>
+        ) : paginaAtiva === 'chamados' ? (
           <AllTickets
             chamados={chamados}
             onSelectTicket={setChamadoSelecionado}
