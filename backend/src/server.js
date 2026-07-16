@@ -1,9 +1,11 @@
+import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import chamadosRouter from './routes/chamados.routes.js'
+import pool from './database/db.js'
 
 const app = express()
-const PORT = 3000
+const PORT = process.env.PORT || 3000
 
 app.use(
   cors({
@@ -13,11 +15,25 @@ app.use(
 
 app.use(express.json())
 
-app.get('/api/health', (request, response) => {
-  response.status(200).json({
-    status: 'ok',
-    message: 'API do Ronas Desk funcionando.',
-  })
+app.get('/api/health', async (request, response) => {
+  try {
+    await pool.query('SELECT 1')
+
+    response.status(200).json({
+      status: 'ok',
+      message: 'API do Ronas Desk funcionando.',
+      database: 'MySQL conectado.',
+    })
+  } catch (error) {
+      console.error('=== ERRO COMPLETO ===')
+  console.error(error)
+
+  response.status(500).json({
+    status: 'erro',
+    message: 'API funcionando, mas o MySQL não conectou.',
+    erro: String(error),
+    })
+  }
 })
 
 app.use('/api/chamados', chamadosRouter)
@@ -30,11 +46,6 @@ app.use((request, response) => {
 })
 
 app.listen(PORT, () => {
-  console.log(
-    `API do Ronas Desk executando na porta ${PORT}`,
-  )
-
-  console.log(
-    `Teste: http://localhost:${PORT}/api/health`,
-  )
+  console.log(`API do Ronas Desk executando na porta ${PORT}`)
+  console.log(`Teste: http://localhost:${PORT}/api/health`)
 })

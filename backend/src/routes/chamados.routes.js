@@ -1,5 +1,6 @@
 import { Router } from 'express'
-import chamados from '../data/chamados.js'
+import pool from '../database/db.js'
+import chamadosController from '../controllers/chamadosController.js'
 
 const chamadosRouter = Router()
 
@@ -56,28 +57,23 @@ function validarChamado(dados) {
   return null
 }
 
-chamadosRouter.get('/', (request, response) => {
-  response.status(200).json(chamados)
-})
+function validarId(id) {
+  return Number.isInteger(id) && id > 0
+}
 
-chamadosRouter.get('/:id', (request, response) => {
-  const id = Number(request.params.id)
+// GET /api/chamados
+// Agora usa Controller → Model → MySQL
+chamadosRouter.get('/', chamadosController.listar)
 
-  const chamado = chamados.find(
-    (item) => item.id === id,
-  )
+// GET /api/chamados/:id
+chamadosRouter.get(
+  '/:id',
+  chamadosController.buscarPorId,
+)
 
-  if (!chamado) {
-    return response.status(404).json({
-      status: 'erro',
-      message: 'Chamado não encontrado.',
-    })
-  }
 
-  return response.status(200).json(chamado)
-})
-
-chamadosRouter.post('/', (request, response) => {
+// POST /api/chamados
+chamadosRouter.post('/', async (request, response) => {
   const erro = validarChamado(request.body)
 
   if (erro) {
@@ -87,90 +83,215 @@ chamadosRouter.post('/', (request, response) => {
     })
   }
 
-  const maiorId = chamados.reduce(
-    (maior, chamado) => Math.max(maior, chamado.id),
-    0,
-  )
+  const titulo = request.body.titulo.trim()
+  const descricao = request.body.descricao.trim()
+  const categoria = request.body.categoria
+  const prioridade = request.body.prioridade
+  const status = request.body.status || 'Aberto'
 
-  const novoChamado = {
-    id: maiorId + 1,
-    titulo: request.body.titulo.trim(),
-    descricao: request.body.descricao.trim(),
-    categoria: request.body.categoria,
-    prioridade: request.body.prioridade,
-    status: request.body.status || 'Aberto',
-  }
+  try {
+    const [resultado] = await pool.execute(
+      `
+        INSERT INTO chamados (
+          titulo,
+          descricao,
+          categoria,
+          prioridade,
+          status
+        )
+        VALUES (?, ?, ?, ?, ?)
+      `,
+      [
+        titulo,
+        descricao,
+        categoria,
+        prioridade,
+        status,
+      ],
+    )
 
-  chamados.unshift(novoChamado)
+    const [chamadosCriados] = await pool.execute(
+      `
+        SELECT
+          id,
+          titulo,
+          descricao,
+          categoria,
+          prioridade,
+          status,
+          created_at,
+          updated_at
+        FROM chamados
+        WHERE id = ?
+      `,
+      [resultado.insertId],
+    )
 
-  return response.status(201).json(novoChamado)
-})
+    return response.status(201).json(chamadosCriados[0])
+  } catch (error) {
+    console.error('Erro ao criar chamado:', error)
 
-chamadosRouter.put('/:id', (request, response) => {
-  const id = Number(request.params.id)
-
-  const indice = chamados.findIndex(
-    (item) => item.id === id,
-  )
-
-  if (indice === -1) {
-    return response.status(404).json({
+    return response.status(500).json({
       status: 'erro',
-      message: 'Chamado não encontrado.',
+      message: 'Não foi possível criar o chamado.',
     })
   }
+})
 
-  const dadosAtualizados = {
-    ...chamados[indice],
-    ...request.body,
-    id,
-  }
+// PUT /api/chamados/:id
+chamadosRouter.put('/:id', async (request, response) => {
+  const id = Number(request.params.id)
 
-  const erro = validarChamado(dadosAtualizados)
-
-  if (erro) {
+  if (!validarId(id)) {
     return response.status(400).json({
       status: 'erro',
-      message: erro,
+      message: 'ID inválido.',
     })
   }
 
-  chamados[indice] = {
-    id,
-    titulo: dadosAtualizados.titulo.trim(),
-    descricao: dadosAtualizados.descricao.trim(),
-    categoria: dadosAtualizados.categoria,
-    prioridade: dadosAtualizados.prioridade,
-    status: dadosAtualizados.status,
-  }
+  try {
+    const [chamadosExistentes] = await pool.execute(
+      `
+        SELECT
+          id,
+          titulo,
+          descricao,
+          categoria,
+          prioridade,
+          status
+        FROM chamados
+        WHERE id = ?
+      `,
+      [id],
+    )
 
-  return response.status(200).json(chamados[indice])
+    if (chamadosExistentes.length === 0) {
+      return response.status(404).json({
+        status: 'erro',
+        message: 'Chamado não encontrado.',
+      })
+    }
+
+    const dadosAtualizados = {
+      ...chamadosExistentes[0],
+      ...request.body,
+      id,
+    }
+
+    const erro = validarChamado(dadosAtualizados)
+
+    if (erro) {
+      return response.status(400).json({
+        status: 'erro',
+        message: erro,
+      })
+    }
+
+    await pool.execute(
+      `
+        UPDATE chamados
+        SET
+          titulo = ?,
+          descricao = ?,
+          categoria = ?,
+          prioridade = ?,
+          status = ?
+        WHERE id = ?
+      `,
+      [
+        dadosAtualizados.titulo.trim(),
+        dadosAtualizados.descricao.trim(),
+        dadosAtualizados.categoria,
+        dadosAtualizados.prioridade,
+        dadosAtualizados.status,
+        id,
+      ],
+    )
+
+    const [chamadosAtualizados] = await pool.execute(
+      `
+        SELECT
+          id,
+          titulo,
+          descricao,
+          categoria,
+          prioridade,
+          status,
+          created_at,
+          updated_at
+        FROM chamados
+        WHERE id = ?
+      `,
+      [id],
+    )
+
+    return response.status(200).json(
+      chamadosAtualizados[0],
+    )
+  } catch (error) {
+    console.error('Erro ao atualizar chamado:', error)
+
+    return response.status(500).json({
+      status: 'erro',
+      message: 'Não foi possível atualizar o chamado.',
+    })
+  }
 })
 
-chamadosRouter.delete('/:id', (request, response) => {
+// DELETE /api/chamados/:id
+chamadosRouter.delete('/:id', async (request, response) => {
   const id = Number(request.params.id)
 
-  const indice = chamados.findIndex(
-    (item) => item.id === id,
-  )
-
-  if (indice === -1) {
-    return response.status(404).json({
+  if (!validarId(id)) {
+    return response.status(400).json({
       status: 'erro',
-      message: 'Chamado não encontrado.',
+      message: 'ID inválido.',
     })
   }
 
-  const chamadoRemovido = chamados.splice(
-    indice,
-    1,
-  )[0]
+  try {
+    const [chamadosEncontrados] = await pool.execute(
+      `
+        SELECT
+          id,
+          titulo,
+          descricao,
+          categoria,
+          prioridade,
+          status,
+          created_at,
+          updated_at
+        FROM chamados
+        WHERE id = ?
+      `,
+      [id],
+    )
 
-  return response.status(200).json({
-    status: 'sucesso',
-    message: 'Chamado excluído com sucesso.',
-    chamado: chamadoRemovido,
-  })
+    if (chamadosEncontrados.length === 0) {
+      return response.status(404).json({
+        status: 'erro',
+        message: 'Chamado não encontrado.',
+      })
+    }
+
+    await pool.execute(
+      'DELETE FROM chamados WHERE id = ?',
+      [id],
+    )
+
+    return response.status(200).json({
+      status: 'sucesso',
+      message: 'Chamado excluído com sucesso.',
+      chamado: chamadosEncontrados[0],
+    })
+  } catch (error) {
+    console.error('Erro ao excluir chamado:', error)
+
+    return response.status(500).json({
+      status: 'erro',
+      message: 'Não foi possível excluir o chamado.',
+    })
+  }
 })
 
 export default chamadosRouter
