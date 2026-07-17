@@ -2,6 +2,7 @@ import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import chamadosRouter from './routes/chamados.routes.js'
+import clientesRouter from './routes/clientes.routes.js'
 import pool from './database/db.js'
 
 const app = express()
@@ -37,6 +38,7 @@ app.get('/api/health', async (request, response) => {
 })
 
 app.use('/api/chamados', chamadosRouter)
+app.use('/api/clientes', clientesRouter)
 
 app.use((request, response) => {
   response.status(404).json({
