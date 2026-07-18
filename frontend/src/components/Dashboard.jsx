@@ -4,6 +4,7 @@ import NewTicketModal from './NewTicketModal'
 import TicketDetailsModal from './TicketDetailsModal'
 import AllTickets from './AllTickets'
 import ProfileSettings from './ProfileSettings'
+import Clientes from '../pages/Clientes/clientes'
 import {
   criarChamadoApi,
   excluirChamadoApi,
@@ -262,6 +263,17 @@ function Dashboard({ onLogout }) {
           </button>
 
           <button
+  className={`menu-item ${
+    paginaAtiva === 'clientes' ? 'active' : ''
+  }`}
+  type="button"
+  onClick={() => setPaginaAtiva('clientes')}
+>
+  <span>👥</span>
+  Clientes
+</button>
+
+          <button
             className={`menu-item ${
               paginaAtiva === 'chamados' ? 'active' : ''
             }`}
@@ -333,7 +345,10 @@ function Dashboard({ onLogout }) {
             >
               Tentar novamente
             </button>
+
           </section>
+        ) : paginaAtiva === 'clientes' ? (
+  <Clientes />
         ) : paginaAtiva === 'chamados' ? (
           <AllTickets
             chamados={chamados}

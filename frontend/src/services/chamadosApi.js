@@ -1,56 +1,44 @@
-const API_URL = 'http://localhost:3000/api/chamados'
+import api from './api'
 
-async function tratarResposta(response) {
-  let dados = {}
-
+async function tratarResposta(promise) {
   try {
-    dados = await response.json()
-  } catch {
-    dados = {}
-  }
+    const response = await promise
+    return response.data
+  } catch (error) {
+    console.error('ERRO API:', error)
 
-  if (!response.ok) {
     throw new Error(
-      dados.message || 'Não foi possível concluir a operação.',
+      error.response?.data?.message ||
+      error.message ||
+      'Não foi possível concluir a operação.',
     )
   }
-
-  return dados
 }
 
-export async function listarChamadosApi() {
-  const response = await fetch(API_URL)
-  return tratarResposta(response)
+
+export function listarChamadosApi() {
+  return tratarResposta(
+    api.get('/chamados'),
+  )
 }
 
-export async function criarChamadoApi(dados) {
-  const response = await fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(dados),
-  })
 
-  return tratarResposta(response)
+export function criarChamadoApi(dados) {
+  return tratarResposta(
+    api.post('/chamados', dados),
+  )
 }
 
-export async function atualizarChamadoApi(id, dados) {
-  const response = await fetch(`${API_URL}/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(dados),
-  })
 
-  return tratarResposta(response)
+export function atualizarChamadoApi(id, dados) {
+  return tratarResposta(
+    api.put(`/chamados/${id}`, dados),
+  )
 }
 
-export async function excluirChamadoApi(id) {
-  const response = await fetch(`${API_URL}/${id}`, {
-    method: 'DELETE',
-  })
 
-  return tratarResposta(response)
+export function excluirChamadoApi(id) {
+  return tratarResposta(
+    api.delete(`/chamados/${id}`),
+  )
 }
