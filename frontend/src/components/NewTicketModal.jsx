@@ -1,17 +1,46 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { listarClientesApi } from '../services/clientesApi'
 import './NewTicketModal.css'
 
 function NewTicketModal({ onClose, onSave }) {
+  const [clienteId, setClienteId] = useState('')
+  const [clientes, setClientes] = useState([])
   const [titulo, setTitulo] = useState('')
   const [descricao, setDescricao] = useState('')
   const [categoria, setCategoria] = useState('')
   const [prioridade, setPrioridade] = useState('')
   const [erro, setErro] = useState('')
+  const [carregandoClientes, setCarregandoClientes] =
+    useState(true)
+
+  useEffect(() => {
+    async function carregarClientes() {
+      try {
+        const resultado = await listarClientesApi()
+
+        const clientesAtivos = resultado.filter(
+          (cliente) =>
+            cliente.ativo === true ||
+            cliente.ativo === 1,
+        )
+
+        setClientes(clientesAtivos)
+      } catch (error) {
+        setErro(error.message)
+      } finally {
+        setCarregandoClientes(false)
+      }
+    }
+
+    carregarClientes()
+  }, [])
 
   function handleSubmit(event) {
     event.preventDefault()
+    setErro('')
 
     if (
+      !clienteId ||
       !titulo.trim() ||
       !descricao.trim() ||
       !categoria ||
@@ -22,8 +51,9 @@ function NewTicketModal({ onClose, onSave }) {
     }
 
     onSave({
-      titulo,
-      descricao,
+      cliente_id: Number(clienteId),
+      titulo: titulo.trim(),
+      descricao: descricao.trim(),
       categoria,
       prioridade,
     })
@@ -49,7 +79,7 @@ function NewTicketModal({ onClose, onSave }) {
             </h2>
 
             <p>
-              Descreva o problema para iniciar o atendimento.
+              Selecione o cliente e descreva o problema.
             </p>
           </div>
 
@@ -67,6 +97,39 @@ function NewTicketModal({ onClose, onSave }) {
           className="ticket-form"
           onSubmit={handleSubmit}
         >
+          <div className="ticket-field full-width">
+            <label htmlFor="cliente">
+              Cliente
+            </label>
+
+            <select
+              id="cliente"
+              value={clienteId}
+              disabled={carregandoClientes}
+              onChange={(event) =>
+                setClienteId(event.target.value)
+              }
+            >
+              <option value="">
+                {carregandoClientes
+                  ? 'Carregando clientes...'
+                  : 'Selecione um cliente'}
+              </option>
+
+              {clientes.map((cliente) => (
+                <option
+                  key={cliente.id}
+                  value={cliente.id}
+                >
+                  {cliente.nome}
+                  {cliente.empresa
+                    ? ` — ${cliente.empresa}`
+                    : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div className="ticket-field full-width">
             <label htmlFor="titulo">
               Título do chamado
@@ -175,6 +238,15 @@ function NewTicketModal({ onClose, onSave }) {
             </p>
           )}
 
+          {!carregandoClientes &&
+            clientes.length === 0 && (
+              <p className="ticket-form-error">
+                Nenhum cliente ativo disponível.
+                Cadastre ou ative um cliente antes de abrir
+                o chamado.
+              </p>
+            )}
+
           <div className="ticket-modal-actions">
             <button
               className="cancel-ticket-button"
@@ -187,6 +259,10 @@ function NewTicketModal({ onClose, onSave }) {
             <button
               className="save-ticket-button"
               type="submit"
+              disabled={
+                carregandoClientes ||
+                clientes.length === 0
+              }
             >
               Abrir chamado
             </button>
