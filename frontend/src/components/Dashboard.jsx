@@ -11,6 +11,17 @@ import {
   listarChamadosApi,
   atualizarChamadoApi,
 } from '../services/chamadosApi'
+import { buscarDashboardApi } from '../services/dashboardApi'
+
+const dashboardInicial = {
+  total_clientes: 0,
+  total_chamados: 0,
+  chamados_abertos: 0,
+  chamados_em_andamento: 0,
+  chamados_concluidos: 0,
+  chamados_alta_prioridade: 0,
+  chamados_recentes: [],
+}
 
 const perfilInicial = {
   nome: 'Ronael Moura',
@@ -90,21 +101,19 @@ function carregarPerfil() {
 
 function Dashboard({ onLogout }) {
   const [chamados, setChamados] = useState([])
+  const [dashboard, setDashboard] = useState(dashboardInicial)
   const [perfil, setPerfil] = useState(carregarPerfil)
   const [carregando, setCarregando] = useState(true)
   const [erroApi, setErroApi] = useState('')
+  const [carregandoDashboard, setCarregandoDashboard] =
+    useState(true)
+  const [erroDashboard, setErroDashboard] = useState('')
   const [modalAberto, setModalAberto] = useState(false)
   const [chamadoSelecionado, setChamadoSelecionado] = useState(null)
   const [paginaAtiva, setPaginaAtiva] = useState('visao-geral')
 
-  const [busca, setBusca] = useState('')
-  const [filtroStatus, setFiltroStatus] = useState('Todos')
-  const [filtroPrioridade, setFiltroPrioridade] = useState('Todas')
-  const [filtroCategoria, setFiltroCategoria] = useState('Todas')
-  
-
   useEffect(() => {
-    carregarChamadosDaApi()
+    carregarDashboardDaApi()
   }, [])
 
   useEffect(() => {
@@ -113,51 +122,6 @@ function Dashboard({ onLogout }) {
       JSON.stringify(perfil),
     )
   }, [perfil])
-
-  const totalChamados = chamados.length
-
-  const chamadosAbertos = chamados.filter(
-    (chamado) => chamado.status === 'Aberto',
-  ).length
-
-  const chamadosEmAndamento = chamados.filter(
-    (chamado) => chamado.status === 'Em andamento',
-  ).length
-
-  const chamadosConcluidos = chamados.filter(
-    (chamado) => chamado.status === 'Concluído',
-  ).length
-
-  const chamadosFiltrados = chamados.filter((chamado) => {
-    const textoBusca = busca.trim().toLowerCase()
-    const titulo = chamado.titulo?.toLowerCase() ?? ''
-    const descricao = chamado.descricao?.toLowerCase() ?? ''
-    const categoria = chamado.categoria?.toLowerCase() ?? ''
-
-    const correspondeBusca =
-      !textoBusca ||
-      titulo.includes(textoBusca) ||
-      descricao.includes(textoBusca) ||
-      categoria.includes(textoBusca)
-
-    const correspondeStatus =
-      filtroStatus === 'Todos' || chamado.status === filtroStatus
-
-    const correspondePrioridade =
-      filtroPrioridade === 'Todas' ||
-      chamado.prioridade === filtroPrioridade
-
-    const correspondeCategoria =
-      filtroCategoria === 'Todas' ||
-      chamado.categoria === filtroCategoria
-
-    return (
-      correspondeBusca &&
-      correspondeStatus &&
-      correspondePrioridade &&
-      correspondeCategoria
-    )
-  })
 
   async function carregarChamadosDaApi() {
     setCarregando(true)
@@ -173,6 +137,30 @@ function Dashboard({ onLogout }) {
     }
   }
 
+  async function carregarDashboardDaApi() {
+    setCarregandoDashboard(true)
+    setErroDashboard('')
+
+    try {
+      const dados = await buscarDashboardApi()
+      setDashboard(dados)
+    } catch (error) {
+      setErroDashboard(error.message)
+    } finally {
+      setCarregandoDashboard(false)
+    }
+  }
+
+  function abrirVisaoGeral() {
+    setPaginaAtiva('visao-geral')
+    carregarDashboardDaApi()
+  }
+
+  function abrirChamados() {
+    setPaginaAtiva('chamados')
+    carregarChamadosDaApi()
+  }
+
   async function criarChamado(dados) {
     try {
       const novoChamado = await criarChamadoApi(dados)
@@ -183,6 +171,7 @@ function Dashboard({ onLogout }) {
       ])
 
       setModalAberto(false)
+      carregarDashboardDaApi()
     } catch (error) {
       window.alert(error.message)
     }
@@ -204,6 +193,7 @@ function Dashboard({ onLogout }) {
       )
 
       setChamadoSelecionado(null)
+      carregarDashboardDaApi()
     } catch (error) {
       window.alert(error.message)
     }
@@ -218,16 +208,10 @@ function Dashboard({ onLogout }) {
       )
 
       setChamadoSelecionado(null)
+      carregarDashboardDaApi()
     } catch (error) {
       window.alert(error.message)
     }
-  }
-
-  function limparFiltros() {
-    setBusca('')
-    setFiltroStatus('Todos')
-    setFiltroPrioridade('Todas')
-    setFiltroCategoria('Todas')
   }
 
   function formatarId(id) {
@@ -256,7 +240,7 @@ function Dashboard({ onLogout }) {
               paginaAtiva === 'visao-geral' ? 'active' : ''
             }`}
             type="button"
-            onClick={() => setPaginaAtiva('visao-geral')}
+            onClick={abrirVisaoGeral}
           >
             <span>⌂</span>
             Visão geral
@@ -278,7 +262,7 @@ function Dashboard({ onLogout }) {
               paginaAtiva === 'chamados' ? 'active' : ''
             }`}
             type="button"
-            onClick={() => setPaginaAtiva('chamados')}
+            onClick={abrirChamados}
           >
             <span>▤</span>
             Chamados
@@ -328,38 +312,54 @@ function Dashboard({ onLogout }) {
       </aside>
 
       <main className="dashboard-content">
-        {carregando ? (
+        {paginaAtiva === 'clientes' ? (
+          <Clientes onSelectTicket={setChamadoSelecionado} />
+        ) : paginaAtiva === 'chamados' ? (
+          carregando ? (
+            <section className="dashboard-panel">
+              <h2>Carregando chamados...</h2>
+              <p>Aguarde enquanto o Ronas Desk consulta a API.</p>
+            </section>
+          ) : erroApi ? (
+            <section className="dashboard-panel">
+              <h2>Não foi possível carregar os chamados</h2>
+              <p>{erroApi}</p>
+
+              <button
+                className="new-ticket-button"
+                type="button"
+                onClick={carregarChamadosDaApi}
+              >
+                Tentar novamente
+              </button>
+            </section>
+          ) : (
+            <AllTickets
+              chamados={chamados}
+              onSelectTicket={setChamadoSelecionado}
+              onNewTicket={() => setModalAberto(true)}
+            />
+          )
+        ) : paginaAtiva === 'configuracoes' ? (
+          <ProfileSettings perfil={perfil} onSave={setPerfil} />
+        ) : carregandoDashboard ? (
           <section className="dashboard-panel">
-            <h2>Carregando chamados...</h2>
-            <p>Aguarde enquanto o Ronas Desk consulta a API.</p>
+            <h2>Carregando dashboard...</h2>
+            <p>Aguarde enquanto o Ronas Desk consolida os dados.</p>
           </section>
-        ) : erroApi ? (
+        ) : erroDashboard ? (
           <section className="dashboard-panel">
-            <h2>Não foi possível carregar os chamados</h2>
-            <p>{erroApi}</p>
+            <h2>Não foi possível carregar o dashboard</h2>
+            <p>{erroDashboard}</p>
 
             <button
               className="new-ticket-button"
               type="button"
-              onClick={carregarChamadosDaApi}
+              onClick={carregarDashboardDaApi}
             >
               Tentar novamente
             </button>
-
           </section>
-        ) : paginaAtiva === 'clientes' ? (
-  <Clientes onSelectTicket={setChamadoSelecionado} />
-        ) : paginaAtiva === 'chamados' ? (
-          <AllTickets
-            chamados={chamados}
-            onSelectTicket={setChamadoSelecionado}
-            onNewTicket={() => setModalAberto(true)}
-          />
-        ) : paginaAtiva === 'configuracoes' ? (
-          <ProfileSettings
-            perfil={perfil}
-            onSave={setPerfil}
-          />
         ) : (
           <>
             <header className="dashboard-header">
@@ -393,7 +393,7 @@ function Dashboard({ onLogout }) {
 
                 <div>
                   <span>Total de chamados</span>
-                  <strong>{totalChamados}</strong>
+                  <strong>{dashboard.total_chamados}</strong>
                   <small>Todos os registros</small>
                 </div>
               </article>
@@ -403,7 +403,7 @@ function Dashboard({ onLogout }) {
 
                 <div>
                   <span>Chamados abertos</span>
-                  <strong>{chamadosAbertos}</strong>
+                  <strong>{dashboard.chamados_abertos}</strong>
                   <small>Aguardando atendimento</small>
                 </div>
               </article>
@@ -413,7 +413,7 @@ function Dashboard({ onLogout }) {
 
                 <div>
                   <span>Em andamento</span>
-                  <strong>{chamadosEmAndamento}</strong>
+                  <strong>{dashboard.chamados_em_andamento}</strong>
                   <small>Sendo analisados</small>
                 </div>
               </article>
@@ -423,8 +423,28 @@ function Dashboard({ onLogout }) {
 
                 <div>
                   <span>Concluídos</span>
-                  <strong>{chamadosConcluidos}</strong>
+                  <strong>{dashboard.chamados_concluidos}</strong>
                   <small>Problemas resolvidos</small>
+                </div>
+              </article>
+
+              <article className="summary-card">
+                <div className="summary-icon purple">♟</div>
+
+                <div>
+                  <span>Total de clientes</span>
+                  <strong>{dashboard.total_clientes}</strong>
+                  <small>Clientes cadastrados</small>
+                </div>
+              </article>
+
+              <article className="summary-card">
+                <div className="summary-icon red">↑</div>
+
+                <div>
+                  <span>Alta prioridade</span>
+                  <strong>{dashboard.chamados_alta_prioridade}</strong>
+                  <small>Atendimentos prioritários</small>
                 </div>
               </article>
             </section>
@@ -432,102 +452,18 @@ function Dashboard({ onLogout }) {
             <section className="dashboard-panel">
               <div className="panel-header">
                 <div>
-                  <h2>Chamados recentes</h2>
-                  <p>Últimas solicitações registradas no sistema.</p>
+                  <h2>Últimos Chamados</h2>
+                  <p>Os cinco registros mais recentes do sistema.</p>
                 </div>
 
                 <button
                   className="text-button"
                   type="button"
-                  onClick={() => setPaginaAtiva('chamados')}
+                  onClick={abrirChamados}
                 >
                   Ver todos
                 </button>
               </div>
-
-              <div className="ticket-filters">
-                <div className="search-field">
-                  <label htmlFor="ticket-search">
-                    Buscar chamado
-                  </label>
-
-                  <input
-                    id="ticket-search"
-                    type="search"
-                    placeholder="Digite um título, descrição ou categoria"
-                    value={busca}
-                    onChange={(event) => setBusca(event.target.value)}
-                  />
-                </div>
-
-                <div className="filter-field">
-                  <label htmlFor="status-filter">Status</label>
-
-                  <select
-                    id="status-filter"
-                    value={filtroStatus}
-                    onChange={(event) =>
-                      setFiltroStatus(event.target.value)
-                    }
-                  >
-                    <option value="Todos">Todos</option>
-                    <option value="Aberto">Aberto</option>
-                    <option value="Em andamento">Em andamento</option>
-                    <option value="Concluído">Concluído</option>
-                  </select>
-                </div>
-
-                <div className="filter-field">
-                  <label htmlFor="priority-filter">Prioridade</label>
-
-                  <select
-                    id="priority-filter"
-                    value={filtroPrioridade}
-                    onChange={(event) =>
-                      setFiltroPrioridade(event.target.value)
-                    }
-                  >
-                    <option value="Todas">Todas</option>
-                    <option value="Baixa">Baixa</option>
-                    <option value="Média">Média</option>
-                    <option value="Alta">Alta</option>
-                  </select>
-                </div>
-
-                <div className="filter-field">
-                  <label htmlFor="category-filter">Categoria</label>
-
-                  <select
-                    id="category-filter"
-                    value={filtroCategoria}
-                    onChange={(event) =>
-                      setFiltroCategoria(event.target.value)
-                    }
-                  >
-                    <option value="Todas">Todas</option>
-                    <option value="Hardware">Hardware</option>
-                    <option value="Software">Software</option>
-                    <option value="Rede">Rede</option>
-                    <option value="Acesso">Acesso</option>
-                    <option value="Outro">Outro</option>
-                  </select>
-                </div>
-
-                <button
-                  className="clear-filters-button"
-                  type="button"
-                  onClick={limparFiltros}
-                >
-                  Limpar filtros
-                </button>
-              </div>
-
-              <p className="filter-result">
-                {chamadosFiltrados.length}{' '}
-                {chamadosFiltrados.length === 1
-                  ? 'chamado encontrado'
-                  : 'chamados encontrados'}
-              </p>
 
               <div className="ticket-table-wrapper">
                 <table className="ticket-table">
@@ -535,16 +471,14 @@ function Dashboard({ onLogout }) {
                     <tr>
                       <th>ID</th>
                       <th>Chamado</th>
-                      <th>Categoria</th>
                       <th>Prioridade</th>
                       <th>Status</th>
-                      <th></th>
                     </tr>
                   </thead>
 
                   <tbody>
-                    {chamadosFiltrados.length > 0 ? (
-                      chamadosFiltrados.map((chamado) => (
+                    {dashboard.chamados_recentes.length > 0 ? (
+                      dashboard.chamados_recentes.map((chamado) => (
                         <tr key={chamado.id}>
                           <td className="ticket-id">
                             {formatarId(chamado.id)}
@@ -553,8 +487,6 @@ function Dashboard({ onLogout }) {
                           <td className="ticket-title">
                             {chamado.titulo}
                           </td>
-
-                          <td>{chamado.categoria}</td>
 
                           <td>
                             <span
@@ -574,23 +506,12 @@ function Dashboard({ onLogout }) {
                             </span>
                           </td>
 
-                          <td>
-                            <button
-                              className="details-button"
-                              type="button"
-                              onClick={() =>
-                                setChamadoSelecionado(chamado)
-                              }
-                            >
-                              Ver detalhes
-                            </button>
-                          </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td className="empty-table" colSpan="6">
-                          Nenhum chamado encontrado com esses filtros.
+                        <td className="empty-table" colSpan="4">
+                          Nenhum chamado registrado.
                         </td>
                       </tr>
                     )}

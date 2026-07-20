@@ -180,7 +180,7 @@
 
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 18px;
   margin-top: 34px;
 }
@@ -225,6 +225,11 @@
 .summary-icon.green {
   background: #eafaf0;
   color: #198a46;
+}
+
+.summary-icon.purple {
+  background: #f2edff;
+  color: #7048c6;
 }
 
 .summary-card span {
