@@ -1,17 +1,64 @@
 import { useEffect, useState } from 'react'
 import {
   listarClientesApi,
-  excluirClienteApi
+  excluirClienteApi,
+  listarChamadosClienteApi,
 } from '../../services/clientesApi'
+import { buscarChamadoApi } from '../../services/chamadosApi'
 import './clientes.css'
 import NovoClienteModal from './NovoClienteModal'
 
 
-function Clientes(){
+function Clientes({ onSelectTicket }){
 
 const [clientes,setClientes] = useState([])
 const [modalAberto,setModalAberto] = useState(false)
 const [clienteSelecionado,setClienteSelecionado] = useState(null)
+const [clienteEmDetalhes,setClienteEmDetalhes] = useState(null)
+const [chamadosCliente,setChamadosCliente] = useState([])
+const [carregandoHistorico,setCarregandoHistorico] = useState(false)
+const [erroHistorico,setErroHistorico] = useState('')
+
+
+async function abrirDetalhesCliente(cliente){
+
+  setClienteEmDetalhes(cliente)
+  setCarregandoHistorico(true)
+  setErroHistorico('')
+
+  try{
+
+    const chamados = await listarChamadosClienteApi(cliente.id)
+    setChamadosCliente(chamados)
+
+  }catch(error){
+
+    setChamadosCliente([])
+    setErroHistorico(error.message)
+
+  }finally{
+
+    setCarregandoHistorico(false)
+
+  }
+
+}
+
+
+async function abrirDetalhesChamado(id){
+
+  try{
+
+    const chamado = await buscarChamadoApi(id)
+    onSelectTicket(chamado)
+
+  }catch(error){
+
+    alert(error.message)
+
+  }
+
+}
 
 
 async function desativarCliente(id){
@@ -70,6 +117,98 @@ return (
 
 <section className="clientes-page">
 
+{clienteEmDetalhes ? (
+
+<>
+
+<button
+  className="btn-voltar-clientes"
+  type="button"
+  onClick={() => setClienteEmDetalhes(null)}
+>
+  ← Voltar para clientes
+</button>
+
+<div className="cliente-detalhes-card">
+  <div>
+    <span>Cliente</span>
+    <h1>{clienteEmDetalhes.nome}</h1>
+    <p>{clienteEmDetalhes.email}</p>
+  </div>
+
+  <dl className="cliente-detalhes-dados">
+    <div>
+      <dt>Empresa</dt>
+      <dd>{clienteEmDetalhes.empresa || 'Não informada'}</dd>
+    </div>
+    <div>
+      <dt>Telefone</dt>
+      <dd>{clienteEmDetalhes.telefone || 'Não informado'}</dd>
+    </div>
+  </dl>
+</div>
+
+<div className="clientes-card historico-card">
+  <div className="historico-header">
+    <div>
+      <h2>Histórico de Chamados</h2>
+      <p>Solicitações vinculadas a este cliente.</p>
+    </div>
+  </div>
+
+  {carregandoHistorico ? (
+    <p className="historico-mensagem">Carregando chamados...</p>
+  ) : erroHistorico ? (
+    <div className="historico-mensagem">
+      <p>{erroHistorico}</p>
+      <button
+        type="button"
+        className="btn-tentar-novamente"
+        onClick={() => abrirDetalhesCliente(clienteEmDetalhes)}
+      >
+        Tentar novamente
+      </button>
+    </div>
+  ) : chamadosCliente.length === 0 ? (
+    <p className="historico-mensagem">
+      Nenhum chamado registrado para este cliente.
+    </p>
+  ) : (
+    <div className="historico-tabela-wrapper">
+      <table className="clientes-table historico-table">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Categoria</th>
+            <th>Prioridade</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {chamadosCliente.map((chamado) => (
+            <tr
+              key={chamado.id}
+              className="historico-linha"
+              onClick={() => abrirDetalhesChamado(chamado.id)}
+            >
+              <td className="historico-titulo">{chamado.titulo}</td>
+              <td>{chamado.categoria}</td>
+              <td>{chamado.prioridade}</td>
+              <td>{chamado.status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+</div>
+
+</>
+
+) : (
+
+<>
+
 <div className="clientes-header">
 
 <div>
@@ -123,7 +262,15 @@ clientes.map(cliente=>(
 <tr key={cliente.id}>
 
 <td>{cliente.id}</td>
-<td>{cliente.nome}</td>
+<td>
+  <button
+    className="cliente-link"
+    type="button"
+    onClick={() => abrirDetalhesCliente(cliente)}
+  >
+    {cliente.nome}
+  </button>
+</td>
 <td>{cliente.email}</td>
 <td>{cliente.telefone}</td>
 <td>{cliente.empresa}</td>
@@ -169,6 +316,10 @@ clientes.map(cliente=>(
 </table>
 
 </div>
+
+</>
+
+)}
 
 {
 modalAberto && (

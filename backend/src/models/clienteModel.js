@@ -52,6 +52,26 @@ async function buscarPorId(id) {
   return buscarPorIdInterno(id)
 }
 
+async function buscarChamados(id) {
+  const [rows] = await pool.execute(
+    `
+      SELECT
+        id,
+        titulo,
+        categoria,
+        prioridade,
+        status,
+        created_at
+      FROM chamados
+      WHERE cliente_id = ?
+      ORDER BY id DESC
+    `,
+    [id],
+  )
+
+  return rows
+}
+
 async function criar(dados) {
   const [resultado] = await pool.execute(
     `
@@ -121,6 +141,7 @@ async function desativar(id) {
 export default {
   listar,
   buscarPorId,
+  buscarChamados,
   criar,
   atualizar,
   desativar,

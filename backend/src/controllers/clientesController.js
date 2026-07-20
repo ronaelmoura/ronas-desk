@@ -138,6 +138,38 @@ async function buscarPorId(request, response) {
   }
 }
 
+async function listarChamados(request, response) {
+  const id = Number(request.params.id)
+
+  if (!validarId(id)) {
+    return response.status(400).json({
+      status: 'erro',
+      message: 'ID inválido.',
+    })
+  }
+
+  try {
+    const cliente = await clienteModel.buscarPorId(id)
+
+    if (!cliente) {
+      return response.status(404).json({
+        status: 'erro',
+        message: 'Cliente não encontrado.',
+      })
+    }
+
+    const chamados = await clienteModel.buscarChamados(id)
+
+    return response.status(200).json(chamados)
+  } catch (error) {
+    return responderErroBanco(
+      error,
+      response,
+      'Erro ao listar chamados do cliente:',
+    )
+  }
+}
+
 async function criar(request, response) {
   const resultadoValidacao = prepararDados(request.body)
 
@@ -241,6 +273,7 @@ async function excluir(request, response) {
 export default {
   listar,
   buscarPorId,
+  listarChamados,
   criar,
   atualizar,
   excluir,

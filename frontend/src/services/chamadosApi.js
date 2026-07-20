@@ -42,3 +42,10 @@ export function excluirChamadoApi(id) {
     api.delete(`/chamados/${id}`),
   )
 }
+
+
+export function buscarChamadoApi(id) {
+  return tratarResposta(
+    api.get(`/chamados/${id}`),
+  )
+}

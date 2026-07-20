@@ -348,7 +348,7 @@ function Dashboard({ onLogout }) {
 
           </section>
         ) : paginaAtiva === 'clientes' ? (
-  <Clientes />
+  <Clientes onSelectTicket={setChamadoSelecionado} />
         ) : paginaAtiva === 'chamados' ? (
           <AllTickets
             chamados={chamados}

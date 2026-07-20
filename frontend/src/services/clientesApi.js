@@ -62,3 +62,13 @@ api.delete(`/clientes/${id}`)
 )
 
 }
+
+
+
+export function listarChamadosClienteApi(id){
+
+return tratarResposta(
+api.get(`/clientes/${id}/chamados`)
+)
+
+}
