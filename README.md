@@ -138,32 +138,6 @@ MySQL
 
 ---
 
-# 📸 Screenshots
-
-## Dashboard
-
-> *(Adicionar imagem)*
-
----
-
-## Clientes
-
-> *(Adicionar imagem)*
-
----
-
-## Chamados
-
-> *(Adicionar imagem)*
-
----
-
-## Histórico de Chamados
-
-> *(Adicionar imagem)*
-
----
-
 # ⚙️ Como Executar
 
 ## Clone o projeto
