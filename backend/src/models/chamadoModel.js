@@ -62,14 +62,7 @@ async function buscarClienteAtivo(clienteId) {
 }
 
 async function criar(dados) {
-  const {
-    cliente_id,
-    titulo,
-    descricao,
-    categoria,
-    prioridade,
-    status,
-  } = dados
+  const { cliente_id, titulo, descricao, categoria, prioridade, status } = dados
 
   const [resultado] = await pool.execute(
     `
@@ -83,28 +76,14 @@ async function criar(dados) {
       )
       VALUES (?, ?, ?, ?, ?, ?)
     `,
-    [
-      cliente_id,
-      titulo,
-      descricao,
-      categoria,
-      prioridade,
-      status,
-    ],
+    [cliente_id, titulo, descricao, categoria, prioridade, status],
   )
 
   return buscarPorId(resultado.insertId)
 }
 
 async function atualizar(id, dados) {
-  const {
-    cliente_id,
-    titulo,
-    descricao,
-    categoria,
-    prioridade,
-    status,
-  } = dados
+  const { cliente_id, titulo, descricao, categoria, prioridade, status } = dados
 
   await pool.execute(
     `
@@ -118,15 +97,7 @@ async function atualizar(id, dados) {
         status = ?
       WHERE id = ?
     `,
-    [
-      cliente_id,
-      titulo,
-      descricao,
-      categoria,
-      prioridade,
-      status,
-      id,
-    ],
+    [cliente_id, titulo, descricao, categoria, prioridade, status, id],
   )
 
   return buscarPorId(id)
@@ -139,10 +110,7 @@ async function excluir(id) {
     return null
   }
 
-  await pool.execute(
-    'DELETE FROM chamados WHERE id = ?',
-    [id],
-  )
+  await pool.execute('DELETE FROM chamados WHERE id = ?', [id])
 
   return chamado
 }

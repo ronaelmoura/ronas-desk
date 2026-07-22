@@ -11,18 +11,17 @@ function validarEmail(email) {
 function prepararDados(dadosRecebidos, ativoPadrao = true) {
   const dados = dadosRecebidos ?? {}
 
-  const nome = typeof dados.nome === 'string'
-    ? dados.nome.trim()
-    : ''
-  const email = typeof dados.email === 'string'
-    ? dados.email.trim().toLowerCase()
-    : ''
-  const telefone = typeof dados.telefone === 'string'
-    ? dados.telefone.trim() || null
-    : dados.telefone ?? null
-  const empresa = typeof dados.empresa === 'string'
-    ? dados.empresa.trim() || null
-    : dados.empresa ?? null
+  const nome = typeof dados.nome === 'string' ? dados.nome.trim() : ''
+  const email =
+    typeof dados.email === 'string' ? dados.email.trim().toLowerCase() : ''
+  const telefone =
+    typeof dados.telefone === 'string'
+      ? dados.telefone.trim() || null
+      : (dados.telefone ?? null)
+  const empresa =
+    typeof dados.empresa === 'string'
+      ? dados.empresa.trim() || null
+      : (dados.empresa ?? null)
   const ativo = dados.ativo ?? ativoPadrao
 
   if (!nome || !email) {
@@ -100,11 +99,7 @@ async function listar(request, response) {
 
     return response.status(200).json(clientes)
   } catch (error) {
-    return responderErroBanco(
-      error,
-      response,
-      'Erro ao listar clientes:',
-    )
+    return responderErroBanco(error, response, 'Erro ao listar clientes:')
   }
 }
 
@@ -130,11 +125,7 @@ async function buscarPorId(request, response) {
 
     return response.status(200).json(cliente)
   } catch (error) {
-    return responderErroBanco(
-      error,
-      response,
-      'Erro ao buscar cliente:',
-    )
+    return responderErroBanco(error, response, 'Erro ao buscar cliente:')
   }
 }
 
@@ -181,17 +172,11 @@ async function criar(request, response) {
   }
 
   try {
-    const cliente = await clienteModel.criar(
-      resultadoValidacao.dados,
-    )
+    const cliente = await clienteModel.criar(resultadoValidacao.dados)
 
     return response.status(201).json(cliente)
   } catch (error) {
-    return responderErroBanco(
-      error,
-      response,
-      'Erro ao criar cliente:',
-    )
+    return responderErroBanco(error, response, 'Erro ao criar cliente:')
   }
 }
 
@@ -215,10 +200,7 @@ async function atualizar(request, response) {
   }
 
   try {
-    const cliente = await clienteModel.atualizar(
-      id,
-      resultadoValidacao.dados,
-    )
+    const cliente = await clienteModel.atualizar(id, resultadoValidacao.dados)
 
     if (!cliente) {
       return response.status(404).json({
@@ -229,11 +211,7 @@ async function atualizar(request, response) {
 
     return response.status(200).json(cliente)
   } catch (error) {
-    return responderErroBanco(
-      error,
-      response,
-      'Erro ao atualizar cliente:',
-    )
+    return responderErroBanco(error, response, 'Erro ao atualizar cliente:')
   }
 }
 
@@ -262,11 +240,7 @@ async function excluir(request, response) {
       message: 'Cliente desativado com sucesso.',
     })
   } catch (error) {
-    return responderErroBanco(
-      error,
-      response,
-      'Erro ao desativar cliente:',
-    )
+    return responderErroBanco(error, response, 'Erro ao desativar cliente:')
   }
 }
 

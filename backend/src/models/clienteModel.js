@@ -84,13 +84,7 @@ async function criar(dados) {
       )
       VALUES (?, ?, ?, ?, ?)
     `,
-    [
-      dados.nome,
-      dados.email,
-      dados.telefone,
-      dados.empresa,
-      dados.ativo,
-    ],
+    [dados.nome, dados.email, dados.telefone, dados.empresa, dados.ativo],
   )
 
   return buscarPorIdInterno(resultado.insertId, false)
@@ -108,14 +102,7 @@ async function atualizar(id, dados) {
         ativo = ?
       WHERE id = ? AND ativo = TRUE
     `,
-    [
-      dados.nome,
-      dados.email,
-      dados.telefone,
-      dados.empresa,
-      dados.ativo,
-      id,
-    ],
+    [dados.nome, dados.email, dados.telefone, dados.empresa, dados.ativo, id],
   )
 
   if (resultado.affectedRows === 0) {

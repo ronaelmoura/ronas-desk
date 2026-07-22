@@ -1,9 +1,8 @@
 import pool from '../database/db.js'
 
 async function buscarResumo() {
-  const [resumoResultado, chamadosRecentesResultado] =
-    await Promise.all([
-      pool.query(`
+  const [resumoResultado, chamadosRecentesResultado] = await Promise.all([
+    pool.query(`
         SELECT
           (SELECT COUNT(*) FROM clientes) AS total_clientes,
           COUNT(*) AS total_chamados,
@@ -13,7 +12,7 @@ async function buscarResumo() {
           SUM(prioridade = 'Alta') AS chamados_alta_prioridade
         FROM chamados
       `),
-      pool.query(`
+    pool.query(`
         SELECT
           id,
           titulo,
@@ -23,7 +22,7 @@ async function buscarResumo() {
         ORDER BY id DESC
         LIMIT 5
       `),
-    ])
+  ])
 
   const [resumoRows] = resumoResultado
   const [chamadosRecentes] = chamadosRecentesResultado
@@ -35,9 +34,7 @@ async function buscarResumo() {
     chamados_abertos: Number(resumo.chamados_abertos),
     chamados_em_andamento: Number(resumo.chamados_em_andamento),
     chamados_concluidos: Number(resumo.chamados_concluidos),
-    chamados_alta_prioridade: Number(
-      resumo.chamados_alta_prioridade,
-    ),
+    chamados_alta_prioridade: Number(resumo.chamados_alta_prioridade),
     chamados_recentes: chamadosRecentes,
   }
 }

@@ -1,17 +1,7 @@
-import api from './api'
+import apiClient from './apiClient'
 
 export async function buscarDashboardApi() {
-  try {
-    const response = await api.get('/dashboard')
+  const response = await apiClient.get('/dashboard')
 
-    return response.data
-  } catch (error) {
-    console.error('ERRO API DASHBOARD:', error)
-
-    throw new Error(
-      error.response?.data?.message ||
-      error.message ||
-      'Não foi possível carregar o dashboard.',
-    )
-  }
+  return response.data
 }

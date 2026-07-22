@@ -1,25 +1,11 @@
-import api from './api'
+import apiClient from './apiClient'
 
 
 async function tratarResposta(promise){
 
-try{
-
 const response = await promise
 
 return response.data
-
-
-}catch(error){
-
-console.error('ERRO API:', error)
-
-throw new Error(
-error.response?.data?.message ||
-'Não foi possível concluir a operação.'
-)
-
-}
 
 }
 
@@ -28,7 +14,7 @@ error.response?.data?.message ||
 export function listarClientesApi(){
 
 return tratarResposta(
-api.get('/clientes')
+apiClient.get('/clientes')
 )
 
 }
@@ -38,7 +24,7 @@ api.get('/clientes')
 export function criarClienteApi(dados){
 
 return tratarResposta(
-api.post('/clientes', dados)
+apiClient.post('/clientes', dados)
 )
 
 }
@@ -48,7 +34,7 @@ api.post('/clientes', dados)
 export function atualizarClienteApi(id,dados){
 
 return tratarResposta(
-api.put(`/clientes/${id}`,dados)
+apiClient.put(`/clientes/${id}`,dados)
 )
 
 }
@@ -58,7 +44,7 @@ api.put(`/clientes/${id}`,dados)
 export function excluirClienteApi(id){
 
 return tratarResposta(
-api.delete(`/clientes/${id}`)
+apiClient.delete(`/clientes/${id}`)
 )
 
 }
@@ -68,7 +54,7 @@ api.delete(`/clientes/${id}`)
 export function listarChamadosClienteApi(id){
 
 return tratarResposta(
-api.get(`/clientes/${id}/chamados`)
+apiClient.get(`/clientes/${id}/chamados`)
 )
 
 }

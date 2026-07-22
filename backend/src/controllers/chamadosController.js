@@ -1,49 +1,23 @@
 import chamadoModel from '../models/chamadoModel.js'
 
-const categoriasPermitidas = [
-  'Hardware',
-  'Software',
-  'Rede',
-  'Acesso',
-  'Outro',
-]
+const categoriasPermitidas = ['Hardware', 'Software', 'Rede', 'Acesso', 'Outro']
 
-const prioridadesPermitidas = [
-  'Baixa',
-  'Média',
-  'Alta',
-]
+const prioridadesPermitidas = ['Baixa', 'Média', 'Alta']
 
-const statusPermitidos = [
-  'Aberto',
-  'Em andamento',
-  'Concluído',
-]
+const statusPermitidos = ['Aberto', 'Em andamento', 'Concluído']
 
 function validarId(id) {
   return Number.isInteger(id) && id > 0
 }
 
 function validarChamado(dados) {
-  const {
-    cliente_id,
-    titulo,
-    descricao,
-    categoria,
-    prioridade,
-    status,
-  } = dados
+  const { cliente_id, titulo, descricao, categoria, prioridade, status } = dados
 
   if (!validarId(Number(cliente_id))) {
     return 'Selecione um cliente válido.'
   }
 
-  if (
-    !titulo?.trim() ||
-    !descricao?.trim() ||
-    !categoria ||
-    !prioridade
-  ) {
+  if (!titulo?.trim() || !descricao?.trim() || !categoria || !prioridade) {
     return 'Título, descrição, categoria e prioridade são obrigatórios.'
   }
 
@@ -128,9 +102,7 @@ async function criar(request, response) {
   }
 
   try {
-    const cliente = await chamadoModel.buscarClienteAtivo(
-      dados.cliente_id,
-    )
+    const cliente = await chamadoModel.buscarClienteAtivo(dados.cliente_id)
 
     if (!cliente) {
       return response.status(400).json({
