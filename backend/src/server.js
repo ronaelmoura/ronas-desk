@@ -5,6 +5,7 @@ import chamadosRouter from './routes/chamados.routes.js'
 import clientesRouter from './routes/clientes.routes.js'
 import dashboardRouter from './routes/dashboard.routes.js'
 import authRouter from './routes/auth.routes.js'
+import usuariosRouter from './routes/usuarios.routes.js'
 import authMiddleware from './middlewares/authMiddleware.js'
 import pool from './database/db.js'
 
@@ -44,6 +45,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/chamados', authMiddleware, chamadosRouter)
 app.use('/api/clientes', authMiddleware, clientesRouter)
 app.use('/api/dashboard', authMiddleware, dashboardRouter)
+app.use('/api/usuarios', authMiddleware, usuariosRouter)
 
 app.use((request, response) => {
   response.status(404).json({

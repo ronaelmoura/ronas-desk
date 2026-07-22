@@ -5,6 +5,7 @@ async function buscarResumo() {
     pool.query(`
         SELECT
           (SELECT COUNT(*) FROM clientes) AS total_clientes,
+          (SELECT COUNT(*) FROM usuarios) AS total_usuarios,
           COUNT(*) AS total_chamados,
           SUM(status = 'Aberto') AS chamados_abertos,
           SUM(status = 'Em andamento') AS chamados_em_andamento,
@@ -30,6 +31,7 @@ async function buscarResumo() {
 
   return {
     total_clientes: Number(resumo.total_clientes),
+    total_usuarios: Number(resumo.total_usuarios),
     total_chamados: Number(resumo.total_chamados),
     chamados_abertos: Number(resumo.chamados_abertos),
     chamados_em_andamento: Number(resumo.chamados_em_andamento),

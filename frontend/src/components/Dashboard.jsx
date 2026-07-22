@@ -1,37 +1,40 @@
-import { useEffect, useState } from 'react'
-import './Dashboard.css'
-import NewTicketModal from './NewTicketModal'
-import TicketDetailsModal from './TicketDetailsModal'
-import AllTickets from './AllTickets'
-import ProfileSettings from './ProfileSettings'
-import Clientes from '../pages/Clientes/clientes'
+import { useEffect, useState } from "react";
+import "./Dashboard.css";
+import NewTicketModal from "./NewTicketModal";
+import TicketDetailsModal from "./TicketDetailsModal";
+import AllTickets from "./AllTickets";
+import ProfileSettings from "./ProfileSettings";
+import Clientes from "../pages/Clientes/clientes";
+import Usuarios from "../pages/Usuarios/Usuarios";
+import useAuth from "../hooks/useAuth";
 import {
   criarChamadoApi,
   excluirChamadoApi,
   listarChamadosApi,
   atualizarChamadoApi,
-} from '../services/chamadosApi'
-import { buscarDashboardApi } from '../services/dashboardApi'
+} from "../services/chamadosApi";
+import { buscarDashboardApi } from "../services/dashboardApi";
 
 const dashboardInicial = {
   total_clientes: 0,
+  total_usuarios: 0,
   total_chamados: 0,
   chamados_abertos: 0,
   chamados_em_andamento: 0,
   chamados_concluidos: 0,
   chamados_alta_prioridade: 0,
   chamados_recentes: [],
-}
+};
 
 const perfilInicial = {
-  nome: 'Ronael Moura',
-  email: 'ronael@email.com',
-  cargo: 'Administrador',
+  nome: "Ronael Moura",
+  email: "ronael@email.com",
+  cargo: "Administrador",
   notificacoes: true,
-}
+};
 
-function obterIniciais(nome = '') {
-  const nomeSeguro = typeof nome === 'string' ? nome : ''
+function obterIniciais(nome = "") {
+  const nomeSeguro = typeof nome === "string" ? nome : "";
 
   return (
     nomeSeguro
@@ -39,141 +42,130 @@ function obterIniciais(nome = '') {
       .split(/\s+/)
       .slice(0, 2)
       .map((parte) => parte[0])
-      .join('')
-      .toUpperCase() || 'US'
-  )
+      .join("")
+      .toUpperCase() || "US"
+  );
 }
 
-function obterPrimeiroNome(nome = '') {
-  const nomeSeguro = typeof nome === 'string' ? nome : ''
+function obterPrimeiroNome(nome = "") {
+  const nomeSeguro = typeof nome === "string" ? nome : "";
 
-  return (
-    nomeSeguro.trim().split(/\s+/).filter(Boolean)[0] ||
-    'Usuário'
-  )
+  return nomeSeguro.trim().split(/\s+/).filter(Boolean)[0] || "Usuário";
 }
 
 function carregarPerfil() {
   try {
-    const perfilSalvo = localStorage.getItem(
-      'ronas-desk-perfil',
-    )
-  
+    const perfilSalvo = localStorage.getItem("ronas-desk-perfil");
+
     if (!perfilSalvo) {
-      return perfilInicial
+      return perfilInicial;
     }
 
-    const perfilConvertido = JSON.parse(perfilSalvo)
+    const perfilConvertido = JSON.parse(perfilSalvo);
 
     if (
       !perfilConvertido ||
-      typeof perfilConvertido !== 'object' ||
+      typeof perfilConvertido !== "object" ||
       Array.isArray(perfilConvertido)
     ) {
-      return perfilInicial
+      return perfilInicial;
     }
 
     return {
       nome:
-        typeof perfilConvertido.nome === 'string' &&
+        typeof perfilConvertido.nome === "string" &&
         perfilConvertido.nome.trim()
           ? perfilConvertido.nome
           : perfilInicial.nome,
       email:
-        typeof perfilConvertido.email === 'string' &&
+        typeof perfilConvertido.email === "string" &&
         perfilConvertido.email.trim()
           ? perfilConvertido.email
           : perfilInicial.email,
       cargo:
-        typeof perfilConvertido.cargo === 'string' &&
+        typeof perfilConvertido.cargo === "string" &&
         perfilConvertido.cargo.trim()
           ? perfilConvertido.cargo
           : perfilInicial.cargo,
       notificacoes:
-        typeof perfilConvertido.notificacoes === 'boolean'
+        typeof perfilConvertido.notificacoes === "boolean"
           ? perfilConvertido.notificacoes
           : perfilInicial.notificacoes,
-    }
+    };
   } catch {
-    return perfilInicial
+    return perfilInicial;
   }
 }
 
 function Dashboard({ onLogout }) {
-  const [chamados, setChamados] = useState([])
-  const [dashboard, setDashboard] = useState(dashboardInicial)
-  const [perfil, setPerfil] = useState(carregarPerfil)
-  const [carregando, setCarregando] = useState(true)
-  const [erroApi, setErroApi] = useState('')
-  const [carregandoDashboard, setCarregandoDashboard] =
-    useState(true)
-  const [erroDashboard, setErroDashboard] = useState('')
-  const [modalAberto, setModalAberto] = useState(false)
-  const [chamadoSelecionado, setChamadoSelecionado] = useState(null)
-  const [paginaAtiva, setPaginaAtiva] = useState('visao-geral')
+  const { usuario } = useAuth();
+  const [chamados, setChamados] = useState([]);
+  const [dashboard, setDashboard] = useState(dashboardInicial);
+  const [perfil, setPerfil] = useState(carregarPerfil);
+  const [carregando, setCarregando] = useState(true);
+  const [erroApi, setErroApi] = useState("");
+  const [carregandoDashboard, setCarregandoDashboard] = useState(true);
+  const [erroDashboard, setErroDashboard] = useState("");
+  const [modalAberto, setModalAberto] = useState(false);
+  const [chamadoSelecionado, setChamadoSelecionado] = useState(null);
+  const [paginaAtiva, setPaginaAtiva] = useState("visao-geral");
 
   useEffect(() => {
-    carregarDashboardDaApi()
-  }, [])
+    carregarDashboardDaApi();
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem(
-      'ronas-desk-perfil',
-      JSON.stringify(perfil),
-    )
-  }, [perfil])
+    localStorage.setItem("ronas-desk-perfil", JSON.stringify(perfil));
+  }, [perfil]);
 
   async function carregarChamadosDaApi() {
-    setCarregando(true)
-    setErroApi('')
+    setCarregando(true);
+    setErroApi("");
 
     try {
-      const dados = await listarChamadosApi()
-      setChamados(dados)
+      const dados = await listarChamadosApi();
+      setChamados(dados);
     } catch (error) {
-      setErroApi(error.message)
+      setErroApi(error.message);
     } finally {
-      setCarregando(false)
+      setCarregando(false);
     }
   }
 
   async function carregarDashboardDaApi() {
-    setCarregandoDashboard(true)
-    setErroDashboard('')
+    setCarregandoDashboard(true);
+    setErroDashboard("");
 
     try {
-      const dados = await buscarDashboardApi()
-      setDashboard(dados)
+      const dados = await buscarDashboardApi();
+      setDashboard(dados);
     } catch (error) {
-      setErroDashboard(error.message)
+      setErroDashboard(error.message);
     } finally {
-      setCarregandoDashboard(false)
+      setCarregandoDashboard(false);
     }
   }
 
   function abrirVisaoGeral() {
-    setPaginaAtiva('visao-geral')
-    carregarDashboardDaApi()
+    setPaginaAtiva("visao-geral");
+    carregarDashboardDaApi();
   }
 
   function abrirChamados() {
-    setPaginaAtiva('chamados')
-    carregarChamadosDaApi()
+    setPaginaAtiva("chamados");
+    carregarChamadosDaApi();
   }
 
   async function criarChamado(dados) {
     try {
-      const novoChamado = await criarChamadoApi(dados)
+      const novoChamado = await criarChamadoApi(dados);
 
-      setChamados((chamadosAtuais) => [
-        novoChamado,
-        ...chamadosAtuais,
-      ])
+      setChamados((chamadosAtuais) => [novoChamado, ...chamadosAtuais]);
 
-      setModalAberto(false)
-      carregarDashboardDaApi()
+      setModalAberto(false);
+      carregarDashboardDaApi();
     } catch (error) {
-      window.alert(error.message)
+      window.alert(error.message);
     }
   }
 
@@ -182,40 +174,38 @@ function Dashboard({ onLogout }) {
       const chamadoSalvo = await atualizarChamadoApi(
         chamadoAtualizado.id,
         chamadoAtualizado,
-      )
+      );
 
       setChamados((chamadosAtuais) =>
         chamadosAtuais.map((chamado) =>
-          chamado.id === chamadoSalvo.id
-            ? chamadoSalvo
-            : chamado,
+          chamado.id === chamadoSalvo.id ? chamadoSalvo : chamado,
         ),
-      )
+      );
 
-      setChamadoSelecionado(null)
-      carregarDashboardDaApi()
+      setChamadoSelecionado(null);
+      carregarDashboardDaApi();
     } catch (error) {
-      window.alert(error.message)
+      window.alert(error.message);
     }
   }
 
   async function excluirChamado(id) {
     try {
-      await excluirChamadoApi(id)
+      await excluirChamadoApi(id);
 
       setChamados((chamadosAtuais) =>
         chamadosAtuais.filter((chamado) => chamado.id !== id),
-      )
+      );
 
-      setChamadoSelecionado(null)
-      carregarDashboardDaApi()
+      setChamadoSelecionado(null);
+      carregarDashboardDaApi();
     } catch (error) {
-      window.alert(error.message)
+      window.alert(error.message);
     }
   }
 
   function formatarId(id) {
-    return `#${String(id).padStart(3, '0')}`
+    return `#${String(id).padStart(3, "0")}`;
   }
 
   return (
@@ -237,7 +227,7 @@ function Dashboard({ onLogout }) {
         <nav className="sidebar-menu">
           <button
             className={`menu-item ${
-              paginaAtiva === 'visao-geral' ? 'active' : ''
+              paginaAtiva === "visao-geral" ? "active" : ""
             }`}
             type="button"
             onClick={abrirVisaoGeral}
@@ -247,25 +237,36 @@ function Dashboard({ onLogout }) {
           </button>
 
           <button
-  className={`menu-item ${
-    paginaAtiva === 'clientes' ? 'active' : ''
-  }`}
-  type="button"
-  onClick={() => setPaginaAtiva('clientes')}
->
-  <span>👥</span>
-  Clientes
-</button>
+            className={`menu-item ${
+              paginaAtiva === "clientes" ? "active" : ""
+            }`}
+            type="button"
+            onClick={() => setPaginaAtiva("clientes")}
+          >
+            <span>👥</span>
+            Clientes
+          </button>
 
           <button
             className={`menu-item ${
-              paginaAtiva === 'chamados' ? 'active' : ''
+              paginaAtiva === "chamados" ? "active" : ""
             }`}
             type="button"
             onClick={abrirChamados}
           >
             <span>▤</span>
             Chamados
+          </button>
+
+          <button
+            className={`menu-item ${
+              paginaAtiva === "usuarios" ? "active" : ""
+            }`}
+            type="button"
+            onClick={() => setPaginaAtiva("usuarios")}
+          >
+            <span>♟</span>
+            Usuários
           </button>
 
           <button
@@ -279,10 +280,10 @@ function Dashboard({ onLogout }) {
 
           <button
             className={`menu-item ${
-              paginaAtiva === 'configuracoes' ? 'active' : ''
+              paginaAtiva === "configuracoes" ? "active" : ""
             }`}
             type="button"
-            onClick={() => setPaginaAtiva('configuracoes')}
+            onClick={() => setPaginaAtiva("configuracoes")}
           >
             <span>⚙</span>
             Configurações
@@ -291,9 +292,7 @@ function Dashboard({ onLogout }) {
 
         <div className="sidebar-footer">
           <div className="sidebar-user">
-            <div className="user-avatar">
-              {obterIniciais(perfil.nome)}
-            </div>
+            <div className="user-avatar">{obterIniciais(perfil.nome)}</div>
 
             <div>
               <strong>{perfil.nome}</strong>
@@ -301,20 +300,18 @@ function Dashboard({ onLogout }) {
             </div>
           </div>
 
-          <button
-            className="logout-button"
-            type="button"
-            onClick={onLogout}
-          >
+          <button className="logout-button" type="button" onClick={onLogout}>
             Sair
           </button>
         </div>
       </aside>
 
       <main className="dashboard-content">
-        {paginaAtiva === 'clientes' ? (
+        {paginaAtiva === "clientes" ? (
           <Clientes onSelectTicket={setChamadoSelecionado} />
-        ) : paginaAtiva === 'chamados' ? (
+        ) : paginaAtiva === "usuarios" ? (
+          <Usuarios administrador={usuario?.cargo === "Administrador"} />
+        ) : paginaAtiva === "chamados" ? (
           carregando ? (
             <section className="dashboard-panel">
               <h2>Carregando chamados...</h2>
@@ -340,7 +337,7 @@ function Dashboard({ onLogout }) {
               onNewTicket={() => setModalAberto(true)}
             />
           )
-        ) : paginaAtiva === 'configuracoes' ? (
+        ) : paginaAtiva === "configuracoes" ? (
           <ProfileSettings perfil={perfil} onSave={setPerfil} />
         ) : carregandoDashboard ? (
           <section className="dashboard-panel">
@@ -364,17 +361,12 @@ function Dashboard({ onLogout }) {
           <>
             <header className="dashboard-header">
               <div>
-                <p className="dashboard-eyebrow">
-                  Painel de controle
-                </p>
+                <p className="dashboard-eyebrow">Painel de controle</p>
 
-                <h1>
-                  Olá, {obterPrimeiroNome(perfil.nome)} 👋
-                </h1>
+                <h1>Olá, {obterPrimeiroNome(perfil.nome)} 👋</h1>
 
                 <p>
-                  Acompanhe os chamados e as atividades recentes do
-                  suporte.
+                  Acompanhe os chamados e as atividades recentes do suporte.
                 </p>
               </div>
 
@@ -447,6 +439,16 @@ function Dashboard({ onLogout }) {
                   <small>Atendimentos prioritários</small>
                 </div>
               </article>
+
+              <article className="summary-card">
+                <div className="summary-icon blue">♟</div>
+
+                <div>
+                  <span>Total de usuários</span>
+                  <strong>{dashboard.total_usuarios}</strong>
+                  <small>Contas cadastradas</small>
+                </div>
+              </article>
             </section>
 
             <section className="dashboard-panel">
@@ -484,9 +486,7 @@ function Dashboard({ onLogout }) {
                             {formatarId(chamado.id)}
                           </td>
 
-                          <td className="ticket-title">
-                            {chamado.titulo}
-                          </td>
+                          <td className="ticket-title">{chamado.titulo}</td>
 
                           <td>
                             <span
@@ -500,12 +500,11 @@ function Dashboard({ onLogout }) {
                             <span
                               className={`status status-${chamado.status
                                 .toLowerCase()
-                                .replace(' ', '-')}`}
+                                .replace(" ", "-")}`}
                             >
                               {chamado.status}
                             </span>
                           </td>
-
                         </tr>
                       ))
                     ) : (
@@ -539,7 +538,7 @@ function Dashboard({ onLogout }) {
         />
       )}
     </div>
-  )
+  );
 }
 
-export default Dashboard
+export default Dashboard;
