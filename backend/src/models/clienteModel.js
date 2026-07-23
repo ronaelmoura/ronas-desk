@@ -61,7 +61,9 @@ async function buscarChamados(id) {
         categoria,
         prioridade,
         status,
-        created_at
+        created_at,
+        updated_at,
+        resolved_at
       FROM chamados
       WHERE cliente_id = ?
       ORDER BY id DESC

@@ -18,6 +18,7 @@ import {
 } from "../services/chamadosApi";
 import { listarUsuariosApi } from "../services/usuariosApi";
 import { PRIORIDADES_CHAMADOS, STATUS_CHAMADOS } from "../utils/chamados";
+import SlaCard from "./sla/SlaCard";
 import "./TicketDetailsModal.css";
 
 const iconesTimeline = {
@@ -209,6 +210,8 @@ function TicketDetailsModal({ chamado, onClose, onUpdate, onDelete }) {
 
         {abaAtiva === "informacoes" && (
           <form className="ticket-details-content" onSubmit={handleSubmit}>
+            <SlaCard sla={chamado.sla} />
+
             <div className="ticket-edit-field">
               <label htmlFor="edit-title">Título do chamado</label>
               <input

@@ -1,4 +1,5 @@
 import clienteModel from '../models/clienteModel.js'
+import slaService from '../services/slaService.js'
 
 function validarId(id) {
   return Number.isInteger(id) && id > 0
@@ -151,7 +152,7 @@ async function listarChamados(request, response) {
 
     const chamados = await clienteModel.buscarChamados(id)
 
-    return response.status(200).json(chamados)
+    return response.status(200).json(slaService.enriquecerChamados(chamados))
   } catch (error) {
     return responderErroBanco(
       error,

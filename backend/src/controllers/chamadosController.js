@@ -1,6 +1,8 @@
 import chamadoModel from '../models/chamadoModel.js'
 import pool from '../database/db.js'
 import auditoriaService from '../services/auditoriaService.js'
+import slaService from '../services/slaService.js'
+import resolucaoChamadoService from '../services/resolucaoChamadoService.js'
 
 const categoriasPermitidas = ['Hardware', 'Software', 'Rede', 'Acesso', 'Outro']
 
@@ -157,8 +159,17 @@ async function listar(request, response) {
   try {
     const chamados = await chamadoModel.listar()
 
-    return response.status(200).json(chamados)
+    return response
+      .status(200)
+      .json(slaService.filtrarPorStatus(chamados, request.query.sla_status))
   } catch (error) {
+    if (error.name === 'StatusSlaInvalidoError') {
+      return response.status(400).json({
+        status: 'erro',
+        message: error.message,
+      })
+    }
+
     console.error('Erro ao listar chamados:', error)
 
     return response.status(500).json({
@@ -188,7 +199,7 @@ async function buscarPorId(request, response) {
       })
     }
 
-    return response.status(200).json(chamado)
+    return response.status(200).json(slaService.enriquecerChamado(chamado))
   } catch (error) {
     console.error('Erro ao buscar chamado:', error)
 
@@ -208,6 +219,7 @@ async function criar(request, response) {
     categoria: request.body.categoria,
     prioridade: request.body.prioridade,
     status: request.body.status || 'Novo',
+    resolved_at: null,
   }
 
   const erro = validarChamado(dados)
@@ -223,6 +235,12 @@ async function criar(request, response) {
 
   try {
     if (!(await validarRelacionamentos(dados, response))) return
+
+    dados.resolved_at = resolucaoChamadoService.determinarResolvedAt(
+      null,
+      dados.status,
+      null,
+    )
 
     conexao = await pool.getConnection()
     await conexao.beginTransaction()
@@ -248,7 +266,7 @@ async function criar(request, response) {
     )
 
     await conexao.commit()
-    return response.status(201).json(chamado)
+    return response.status(201).json(slaService.enriquecerChamado(chamado))
   } catch (error) {
     if (conexao) await conexao.rollback()
     console.error('Erro ao criar chamado:', error)
@@ -324,6 +342,11 @@ async function atualizar(request, response) {
         categoria: dadosAtualizados.categoria,
         prioridade: dadosAtualizados.prioridade,
         status: dadosAtualizados.status,
+        resolved_at: resolucaoChamadoService.determinarResolvedAt(
+          chamadoExistente.status,
+          dadosAtualizados.status,
+          chamadoExistente.resolved_at,
+        ),
       },
       conexao,
     )
@@ -334,7 +357,7 @@ async function atualizar(request, response) {
     )
 
     await conexao.commit()
-    return response.status(200).json(chamado)
+    return response.status(200).json(slaService.enriquecerChamado(chamado))
   } catch (error) {
     if (conexao) await conexao.rollback()
     console.error('Erro ao atualizar chamado:', error)
@@ -390,7 +413,7 @@ async function excluir(request, response) {
     return response.status(200).json({
       status: 'sucesso',
       message: 'Chamado excluído com sucesso.',
-      chamado,
+      chamado: slaService.enriquecerChamado(chamado),
     })
   } catch (error) {
     if (conexao) await conexao.rollback()

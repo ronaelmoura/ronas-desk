@@ -14,7 +14,8 @@ async function listar() {
       chamados.prioridade,
       chamados.status,
       chamados.created_at,
-      chamados.updated_at
+      chamados.updated_at,
+      chamados.resolved_at
     FROM chamados
     LEFT JOIN clientes
       ON clientes.id = chamados.cliente_id
@@ -41,7 +42,8 @@ async function buscarPorId(id, executor = pool) {
         chamados.prioridade,
         chamados.status,
         chamados.created_at,
-        chamados.updated_at
+        chamados.updated_at,
+        chamados.resolved_at
       FROM chamados
       LEFT JOIN clientes
         ON clientes.id = chamados.cliente_id
@@ -92,6 +94,7 @@ async function criar(dados, executor = pool) {
     categoria,
     prioridade,
     status,
+    resolved_at,
   } = dados
 
   const [resultado] = await executor.execute(
@@ -103,9 +106,10 @@ async function criar(dados, executor = pool) {
         descricao,
         categoria,
         prioridade,
-        status
+        status,
+        resolved_at
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `,
     [
       cliente_id,
@@ -115,6 +119,7 @@ async function criar(dados, executor = pool) {
       categoria,
       prioridade,
       status,
+      resolved_at,
     ],
   )
 
@@ -130,6 +135,7 @@ async function atualizar(id, dados, executor = pool) {
     categoria,
     prioridade,
     status,
+    resolved_at,
   } = dados
 
   await executor.execute(
@@ -142,7 +148,8 @@ async function atualizar(id, dados, executor = pool) {
         descricao = ?,
         categoria = ?,
         prioridade = ?,
-        status = ?
+        status = ?,
+        resolved_at = ?
       WHERE id = ?
     `,
     [
@@ -153,6 +160,7 @@ async function atualizar(id, dados, executor = pool) {
       categoria,
       prioridade,
       status,
+      resolved_at,
       id,
     ],
   )

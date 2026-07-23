@@ -27,6 +27,10 @@ const dashboardInicial = {
   chamados_fechados: 0,
   chamados_cancelados: 0,
   chamados_criticos: 0,
+  sla_vencidos: 0,
+  sla_proximos_vencimento: 0,
+  tempo_medio_resolucao_minutos: null,
+  tempo_medio_primeira_resposta_minutos: null,
   chamados_recentes: [],
 };
 
@@ -55,6 +59,15 @@ function obterPrimeiroNome(nome = "") {
   const nomeSeguro = typeof nome === "string" ? nome : "";
 
   return nomeSeguro.trim().split(/\s+/).filter(Boolean)[0] || "Usuário";
+}
+
+function formatarTempoMedio(minutos) {
+  if (!Number.isFinite(minutos)) return "Ainda não disponível";
+  if (minutos < 60) return `${minutos}min`;
+
+  const horas = Math.floor(minutos / 60);
+  const minutosRestantes = minutos % 60;
+  return minutosRestantes ? `${horas}h ${minutosRestantes}min` : `${horas}h`;
 }
 
 function carregarPerfil() {
@@ -353,7 +366,7 @@ function Dashboard({ onLogout }) {
               <span />
             </div>
             <div className="summary-grid">
-              {Array.from({ length: 10 }, (_, indice) => (
+              {Array.from({ length: 14 }, (_, indice) => (
                 <div className="summary-card skeleton-card" key={indice}>
                   <span />
                   <div>
@@ -398,6 +411,7 @@ function Dashboard({ onLogout }) {
               >
                 + Novo chamado
               </button>
+
             </header>
 
             <section className="summary-grid">
@@ -550,6 +564,72 @@ function Dashboard({ onLogout }) {
                   <small>Contas cadastradas</small>
                 </div>
               </button>
+
+              <button
+                className="summary-card"
+                type="button"
+                aria-label="Ver chamados com SLA vencido"
+                onClick={abrirChamados}
+              >
+                <div className="summary-icon red">!</div>
+
+                <div>
+                  <span>SLA vencido</span>
+                  <strong>{dashboard.sla_vencidos}</strong>
+                  <small>Chamados fora do prazo</small>
+                </div>
+              </button>
+
+              <button
+                className="summary-card"
+                type="button"
+                aria-label="Ver chamados próximos do vencimento do SLA"
+                onClick={abrirChamados}
+              >
+                <div className="summary-icon orange">◷</div>
+
+                <div>
+                  <span>SLA próximo do vencimento</span>
+                  <strong>{dashboard.sla_proximos_vencimento}</strong>
+                  <small>Consumo acima de 80%</small>
+                </div>
+              </button>
+
+              <button
+                className="summary-card"
+                type="button"
+                aria-label="Ver chamados e tempo médio de resolução"
+                onClick={abrirChamados}
+              >
+                <div className="summary-icon green">◴</div>
+
+                <div>
+                  <span>Tempo médio de resolução</span>
+                  <strong>
+                    {formatarTempoMedio(
+                      dashboard.tempo_medio_resolucao_minutos,
+                    )}
+                  </strong>
+                  <small>Chamados resolvidos e fechados</small>
+                </div>
+              </button>
+
+              <div
+                className="summary-card"
+                aria-label="Tempo médio de primeira resposta ainda não disponível"
+              >
+                <div className="summary-icon blue">◷</div>
+
+                <div>
+                  <span>Tempo médio de primeira resposta</span>
+                  <strong>
+                    {formatarTempoMedio(
+                      dashboard.tempo_medio_primeira_resposta_minutos,
+                    )}
+                  </strong>
+                  <small>Aguardando registro da primeira resposta</small>
+                </div>
+              </div>
             </section>
 
             <section className="dashboard-panel">

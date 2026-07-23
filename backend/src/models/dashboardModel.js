@@ -22,6 +22,9 @@ async function buscarResumo() {
           chamados.titulo,
           chamados.status,
           chamados.prioridade,
+          chamados.created_at,
+          chamados.updated_at,
+          chamados.resolved_at,
           usuarios.nome AS responsavel_nome
         FROM chamados
         LEFT JOIN usuarios

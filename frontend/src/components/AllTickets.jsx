@@ -4,6 +4,7 @@ import {
   PRIORIDADES_CHAMADOS,
   STATUS_CHAMADOS,
 } from "../utils/chamados";
+import SlaBadge from "./sla/SlaBadge";
 import "./AllTickets.css";
 
 function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
@@ -11,6 +12,7 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
   const [filtroStatus, setFiltroStatus] = useState("Todos");
   const [filtroPrioridade, setFiltroPrioridade] = useState("Todas");
   const [filtroCategoria, setFiltroCategoria] = useState("Todas");
+  const [filtroSla, setFiltroSla] = useState("Todos");
 
   const chamadosFiltrados = chamados.filter((chamado) => {
     const textoBusca = busca.trim().toLowerCase();
@@ -31,11 +33,15 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
     const correspondeCategoria =
       filtroCategoria === "Todas" || chamado.categoria === filtroCategoria;
 
+    const correspondeSla =
+      filtroSla === "Todos" || chamado.sla?.status === filtroSla;
+
     return (
       correspondeBusca &&
       correspondeStatus &&
       correspondePrioridade &&
-      correspondeCategoria
+      correspondeCategoria &&
+      correspondeSla
     );
   });
 
@@ -44,6 +50,7 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
     setFiltroStatus("Todos");
     setFiltroPrioridade("Todas");
     setFiltroCategoria("Todas");
+    setFiltroSla("Todos");
   }
 
   function formatarId(id) {
@@ -135,6 +142,23 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
             </select>
           </div>
 
+          <div className="all-filter-field">
+            <label htmlFor="all-sla-filter">SLA</label>
+
+            <select
+              id="all-sla-filter"
+              value={filtroSla}
+              onChange={(event) => setFiltroSla(event.target.value)}
+            >
+              <option value="Todos">Todos</option>
+              <option value="Dentro do prazo">Dentro do prazo</option>
+              <option value="Próximo do vencimento">
+                Próximo do vencimento
+              </option>
+              <option value="Vencido">Vencido</option>
+            </select>
+          </div>
+
           <button
             className="all-clear-button"
             type="button"
@@ -161,6 +185,7 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
                 <th>Responsável</th>
                 <th>Prioridade</th>
                 <th>Status</th>
+                <th>SLA</th>
                 <th></th>
               </tr>
             </thead>
@@ -188,6 +213,10 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
                     </td>
 
                     <td>
+                      {chamado.sla && <SlaBadge status={chamado.sla.status} />}
+                    </td>
+
+                    <td>
                       <span
                         className={`status ${classeChamado("status", chamado.status)}`}
                       >
@@ -208,7 +237,7 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
                 ))
               ) : (
                 <tr>
-                  <td className="empty-table" colSpan="7">
+                  <td className="empty-table" colSpan="8">
                     Nenhum chamado encontrado.
                   </td>
                 </tr>
