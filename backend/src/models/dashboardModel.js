@@ -7,20 +7,26 @@ async function buscarResumo() {
           (SELECT COUNT(*) FROM clientes) AS total_clientes,
           (SELECT COUNT(*) FROM usuarios) AS total_usuarios,
           COUNT(*) AS total_chamados,
-          SUM(status = 'Aberto') AS chamados_abertos,
-          SUM(status = 'Em andamento') AS chamados_em_andamento,
-          SUM(status = 'Concluído') AS chamados_concluidos,
-          SUM(prioridade = 'Alta') AS chamados_alta_prioridade
+          SUM(status = 'Novo') AS chamados_novos,
+          SUM(status = 'Em Atendimento') AS chamados_em_atendimento,
+          SUM(status = 'Aguardando Cliente') AS chamados_aguardando_cliente,
+          SUM(status = 'Resolvido') AS chamados_resolvidos,
+          SUM(status = 'Fechado') AS chamados_fechados,
+          SUM(status = 'Cancelado') AS chamados_cancelados,
+          SUM(prioridade = 'Crítica') AS chamados_criticos
         FROM chamados
       `),
     pool.query(`
         SELECT
-          id,
-          titulo,
-          status,
-          prioridade
+          chamados.id,
+          chamados.titulo,
+          chamados.status,
+          chamados.prioridade,
+          usuarios.nome AS responsavel_nome
         FROM chamados
-        ORDER BY id DESC
+        LEFT JOIN usuarios
+          ON usuarios.id = chamados.responsavel_id
+        ORDER BY chamados.id DESC
         LIMIT 5
       `),
   ])
@@ -33,10 +39,13 @@ async function buscarResumo() {
     total_clientes: Number(resumo.total_clientes),
     total_usuarios: Number(resumo.total_usuarios),
     total_chamados: Number(resumo.total_chamados),
-    chamados_abertos: Number(resumo.chamados_abertos),
-    chamados_em_andamento: Number(resumo.chamados_em_andamento),
-    chamados_concluidos: Number(resumo.chamados_concluidos),
-    chamados_alta_prioridade: Number(resumo.chamados_alta_prioridade),
+    chamados_novos: Number(resumo.chamados_novos),
+    chamados_em_atendimento: Number(resumo.chamados_em_atendimento),
+    chamados_aguardando_cliente: Number(resumo.chamados_aguardando_cliente),
+    chamados_resolvidos: Number(resumo.chamados_resolvidos),
+    chamados_fechados: Number(resumo.chamados_fechados),
+    chamados_cancelados: Number(resumo.chamados_cancelados),
+    chamados_criticos: Number(resumo.chamados_criticos),
     chamados_recentes: chamadosRecentes,
   }
 }

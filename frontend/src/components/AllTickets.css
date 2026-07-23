@@ -106,6 +106,12 @@
   color: #147ee8;
 }
 
+.ticket-responsavel {
+  color: #526279;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 @media (max-width: 1150px) {
   .all-tickets-filters {
     grid-template-columns: repeat(2, 1fr);

@@ -5,7 +5,9 @@ async function listar() {
     SELECT
       chamados.id,
       chamados.cliente_id,
+      chamados.responsavel_id,
       clientes.nome AS cliente_nome,
+      usuarios.nome AS responsavel_nome,
       chamados.titulo,
       chamados.descricao,
       chamados.categoria,
@@ -16,19 +18,23 @@ async function listar() {
     FROM chamados
     LEFT JOIN clientes
       ON clientes.id = chamados.cliente_id
+    LEFT JOIN usuarios
+      ON usuarios.id = chamados.responsavel_id
     ORDER BY chamados.id DESC
   `)
 
   return rows
 }
 
-async function buscarPorId(id) {
-  const [rows] = await pool.execute(
+async function buscarPorId(id, executor = pool) {
+  const [rows] = await executor.execute(
     `
       SELECT
         chamados.id,
         chamados.cliente_id,
+        chamados.responsavel_id,
         clientes.nome AS cliente_nome,
+        usuarios.nome AS responsavel_nome,
         chamados.titulo,
         chamados.descricao,
         chamados.categoria,
@@ -39,6 +45,8 @@ async function buscarPorId(id) {
       FROM chamados
       LEFT JOIN clientes
         ON clientes.id = chamados.cliente_id
+      LEFT JOIN usuarios
+        ON usuarios.id = chamados.responsavel_id
       WHERE chamados.id = ?
     `,
     [id],
@@ -61,35 +69,75 @@ async function buscarClienteAtivo(clienteId) {
   return rows[0] || null
 }
 
-async function criar(dados) {
-  const { cliente_id, titulo, descricao, categoria, prioridade, status } = dados
+async function buscarResponsavelAtivo(responsavelId) {
+  const [rows] = await pool.execute(
+    `
+      SELECT id, nome
+      FROM usuarios
+      WHERE id = ?
+        AND ativo = TRUE
+    `,
+    [responsavelId],
+  )
 
-  const [resultado] = await pool.execute(
+  return rows[0] || null
+}
+
+async function criar(dados, executor = pool) {
+  const {
+    cliente_id,
+    responsavel_id,
+    titulo,
+    descricao,
+    categoria,
+    prioridade,
+    status,
+  } = dados
+
+  const [resultado] = await executor.execute(
     `
       INSERT INTO chamados (
         cliente_id,
+        responsavel_id,
         titulo,
         descricao,
         categoria,
         prioridade,
         status
       )
-      VALUES (?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `,
-    [cliente_id, titulo, descricao, categoria, prioridade, status],
+    [
+      cliente_id,
+      responsavel_id,
+      titulo,
+      descricao,
+      categoria,
+      prioridade,
+      status,
+    ],
   )
 
-  return buscarPorId(resultado.insertId)
+  return buscarPorId(resultado.insertId, executor)
 }
 
-async function atualizar(id, dados) {
-  const { cliente_id, titulo, descricao, categoria, prioridade, status } = dados
+async function atualizar(id, dados, executor = pool) {
+  const {
+    cliente_id,
+    responsavel_id,
+    titulo,
+    descricao,
+    categoria,
+    prioridade,
+    status,
+  } = dados
 
-  await pool.execute(
+  await executor.execute(
     `
       UPDATE chamados
       SET
         cliente_id = ?,
+        responsavel_id = ?,
         titulo = ?,
         descricao = ?,
         categoria = ?,
@@ -97,20 +145,29 @@ async function atualizar(id, dados) {
         status = ?
       WHERE id = ?
     `,
-    [cliente_id, titulo, descricao, categoria, prioridade, status, id],
+    [
+      cliente_id,
+      responsavel_id,
+      titulo,
+      descricao,
+      categoria,
+      prioridade,
+      status,
+      id,
+    ],
   )
 
-  return buscarPorId(id)
+  return buscarPorId(id, executor)
 }
 
-async function excluir(id) {
-  const chamado = await buscarPorId(id)
+async function excluir(id, executor = pool) {
+  const chamado = await buscarPorId(id, executor)
 
   if (!chamado) {
     return null
   }
 
-  await pool.execute('DELETE FROM chamados WHERE id = ?', [id])
+  await executor.execute('DELETE FROM chamados WHERE id = ?', [id])
 
   return chamado
 }
@@ -119,6 +176,7 @@ export default {
   listar,
   buscarPorId,
   buscarClienteAtivo,
+  buscarResponsavelAtivo,
   criar,
   atualizar,
   excluir,

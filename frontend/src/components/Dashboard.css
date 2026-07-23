@@ -12,11 +12,7 @@
   flex-direction: column;
   padding: 28px 20px;
   background:
-    radial-gradient(
-      circle at top,
-      rgba(22, 130, 255, 0.2),
-      transparent 30%
-    ),
+    radial-gradient(circle at top, rgba(22, 130, 255, 0.2), transparent 30%),
     #081525;
   color: #ffffff;
 }
@@ -73,6 +69,10 @@
   font-weight: 700;
   text-align: left;
   cursor: pointer;
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
 }
 
 .menu-item span {
@@ -86,6 +86,7 @@
 .menu-item.active {
   background: rgba(22, 130, 255, 0.16);
   color: #ffffff;
+  transform: translateX(3px);
 }
 
 .sidebar-footer {
@@ -123,6 +124,10 @@
   font: inherit;
   font-weight: 700;
   cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease,
+    background 160ms ease;
 }
 
 .logout-button:hover {
@@ -176,6 +181,14 @@
   font-weight: 800;
   cursor: pointer;
   box-shadow: 0 12px 28px rgba(20, 126, 232, 0.23);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.new-ticket-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px rgba(20, 126, 232, 0.3);
 }
 
 .summary-grid {
@@ -195,6 +208,24 @@
   border-radius: 17px;
   background: #ffffff;
   box-shadow: 0 14px 40px rgba(20, 40, 70, 0.05);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-4px);
+  border-color: #c5ddf5;
+  box-shadow: 0 18px 42px rgba(20, 70, 120, 0.12);
+}
+
+.summary-card:active {
+  transform: translateY(-1px);
 }
 
 .summary-icon {
@@ -319,6 +350,89 @@
   border-bottom: 0;
 }
 
+.ticket-table tbody tr {
+  transition:
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.ticket-table tbody tr:hover {
+  background: #f7fbff;
+  box-shadow: inset 3px 0 #1682ff;
+}
+
+.dashboard-skeleton {
+  padding-top: 8px;
+}
+
+.dashboard-skeleton-header {
+  display: grid;
+  gap: 12px;
+  max-width: 460px;
+}
+
+.dashboard-skeleton-header span,
+.skeleton-card > span,
+.skeleton-card div span {
+  display: block;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #e8edf3 25%, #f7f9fb 50%, #e8edf3 75%);
+  background-size: 200% 100%;
+  animation: dashboard-shimmer 1.25s infinite linear;
+}
+
+.dashboard-skeleton-header span:first-child {
+  width: 190px;
+  height: 30px;
+}
+
+.dashboard-skeleton-header span:last-child {
+  width: 100%;
+  height: 16px;
+}
+
+.skeleton-card {
+  pointer-events: none;
+}
+
+.skeleton-card > span {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+}
+
+.skeleton-card div {
+  display: grid;
+  flex: 1;
+  gap: 8px;
+}
+
+.skeleton-card div span:nth-child(1) {
+  width: 70%;
+  height: 12px;
+}
+
+.skeleton-card div span:nth-child(2) {
+  width: 38%;
+  height: 26px;
+}
+
+.skeleton-card div span:nth-child(3) {
+  width: 85%;
+  height: 10px;
+}
+
+button:focus-visible {
+  outline: 3px solid rgba(22, 130, 255, 0.38);
+  outline-offset: 3px;
+}
+
+@keyframes dashboard-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
 .ticket-id {
   color: #147ee8 !important;
   font-weight: 800;
@@ -344,7 +458,12 @@
   color: #b82f2f;
 }
 
-.priority-média {
+.priority-critica {
+  background: #501414;
+  color: #ffffff;
+}
+
+.priority-media {
   background: #fff6e8;
   color: #b76800;
 }
@@ -354,19 +473,34 @@
   color: #1769aa;
 }
 
-.status-aberto {
-  background: #fff0f0;
-  color: #b82f2f;
+.status-novo {
+  background: #eaf4ff;
+  color: #146bbd;
 }
 
-.status-em-andamento {
+.status-em-atendimento {
   background: #fff6e8;
   color: #b76800;
 }
 
-.status-concluído {
+.status-aguardando-cliente {
+  background: #fff8d9;
+  color: #856300;
+}
+
+.status-resolvido {
   background: #eafaf0;
   color: #19713d;
+}
+
+.status-fechado {
+  background: #f1edff;
+  color: #6245a5;
+}
+
+.status-cancelado {
+  background: #f1f3f6;
+  color: #596678;
 }
 
 .details-button {
@@ -457,22 +591,22 @@
 
 @media (max-width: 1150px) {
   .ticket-filters {
-  grid-template-columns: repeat(2, 1fr);
-}   
+    grid-template-columns: repeat(2, 1fr);
+  }
   .clear-filters-button {
-  width: 100%;
-} 
+    width: 100%;
+  }
   .summary-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 800px) {
-    .ticket-filters {
-  grid-template-columns: 1fr;
-  padding: 14px;
-}
-    .dashboard-page {
+  .ticket-filters {
+    grid-template-columns: 1fr;
+    padding: 14px;
+  }
+  .dashboard-page {
     grid-template-columns: 1fr;
   }
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { X } from "lucide-react";
 
 const formularioInicial = {
   nome: "",
@@ -22,6 +23,15 @@ function UsuarioModal({ usuario, onClose, onSave }) {
       });
     }
   }, [usuario]);
+
+  useEffect(() => {
+    function fecharComEscape(event) {
+      if (event.key === "Escape" && !salvando) onClose();
+    }
+
+    document.addEventListener("keydown", fecharComEscape);
+    return () => document.removeEventListener("keydown", fecharComEscape);
+  }, [onClose, salvando]);
 
   function atualizarCampo(event) {
     const { name, value } = event.target;
@@ -64,7 +74,7 @@ function UsuarioModal({ usuario, onClose, onSave }) {
           </div>
 
           <button type="button" aria-label="Fechar" onClick={onClose}>
-            ×
+            <X size={20} aria-hidden="true" />
           </button>
         </div>
 
@@ -78,6 +88,7 @@ function UsuarioModal({ usuario, onClose, onSave }) {
               value={formulario.nome}
               onChange={atualizarCampo}
               maxLength="120"
+              autoFocus
               required
             />
           </label>

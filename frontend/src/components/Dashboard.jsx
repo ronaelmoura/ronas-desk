@@ -14,15 +14,19 @@ import {
   atualizarChamadoApi,
 } from "../services/chamadosApi";
 import { buscarDashboardApi } from "../services/dashboardApi";
+import { classeChamado } from "../utils/chamados";
 
 const dashboardInicial = {
   total_clientes: 0,
   total_usuarios: 0,
   total_chamados: 0,
-  chamados_abertos: 0,
-  chamados_em_andamento: 0,
-  chamados_concluidos: 0,
-  chamados_alta_prioridade: 0,
+  chamados_novos: 0,
+  chamados_em_atendimento: 0,
+  chamados_aguardando_cliente: 0,
+  chamados_resolvidos: 0,
+  chamados_fechados: 0,
+  chamados_cancelados: 0,
+  chamados_criticos: 0,
   chamados_recentes: [],
 };
 
@@ -340,9 +344,26 @@ function Dashboard({ onLogout }) {
         ) : paginaAtiva === "configuracoes" ? (
           <ProfileSettings perfil={perfil} onSave={setPerfil} />
         ) : carregandoDashboard ? (
-          <section className="dashboard-panel">
-            <h2>Carregando dashboard...</h2>
-            <p>Aguarde enquanto o Ronas Desk consolida os dados.</p>
+          <section
+            className="dashboard-skeleton"
+            aria-label="Carregando dashboard"
+          >
+            <div className="dashboard-skeleton-header">
+              <span />
+              <span />
+            </div>
+            <div className="summary-grid">
+              {Array.from({ length: 10 }, (_, indice) => (
+                <div className="summary-card skeleton-card" key={indice}>
+                  <span />
+                  <div>
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+              ))}
+            </div>
           </section>
         ) : erroDashboard ? (
           <section className="dashboard-panel">
@@ -380,7 +401,12 @@ function Dashboard({ onLogout }) {
             </header>
 
             <section className="summary-grid">
-              <article className="summary-card">
+              <button
+                className="summary-card"
+                type="button"
+                aria-label="Ver todos os chamados"
+                onClick={abrirChamados}
+              >
                 <div className="summary-icon blue">▤</div>
 
                 <div>
@@ -388,39 +414,104 @@ function Dashboard({ onLogout }) {
                   <strong>{dashboard.total_chamados}</strong>
                   <small>Todos os registros</small>
                 </div>
-              </article>
+              </button>
 
-              <article className="summary-card">
+              <button
+                className="summary-card"
+                type="button"
+                aria-label="Ver chamados novos"
+                onClick={abrirChamados}
+              >
                 <div className="summary-icon red">!</div>
 
                 <div>
-                  <span>Chamados abertos</span>
-                  <strong>{dashboard.chamados_abertos}</strong>
+                  <span>Novos</span>
+                  <strong>{dashboard.chamados_novos}</strong>
                   <small>Aguardando atendimento</small>
                 </div>
-              </article>
+              </button>
 
-              <article className="summary-card">
+              <button
+                className="summary-card"
+                type="button"
+                aria-label="Ver chamados em atendimento"
+                onClick={abrirChamados}
+              >
                 <div className="summary-icon orange">◷</div>
 
                 <div>
-                  <span>Em andamento</span>
-                  <strong>{dashboard.chamados_em_andamento}</strong>
-                  <small>Sendo analisados</small>
+                  <span>Em atendimento</span>
+                  <strong>{dashboard.chamados_em_atendimento}</strong>
+                  <small>Em análise pela equipe</small>
                 </div>
-              </article>
+              </button>
 
-              <article className="summary-card">
+              <button
+                className="summary-card"
+                type="button"
+                aria-label="Ver chamados aguardando cliente"
+                onClick={abrirChamados}
+              >
                 <div className="summary-icon green">✓</div>
 
                 <div>
-                  <span>Concluídos</span>
-                  <strong>{dashboard.chamados_concluidos}</strong>
-                  <small>Problemas resolvidos</small>
+                  <span>Aguardando cliente</span>
+                  <strong>{dashboard.chamados_aguardando_cliente}</strong>
+                  <small>Pendentes de retorno</small>
                 </div>
-              </article>
+              </button>
 
-              <article className="summary-card">
+              <button
+                className="summary-card"
+                type="button"
+                aria-label="Ver chamados resolvidos"
+                onClick={abrirChamados}
+              >
+                <div className="summary-icon green">✓</div>
+
+                <div>
+                  <span>Resolvidos</span>
+                  <strong>{dashboard.chamados_resolvidos}</strong>
+                  <small>Solução aplicada</small>
+                </div>
+              </button>
+
+              <button
+                className="summary-card"
+                type="button"
+                aria-label="Ver chamados fechados"
+                onClick={abrirChamados}
+              >
+                <div className="summary-icon purple">■</div>
+
+                <div>
+                  <span>Fechados</span>
+                  <strong>{dashboard.chamados_fechados}</strong>
+                  <small>Atendimentos encerrados</small>
+                </div>
+              </button>
+
+              <button
+                className="summary-card"
+                type="button"
+                aria-label="Ver chamados cancelados"
+                onClick={abrirChamados}
+              >
+                <div className="summary-icon red">×</div>
+
+                <div>
+                  <span>Cancelados</span>
+                  <strong>{dashboard.chamados_cancelados}</strong>
+                  <small>Solicitações canceladas</small>
+                </div>
+              </button>
+
+              <button
+                className="summary-card"
+                type="button"
+                aria-label="Ver clientes cadastrados"
+                onClick={() => setPaginaAtiva("clientes")}
+              >
                 <div className="summary-icon purple">♟</div>
 
                 <div>
@@ -428,19 +519,29 @@ function Dashboard({ onLogout }) {
                   <strong>{dashboard.total_clientes}</strong>
                   <small>Clientes cadastrados</small>
                 </div>
-              </article>
+              </button>
 
-              <article className="summary-card">
+              <button
+                className="summary-card"
+                type="button"
+                aria-label="Ver chamados de prioridade crítica"
+                onClick={abrirChamados}
+              >
                 <div className="summary-icon red">↑</div>
 
                 <div>
-                  <span>Alta prioridade</span>
-                  <strong>{dashboard.chamados_alta_prioridade}</strong>
-                  <small>Atendimentos prioritários</small>
+                  <span>Prioridade crítica</span>
+                  <strong>{dashboard.chamados_criticos}</strong>
+                  <small>Atendimento imediato</small>
                 </div>
-              </article>
+              </button>
 
-              <article className="summary-card">
+              <button
+                className="summary-card"
+                type="button"
+                aria-label="Ver usuários cadastrados"
+                onClick={() => setPaginaAtiva("usuarios")}
+              >
                 <div className="summary-icon blue">♟</div>
 
                 <div>
@@ -448,7 +549,7 @@ function Dashboard({ onLogout }) {
                   <strong>{dashboard.total_usuarios}</strong>
                   <small>Contas cadastradas</small>
                 </div>
-              </article>
+              </button>
             </section>
 
             <section className="dashboard-panel">
@@ -473,6 +574,7 @@ function Dashboard({ onLogout }) {
                     <tr>
                       <th>ID</th>
                       <th>Chamado</th>
+                      <th>Responsável</th>
                       <th>Prioridade</th>
                       <th>Status</th>
                     </tr>
@@ -488,9 +590,14 @@ function Dashboard({ onLogout }) {
 
                           <td className="ticket-title">{chamado.titulo}</td>
 
+                          <td>{chamado.responsavel_nome || "Não atribuído"}</td>
+
                           <td>
                             <span
-                              className={`priority priority-${chamado.prioridade.toLowerCase()}`}
+                              className={`priority ${classeChamado(
+                                "priority",
+                                chamado.prioridade,
+                              )}`}
                             >
                               {chamado.prioridade}
                             </span>
@@ -498,9 +605,10 @@ function Dashboard({ onLogout }) {
 
                           <td>
                             <span
-                              className={`status status-${chamado.status
-                                .toLowerCase()
-                                .replace(" ", "-")}`}
+                              className={`status ${classeChamado(
+                                "status",
+                                chamado.status,
+                              )}`}
                             >
                               {chamado.status}
                             </span>
@@ -509,7 +617,7 @@ function Dashboard({ onLogout }) {
                       ))
                     ) : (
                       <tr>
-                        <td className="empty-table" colSpan="4">
+                        <td className="empty-table" colSpan="5">
                           Nenhum chamado registrado.
                         </td>
                       </tr>
