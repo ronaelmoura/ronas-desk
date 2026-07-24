@@ -1,424 +1,221 @@
 <div align="center">
 
-<<<<<<< HEAD
-# 🚀 Ronas Desk
-
-### Sistema Inteligente de Gerenciamento de Chamados
-
-<img src="https://img.shields.io/badge/Status-Em%20Desenvolvimento-blue?style=for-the-badge">
-<img src="https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js">
-<img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react">
-<img src="https://img.shields.io/badge/MySQL-8-4479A1?style=for-the-badge&logo=mysql">
-<img src="https://img.shields.io/badge/MVC-Arquitetura-success?style=for-the-badge">
-=======
 # 🖥️ Ronas Desk
 
-### Sistema de Gerenciamento de Chamados Técnicos
+### Sistema Full Stack de gerenciamento de chamados técnicos
 
-Aplicação Full Stack desenvolvida para gerenciamento de chamados técnicos, clientes e atendimentos, simulando um ambiente real de Help Desk.
+O Ronas Desk centraliza clientes, usuários, chamados e indicadores de atendimento em uma interface moderna de Help Desk.
 
-<img src="https://img.shields.io/badge/Status-Em%20Desenvolvimento-blue?style=for-the-badge" />
-<img src="https://img.shields.io/badge/React-Frontend-61DAFB?style=for-the-badge&logo=react" />
-<img src="https://img.shields.io/badge/Node.js-Backend-339933?style=for-the-badge&logo=node.js" />
-<img src="https://img.shields.io/badge/Express-API-000000?style=for-the-badge&logo=express" />
-<img src="https://img.shields.io/badge/MySQL-Database-4479A1?style=for-the-badge&logo=mysql" />
->>>>>>> main
+![Status](https://img.shields.io/badge/Status-Em%20desenvolvimento-2563EB?style=for-the-badge)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 
 </div>
 
 ---
 
-# 📖 Sobre o Projeto
+## 📖 Sobre o projeto
 
-<<<<<<< HEAD
-O **Ronas Desk** é um sistema de gerenciamento de chamados desenvolvido para demonstrar boas práticas de desenvolvimento Full Stack.
+O **Ronas Desk** é uma aplicação de portfólio criada para simular a rotina de uma equipe de suporte técnico. O sistema possui frontend em React, API REST com Node.js e Express e persistência de dados em MySQL.
 
-O projeto utiliza arquitetura MVC, API REST, React no frontend e MySQL como banco de dados.
+O projeto aplica separação de responsabilidades no backend, autenticação com JWT e rotas protegidas para oferecer uma base próxima de um produto real.
 
-Seu objetivo é simular um sistema real de Help Desk utilizado por empresas para controle de clientes, chamados e atendimentos.
+## ✨ Funcionalidades
 
----
+- Autenticação de usuários com JWT
+- Rotas protegidas no frontend e no backend
+- Cadastro, consulta, edição e inativação de clientes
+- Cadastro, consulta e atualização de chamados
+- Associação de chamados a clientes e responsáveis
+- Controle de categoria, prioridade e status
+- Comentários, linha do tempo e auditoria por chamado
+- Dashboard com indicadores de atendimento
+- Registro da data real de resolução ou fechamento
+- Cálculo de SLA e tempo médio de resolução
+- Exclusão lógica para preservação de dados
 
-# ✨ Funcionalidades
+## 🛠️ Tecnologias
 
-## Backend
+### Frontend
 
-- ✅ CRUD de Chamados
-- ✅ CRUD de Clientes
-- ✅ Soft Delete
-- ✅ API REST
-- ✅ Arquitetura MVC
-- ✅ Validações
-- ✅ Integração com MySQL
-
-## Em desenvolvimento
-
-- 🔄 Login JWT
-- 🔄 Dashboard
-- 🔄 Upload de Arquivos
-- 🔄 Controle de Usuários
-- 🔄 Docker
-- 🔄 Deploy
-
----
-
-# 🛠 Tecnologias
-=======
-O **Ronas Desk** é um sistema de gerenciamento de chamados técnicos desenvolvido para demonstrar conhecimentos em desenvolvimento Full Stack.
-
-O projeto foi pensado para simular um sistema utilizado por empresas de suporte técnico, permitindo o gerenciamento de clientes, chamados e atendimentos através de uma interface moderna e intuitiva.
-
----
-
-# 🚀 Tecnologias Utilizadas
->>>>>>> main
-
-## Frontend
-
-- React
-<<<<<<< HEAD
+- React 19
 - Vite
 - JavaScript
-=======
-- JavaScript
-- CSS3
-- Vite
->>>>>>> main
+- Axios
+- React Router
+- SweetAlert2
+- Lucide React e React Icons
 
-## Backend
+### Backend
 
 - Node.js
-- Express
-<<<<<<< HEAD
+- Express 5
 - MySQL2
+- JSON Web Token
+- bcryptjs
 - CORS
-- Dotenv
-=======
->>>>>>> main
+- dotenv
 
-## Banco de Dados
+### Banco de dados e ferramentas
 
 - MySQL
+- Git e GitHub
+- ESLint e Prettier
+- Node Test Runner
 
-<<<<<<< HEAD
----
+## 🏗️ Arquitetura
 
-# 🏗 Arquitetura
-
-```
+```text
 React
-      │
-      ▼
-Express API
-      │
-Controllers
-      │
-Models
-      │
-=======
-## Ferramentas
-
-- Git
-- GitHub
-- VS Code
-- Postman
-
----
-
-# ✨ Funcionalidades
-
-## Clientes
-
-- Cadastro de clientes
-- Edição
-- Exclusão
-- Pesquisa
-- Situação ativa/inativa
-
----
-
-## Chamados
-
-- Cadastro de chamados
-- Atualização
-- Exclusão
-- Categorias
-- Prioridades
-- Status
-
----
-
-## Relacionamentos
-
-- Cliente vinculado ao chamado
-- Histórico de chamados por cliente
-
----
-
-## Dashboard
-
-- Total de chamados
-- Chamados abertos
-- Chamados em andamento
-- Chamados concluídos
-
----
-
-# 📂 Estrutura do Projeto
-
+  │
+  ▼
+API REST (Express)
+  │
+  ├── Rotas e middlewares
+  ├── Controllers
+  └── Models
+        │
+        ▼
+      MySQL
 ```
-ronas-desk
-│
-├── backend
-│   ├── src
-│   ├── controllers
-│   ├── models
-│   ├── routes
-│   └── database
-│
-├── frontend
-│   ├── src
-│   ├── components
-│   ├── pages
-│   ├── services
-│   └── assets
-│
+
+## 📂 Estrutura do projeto
+
+```text
+ronas-desk/
+├── backend/
+│   ├── sql/
+│   └── src/
+│       ├── controllers/
+│       ├── database/
+│       ├── middlewares/
+│       ├── models/
+│       ├── routes/
+│       └── scripts/
+├── frontend/
+│   ├── public/
+│   └── src/
+│       ├── assets/
+│       ├── components/
+│       ├── hooks/
+│       ├── pages/
+│       └── services/
+├── .env.example
 └── README.md
 ```
 
----
+## ⚙️ Como executar
 
-# 🏛 Arquitetura
+### Pré-requisitos
 
-```
-React
+- Node.js
+- npm
+- MySQL 8 ou superior
 
-↓
-
-API REST (Express)
-
-↓
-
-Controllers
-
-↓
-
-Models
-
-↓
-
->>>>>>> main
-MySQL
-```
-
----
-
-<<<<<<< HEAD
-# 📂 Estrutura
-
-```
-ronas-desk/
-
-backend/
- ├── src/
- │   ├── controllers/
- │   ├── models/
- │   ├── routes/
- │   ├── database/
- │   └── data/
-
-frontend/
- ├── public/
- └── src/
-     ├── assets/
-     ├── components/
-     └── services/
-=======
-# ⚙️ Como Executar
-
-## Clone o projeto
+### 1. Clone o repositório
 
 ```bash
 git clone https://github.com/ronaelmoura/ronas-desk.git
->>>>>>> main
+cd ronas-desk
 ```
 
----
+### 2. Configure o ambiente
 
-<<<<<<< HEAD
-# ⚙ Como executar
+Copie o arquivo de exemplo para o backend e preencha as credenciais do MySQL e o segredo JWT:
 
-=======
->>>>>>> main
-## Backend
+```bash
+cp .env.example backend/.env
+```
+
+Variáveis disponíveis:
+
+```env
+DB_HOST=127.0.0.1
+DB_USER=root
+DB_PASSWORD=sua_senha
+DB_NAME=ronas_desk
+DB_PORT=3306
+PORT=3001
+JWT_SECRET=uma_chave_secreta_forte
+JWT_EXPIRES_IN=8h
+```
+
+Crie o banco `ronas_desk` e execute, em ordem, os scripts SQL disponíveis em `backend/sql`.
+
+### 3. Inicie o backend
 
 ```bash
 cd backend
-<<<<<<< HEAD
 npm install
 npm run dev
 ```
 
-=======
+A API será iniciada em `http://localhost:3001`.
 
-npm install
+### 4. Crie o usuário administrador
 
-npm run dev
+Com as variáveis de ambiente configuradas:
+
+```bash
+npm run create-admin
 ```
 
----
+### 5. Inicie o frontend
 
->>>>>>> main
-## Frontend
+Em outro terminal:
 
 ```bash
 cd frontend
-<<<<<<< HEAD
 npm install
-=======
-
-npm install
-
->>>>>>> main
 npm run dev
 ```
 
----
+Acesse `http://localhost:5173`.
 
-<<<<<<< HEAD
-# 🗄 Banco de Dados
+## 📡 Principais rotas da API
 
-Banco utilizado:
+| Método | Endpoint | Descrição |
+| --- | --- | --- |
+| `GET` | `/api/health` | Verifica a API e a conexão com o banco |
+| `POST` | `/api/auth/login` | Autenticação |
+| `GET` | `/api/auth/me` | Consulta da sessão autenticada |
+| Vários | `/api/clientes` | Gerenciamento de clientes |
+| Vários | `/api/chamados` | Gerenciamento de chamados |
+| `GET` | `/api/dashboard` | Indicadores do dashboard |
+| Vários | `/api/usuarios` | Gerenciamento de usuários |
 
-MySQL
+> As rotas de clientes, chamados, dashboard e usuários exigem autenticação.
 
-Configure as variáveis de ambiente utilizando o arquivo:
+## 🗺️ Roadmap
 
-```
-.env.example
-```
-
----
-
-# 📡 Endpoints
-
-## Clientes
-
-| Método | Endpoint |
-|---------|----------|
-| GET | /api/clientes |
-| GET | /api/clientes/:id |
-| POST | /api/clientes |
-| PUT | /api/clientes/:id |
-| DELETE | /api/clientes/:id |
-
----
-
-# 🚧 Roadmap
-
-- [x] CRUD de Chamados
-- [x] CRUD de Clientes
-- [ ] Frontend React
-- [ ] Login JWT
-- [ ] Dashboard
-- [ ] Upload de Arquivos
+- [x] CRUD de clientes
+- [x] CRUD de chamados
+- [x] Relacionamento entre clientes e chamados
+- [x] Comentários, linha do tempo e auditoria
+- [x] Dashboard
+- [x] Autenticação JWT
+- [x] Controle de usuários
+- [x] Indicadores de SLA e resolução
+- [ ] Anexos em chamados
+- [ ] Relatórios
 - [ ] Docker
-- [ ] Deploy
+- [ ] Deploy de demonstração
 
----
+## 👨‍💻 Autor
 
-# 👨‍💻 Desenvolvedor
+**Ronael Moura** — Desenvolvedor Full Stack
 
-**Ronael Moura**
-
-Desenvolvedor Full Stack
-
-GitHub:
-
-https://github.com/ronaelmoura
-
-LinkedIn:
-
-https://linkedin.com/in/ronael-moura
-
-Portfólio:
-
-https://ronaelmoura.github.io/portfolio-ronas-tech/
-
----
-
-# 📄 Licença
-
-Projeto desenvolvido para fins de estudo e portfólio.
-=======
-# 📅 Roadmap
-
-## ✅ Sprint 1
-
-- Estrutura inicial
-
-## ✅ Sprint 2
-
-- CRUD Clientes
-
-## ✅ Sprint 3
-
-- CRUD Chamados
-
-## ✅ Sprint 4
-
-- Relacionamento Cliente × Chamado
-
-## ✅ Sprint 5
-
-- Histórico de Chamados por Cliente
-
----
-
-## 🚧 Próximas Sprints
-
-- Dashboard Avançado
-- Autenticação JWT
-- Técnicos
-- Anexos
-- Relatórios
-- Deploy
-
----
-
-# 🎯 Objetivo
-
-Este projeto faz parte do meu portfólio como Desenvolvedor Full Stack e representa minha evolução prática utilizando React, Node.js, Express e MySQL na construção de aplicações completas.
-
----
-
-# 👨‍💻 Autor
-
-## Ronael Moura
-
-Desenvolvedor Full Stack
-
-📧 ronaelmoura240@gmail.com
-
-🌐 Portfólio
-
-https://ronaelmoura.github.io/portfolio-ronas-tech/
-
-💼 LinkedIn
-
-https://linkedin.com/in/ronael-moura
-
-🐙 GitHub
-
-https://github.com/ronaelmoura
+- [GitHub](https://github.com/ronaelmoura)
+- [LinkedIn](https://www.linkedin.com/in/ronael-moura)
+- [Portfólio](https://ronaelmoura.github.io/portfolio-ronas-tech/)
 
 ---
 
 <div align="center">
 
-### ⭐ Se este projeto foi útil para você, deixe uma estrela no repositório!
+Se este projeto foi útil para você, deixe uma ⭐ no repositório.
 
-Desenvolvido com ❤️ por **Ronael Moura**
+Desenvolvido com dedicação por **Ronael Moura**.
 
 </div>
->>>>>>> main
