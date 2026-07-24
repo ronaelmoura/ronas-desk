@@ -34,7 +34,7 @@
   display: grid;
   grid-template-columns:
     minmax(240px, 2fr)
-    repeat(3, minmax(125px, 1fr))
+    repeat(4, minmax(125px, 1fr))
     auto;
   align-items: end;
   gap: 14px;
@@ -104,6 +104,12 @@
 
 .all-tickets-result strong {
   color: #147ee8;
+}
+
+.ticket-responsavel {
+  color: #526279;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 @media (max-width: 1150px) {

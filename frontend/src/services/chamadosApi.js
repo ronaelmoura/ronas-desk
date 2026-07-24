@@ -1,56 +1,41 @@
-const API_URL = 'http://localhost:3000/api/chamados'
+import apiClient from "./apiClient";
 
-async function tratarResposta(response) {
-  let dados = {}
+async function tratarResposta(promise) {
+  const response = await promise;
 
-  try {
-    dados = await response.json()
-  } catch {
-    dados = {}
-  }
-
-  if (!response.ok) {
-    throw new Error(
-      dados.message || 'Não foi possível concluir a operação.',
-    )
-  }
-
-  return dados
+  return response.data;
 }
 
-export async function listarChamadosApi() {
-  const response = await fetch(API_URL)
-  return tratarResposta(response)
+export function listarChamadosApi() {
+  return tratarResposta(apiClient.get("/chamados"));
 }
 
-export async function criarChamadoApi(dados) {
-  const response = await fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(dados),
-  })
-
-  return tratarResposta(response)
+export function criarChamadoApi(dados) {
+  return tratarResposta(apiClient.post("/chamados", dados));
 }
 
-export async function atualizarChamadoApi(id, dados) {
-  const response = await fetch(`${API_URL}/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(dados),
-  })
-
-  return tratarResposta(response)
+export function atualizarChamadoApi(id, dados) {
+  return tratarResposta(apiClient.put(`/chamados/${id}`, dados));
 }
 
-export async function excluirChamadoApi(id) {
-  const response = await fetch(`${API_URL}/${id}`, {
-    method: 'DELETE',
-  })
+export function excluirChamadoApi(id) {
+  return tratarResposta(apiClient.delete(`/chamados/${id}`));
+}
 
-  return tratarResposta(response)
+export function buscarChamadoApi(id) {
+  return tratarResposta(apiClient.get(`/chamados/${id}`));
+}
+
+export function listarTimelineChamadoApi(id) {
+  return tratarResposta(apiClient.get(`/chamados/${id}/timeline`));
+}
+
+export function listarComentariosChamadoApi(id) {
+  return tratarResposta(apiClient.get(`/chamados/${id}/comentarios`));
+}
+
+export function criarComentarioChamadoApi(id, conteudo, tipo) {
+  return tratarResposta(
+    apiClient.post(`/chamados/${id}/comentarios`, { conteudo, tipo }),
+  );
 }

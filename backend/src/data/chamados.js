@@ -5,7 +5,7 @@ const chamados = [
     descricao: 'O computador não encontra nenhuma rede Wi-Fi.',
     categoria: 'Rede',
     prioridade: 'Alta',
-    status: 'Aberto',
+    status: 'Novo',
   },
   {
     id: 2,
@@ -13,7 +13,7 @@ const chamados = [
     descricao: 'O instalador apresenta erro durante a execução.',
     categoria: 'Software',
     prioridade: 'Média',
-    status: 'Em andamento',
+    status: 'Em Atendimento',
   },
   {
     id: 3,
@@ -21,7 +21,7 @@ const chamados = [
     descricao: 'A impressora não aparece entre os dispositivos.',
     categoria: 'Hardware',
     prioridade: 'Baixa',
-    status: 'Concluído',
+    status: 'Resolvido',
   },
 ]
 

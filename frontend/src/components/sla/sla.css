@@ -1,0 +1,152 @@
+.sla-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 6px 9px;
+  border: 1px solid;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.sla-badge.dentro {
+  border-color: #bde4cc;
+  background: #eafaf0;
+  color: #176d3a;
+}
+
+.sla-badge.proximo {
+  border-color: #f2d49a;
+  background: #fff6e4;
+  color: #926000;
+}
+
+.sla-badge.vencido {
+  border-color: #efb7b7;
+  background: #fff0f0;
+  color: #aa2929;
+}
+
+.sla-badge.indisponivel {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.sla-card {
+  margin-bottom: 22px;
+  padding: 20px;
+  border: 1px solid #dce5ef;
+  border-radius: 15px;
+  background: linear-gradient(145deg, #ffffff, #f7fbff);
+}
+
+.sla-card > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.sla-card-eyebrow {
+  color: #1475cf;
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sla-card h3 {
+  margin: 4px 0 0;
+  color: #223249;
+  font-size: 1rem;
+}
+
+.sla-progress-wrapper {
+  margin-top: 18px;
+}
+
+.sla-progress-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 7px;
+  color: #66758a;
+  font-size: 0.7rem;
+}
+
+.sla-progress-label strong {
+  color: #34445a;
+}
+
+.sla-progress {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e7edf3;
+}
+
+.sla-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transition: width 300ms ease;
+}
+
+.sla-progress > span.dentro {
+  background: linear-gradient(90deg, #28a85d, #55c77d);
+}
+
+.sla-progress > span.proximo {
+  background: linear-gradient(90deg, #e19a16, #f2bd4f);
+}
+
+.sla-progress > span.vencido {
+  background: linear-gradient(90deg, #c93636, #ee6262);
+}
+
+.sla-card-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.sla-card-metrics > div {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  align-items: center;
+  padding: 11px 12px;
+  border-radius: 10px;
+  background: #fff;
+  color: #1475cf;
+}
+
+.sla-card-metrics span,
+.sla-card-metrics strong {
+  grid-column: 2;
+}
+
+.sla-card-metrics span {
+  color: #7a8799;
+  font-size: 0.66rem;
+}
+
+.sla-card-metrics strong {
+  margin-top: 2px;
+  color: #34445a;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 520px) {
+  .sla-card > header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .sla-card-metrics {
+    grid-template-columns: 1fr;
+  }
+}
