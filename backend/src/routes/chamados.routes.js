@@ -10,6 +10,8 @@ chamadosRouter.get('/:id/timeline', chamadoInteracoesController.listarTimeline)
 
 chamadosRouter.get('/:id/auditoria', chamadoInteracoesController.listarTimeline)
 
+chamadosRouter.get('/:id/history', chamadoInteracoesController.listarHistorico)
+
 chamadosRouter.get(
   '/:id/comentarios',
   chamadoInteracoesController.listarComentarios,

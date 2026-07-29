@@ -57,8 +57,18 @@ async function buscarPorId(id, executor = pool) {
   return rows[0] || null
 }
 
-async function buscarClienteAtivo(clienteId) {
-  const [rows] = await pool.execute(
+async function buscarPorIdParaAtualizacao(id, executor) {
+  const [rows] = await executor.execute(
+    'SELECT id FROM chamados WHERE id = ? FOR UPDATE',
+    [id],
+  )
+
+  if (!rows[0]) return null
+  return buscarPorId(id, executor)
+}
+
+async function buscarClienteAtivo(clienteId, executor = pool) {
+  const [rows] = await executor.execute(
     `
       SELECT id, nome
       FROM clientes
@@ -71,8 +81,8 @@ async function buscarClienteAtivo(clienteId) {
   return rows[0] || null
 }
 
-async function buscarResponsavelAtivo(responsavelId) {
-  const [rows] = await pool.execute(
+async function buscarResponsavelAtivo(responsavelId, executor = pool) {
+  const [rows] = await executor.execute(
     `
       SELECT id, nome
       FROM usuarios
@@ -183,6 +193,7 @@ async function excluir(id, executor = pool) {
 export default {
   listar,
   buscarPorId,
+  buscarPorIdParaAtualizacao,
   buscarClienteAtivo,
   buscarResponsavelAtivo,
   criar,
