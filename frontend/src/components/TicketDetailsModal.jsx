@@ -1,35 +1,19 @@
 import { useEffect, useState } from "react";
 import {
-  CirclePlus,
-  Flag,
   History,
   Info,
   MessageSquare,
-  Pencil,
-  RefreshCw,
-  Trash2,
-  UserRound,
   X,
 } from "lucide-react";
 import {
   criarComentarioChamadoApi,
   listarComentariosChamadoApi,
-  listarTimelineChamadoApi,
 } from "../services/chamadosApi";
 import { listarUsuariosApi } from "../services/usuariosApi";
 import { PRIORIDADES_CHAMADOS, STATUS_CHAMADOS } from "../utils/chamados";
 import SlaCard from "./sla/SlaCard";
+import TicketTimeline from "./TicketTimeline";
 import "./TicketDetailsModal.css";
-
-const iconesTimeline = {
-  criacao: CirclePlus,
-  edicao: Pencil,
-  alteracao_status: RefreshCw,
-  alteracao_prioridade: Flag,
-  alteracao_responsavel: UserRound,
-  comentario: MessageSquare,
-  exclusao: Trash2,
-};
 
 function formatarDataHora(data) {
   const valor = new Date(data);
@@ -54,7 +38,6 @@ function TicketDetailsModal({ chamado, onClose, onUpdate, onDelete }) {
   );
   const [usuarios, setUsuarios] = useState([]);
   const [comentarios, setComentarios] = useState([]);
-  const [auditoria, setAuditoria] = useState([]);
   const [novoComentario, setNovoComentario] = useState("");
   const [tipoComentario, setTipoComentario] = useState("INTERNO");
   const [carregandoUsuarios, setCarregandoUsuarios] = useState(true);
@@ -66,16 +49,13 @@ function TicketDetailsModal({ chamado, onClose, onUpdate, onDelete }) {
   useEffect(() => {
     async function carregarDados() {
       try {
-        const [resultadoUsuarios, resultadoComentarios, resultadoAuditoria] =
-          await Promise.all([
-            listarUsuariosApi(),
-            listarComentariosChamadoApi(chamado.id),
-            listarTimelineChamadoApi(chamado.id),
-          ]);
+        const [resultadoUsuarios, resultadoComentarios] = await Promise.all([
+          listarUsuariosApi(),
+          listarComentariosChamadoApi(chamado.id),
+        ]);
 
         setUsuarios(resultadoUsuarios.filter((usuario) => usuario.ativo));
         setComentarios(resultadoComentarios);
-        setAuditoria(resultadoAuditoria);
       } catch (error) {
         setErro(error.message);
       } finally {
@@ -132,7 +112,6 @@ function TicketDetailsModal({ chamado, onClose, onUpdate, onDelete }) {
       );
       setComentarios((atuais) => [...atuais, comentario]);
       setNovoComentario("");
-      setAuditoria(await listarTimelineChamadoApi(chamado.id));
     } catch (error) {
       setErro(error.message);
     } finally {
@@ -195,7 +174,7 @@ function TicketDetailsModal({ chamado, onClose, onUpdate, onDelete }) {
             onClick={() => setAbaAtiva("timeline")}
           >
             <History size={17} aria-hidden="true" />
-            Timeline
+            Histórico
           </button>
         </nav>
 
@@ -441,53 +420,7 @@ function TicketDetailsModal({ chamado, onClose, onUpdate, onDelete }) {
 
         {abaAtiva === "timeline" && (
           <section className="ticket-interactions-content">
-            {carregandoInteracoes ? (
-              <div className="interaction-loading">Carregando timeline...</div>
-            ) : auditoria.length ? (
-              <ol className="timeline-list">
-                {auditoria.map((evento) => {
-                  const Icone = iconesTimeline[evento.acao] || History;
-                  const dataHora = formatarDataHora(evento.created_at);
-                  return (
-                    <li key={evento.id}>
-                      <div className={`timeline-icon ${evento.acao}`}>
-                        <Icone size={17} aria-hidden="true" />
-                      </div>
-                      <div className="timeline-event">
-                        <header>
-                          <span>{dataHora.hora}</span>
-                          <small>{dataHora.data}</small>
-                        </header>
-                        <div>
-                          <strong>{evento.descricao}</strong>
-                          <span className="timeline-user">
-                            {evento.usuario_nome || "Sistema"}
-                          </span>
-                          {evento.valor_anterior !== null &&
-                            evento.valor_novo !== null && (
-                              <p className="timeline-change">
-                                <span>{evento.valor_anterior}</span>
-                                <b>→</b>
-                                <span>{evento.valor_novo}</span>
-                              </p>
-                            )}
-                          {evento.acao === "comentario" &&
-                            evento.valor_novo && (
-                              <blockquote>“{evento.valor_novo}”</blockquote>
-                            )}
-                        </div>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ol>
-            ) : (
-              <div className="interaction-empty">
-                <History size={30} aria-hidden="true" />
-                <strong>Nenhum evento registrado</strong>
-                <p>As próximas alterações aparecerão nesta timeline.</p>
-              </div>
-            )}
+            <TicketTimeline ticketId={chamado.id} />
           </section>
         )}
       </section>

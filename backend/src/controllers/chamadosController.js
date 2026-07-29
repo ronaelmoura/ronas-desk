@@ -1,6 +1,7 @@
 import chamadoModel from '../models/chamadoModel.js'
 import pool from '../database/db.js'
 import auditoriaService from '../services/auditoriaService.js'
+import historyService from '../services/historyService.js'
 import slaService from '../services/slaService.js'
 import resolucaoChamadoService from '../services/resolucaoChamadoService.js'
 
@@ -16,8 +17,6 @@ const statusPermitidos = [
   'Fechado',
   'Cancelado',
 ]
-
-const camposInformacoes = ['cliente_id', 'titulo', 'descricao', 'categoria']
 
 function validarId(id) {
   return Number.isInteger(id) && id > 0
@@ -69,8 +68,11 @@ function normalizarResponsavelId(responsavelId) {
     : Number(responsavelId)
 }
 
-async function validarRelacionamentos(dados, response) {
-  const cliente = await chamadoModel.buscarClienteAtivo(dados.cliente_id)
+async function validarRelacionamentos(dados, response, executor = pool) {
+  const cliente = await chamadoModel.buscarClienteAtivo(
+    dados.cliente_id,
+    executor,
+  )
 
   if (!cliente) {
     response.status(400).json({
@@ -83,6 +85,7 @@ async function validarRelacionamentos(dados, response) {
   if (dados.responsavel_id !== null) {
     const responsavel = await chamadoModel.buscarResponsavelAtivo(
       dados.responsavel_id,
+      executor,
     )
 
     if (!responsavel) {
@@ -95,64 +98,6 @@ async function validarRelacionamentos(dados, response) {
   }
 
   return true
-}
-
-function criarEventosAtualizacao(anterior, atual, usuarioId) {
-  const eventoBase = {
-    entidade: 'chamado',
-    entidade_id: anterior.id,
-    usuario_id: usuarioId,
-  }
-  const eventos = []
-
-  if (camposInformacoes.some((campo) => anterior[campo] !== atual[campo])) {
-    eventos.push({
-      ...eventoBase,
-      acao: 'edicao',
-      descricao: 'Informações do chamado atualizadas.',
-    })
-  }
-
-  if (anterior.status !== atual.status) {
-    eventos.push({
-      ...eventoBase,
-      acao: 'alteracao_status',
-      campo: 'status',
-      valor_anterior: anterior.status,
-      valor_novo: atual.status,
-      descricao: 'Status alterado.',
-    })
-  }
-
-  if (anterior.prioridade !== atual.prioridade) {
-    eventos.push({
-      ...eventoBase,
-      acao: 'alteracao_prioridade',
-      campo: 'prioridade',
-      valor_anterior: anterior.prioridade,
-      valor_novo: atual.prioridade,
-      descricao: 'Prioridade alterada.',
-    })
-  }
-
-  if (anterior.responsavel_id !== atual.responsavel_id) {
-    eventos.push({
-      ...eventoBase,
-      acao: 'alteracao_responsavel',
-      campo: 'responsavel',
-      valor_anterior: anterior.responsavel_nome || 'Não atribuído',
-      valor_novo: atual.responsavel_nome || 'Não atribuído',
-      descricao: 'Responsável alterado.',
-    })
-  }
-
-  return eventos
-}
-
-async function registrarEventos(eventos, conexao) {
-  for (const evento of eventos) {
-    await auditoriaService.registrar(evento, conexao)
-  }
 }
 
 async function listar(request, response) {
@@ -254,16 +199,7 @@ async function criar(request, response) {
       conexao,
     )
 
-    await auditoriaService.registrar(
-      {
-        entidade: 'chamado',
-        entidade_id: chamado.id,
-        usuario_id: request.usuario.id,
-        acao: 'criacao',
-        descricao: 'Chamado criado.',
-      },
-      conexao,
-    )
+    await historyService.registrarCriacao(chamado, request.usuario.id, conexao)
 
     await conexao.commit()
     return response.status(201).json(slaService.enriquecerChamado(chamado))
@@ -293,9 +229,16 @@ async function atualizar(request, response) {
   let conexao
 
   try {
-    const chamadoExistente = await chamadoModel.buscarPorId(id)
+    conexao = await pool.getConnection()
+    await conexao.beginTransaction()
+
+    const chamadoExistente = await chamadoModel.buscarPorIdParaAtualizacao(
+      id,
+      conexao,
+    )
 
     if (!chamadoExistente) {
+      await conexao.rollback()
       return response.status(404).json({
         status: 'erro',
         message: 'Chamado não encontrado.',
@@ -321,16 +264,17 @@ async function atualizar(request, response) {
     const erro = validarChamado(dadosAtualizados)
 
     if (erro) {
+      await conexao.rollback()
       return response.status(400).json({
         status: 'erro',
         message: erro,
       })
     }
 
-    if (!(await validarRelacionamentos(dadosAtualizados, response))) return
-
-    conexao = await pool.getConnection()
-    await conexao.beginTransaction()
+    if (!(await validarRelacionamentos(dadosAtualizados, response, conexao))) {
+      await conexao.rollback()
+      return
+    }
 
     const chamado = await chamadoModel.atualizar(
       id,
@@ -351,8 +295,10 @@ async function atualizar(request, response) {
       conexao,
     )
 
-    await registrarEventos(
-      criarEventosAtualizacao(chamadoExistente, chamado, request.usuario.id),
+    await historyService.registrarAtualizacao(
+      chamadoExistente,
+      chamado,
+      request.usuario.id,
       conexao,
     )
 

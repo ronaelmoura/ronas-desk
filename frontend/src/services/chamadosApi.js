@@ -30,6 +30,10 @@ export function listarTimelineChamadoApi(id) {
   return tratarResposta(apiClient.get(`/chamados/${id}/timeline`));
 }
 
+export function listarHistoricoChamadoApi(id) {
+  return tratarResposta(apiClient.get(`/chamados/${id}/history`));
+}
+
 export function listarComentariosChamadoApi(id) {
   return tratarResposta(apiClient.get(`/chamados/${id}/comentarios`));
 }

@@ -736,6 +736,54 @@
   margin: 10px 0 0;
 }
 
+.timeline-changes {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.timeline-change-group > small {
+  color: var(--text-muted, #64748b);
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.timeline-icon.chamado_resolvido,
+.timeline-icon.chamado_criado {
+  background: color-mix(in srgb, var(--success, #16a34a) 14%, transparent);
+  color: var(--success, #15803d);
+}
+
+.timeline-icon.chamado_fechado,
+.timeline-icon.status_alterado {
+  background: color-mix(in srgb, var(--primary, #2563eb) 13%, transparent);
+  color: var(--primary, #2563eb);
+}
+
+.timeline-icon.prioridade_alterada,
+.timeline-icon.chamado_reaberto {
+  background: color-mix(in srgb, var(--warning, #d97706) 14%, transparent);
+  color: var(--warning, #b45309);
+}
+
+.timeline-icon.responsavel_alterado,
+.timeline-icon.cliente_alterado,
+.timeline-icon.comentario_adicionado,
+.timeline-icon.chamado_atualizado {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.interaction-empty button {
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  margin-top: 12px;
+  padding: 8px 12px;
+}
+
 .timeline-change span {
   padding: 4px 8px;
   border-radius: 7px;

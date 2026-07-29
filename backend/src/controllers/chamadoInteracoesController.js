@@ -1,5 +1,5 @@
 import pool from '../database/db.js'
-import auditoriaService from '../services/auditoriaService.js'
+import historyService from '../services/historyService.js'
 import chamadoModel from '../models/chamadoModel.js'
 import comentarioModel from '../models/comentarioModel.js'
 
@@ -26,18 +26,20 @@ async function obterChamado(id, response) {
 }
 
 async function listarTimeline(request, response) {
+  return listarHistorico(request, response)
+}
+
+async function listarHistorico(request, response) {
   const id = Number(request.params.id)
 
   try {
     if (!(await obterChamado(id, response))) return
-    return response
-      .status(200)
-      .json(await auditoriaService.listarPorChamado(id))
+    return response.status(200).json(await historyService.listarPorChamado(id))
   } catch (error) {
-    console.error('Erro ao listar auditoria do chamado:', error)
+    console.error('Erro ao listar histórico do chamado:', error)
     return response.status(500).json({
       status: 'erro',
-      message: 'Não foi possível carregar a timeline.',
+      message: 'Não foi possível carregar o histórico.',
     })
   }
 }
@@ -95,16 +97,10 @@ async function criarComentario(request, response) {
       conexao,
     )
 
-    await auditoriaService.registrar(
-      {
-        entidade: 'chamado',
-        entidade_id: id,
-        usuario_id: request.usuario.id,
-        acao: 'comentario',
-        campo: `comentario_${tipo.toLowerCase()}`,
-        valor_novo: conteudo,
-        descricao: `Comentário ${tipo === 'PUBLICO' ? 'público' : 'interno'} adicionado.`,
-      },
+    await historyService.registrarComentario(
+      id,
+      comentario,
+      request.usuario.id,
       conexao,
     )
 
@@ -124,6 +120,7 @@ async function criarComentario(request, response) {
 
 export default {
   listarTimeline,
+  listarHistorico,
   listarComentarios,
   criarComentario,
 }

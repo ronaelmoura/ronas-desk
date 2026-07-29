@@ -187,6 +187,53 @@ Acesse `http://localhost:5173`.
 
 > As rotas de clientes, chamados, dashboard e usuários exigem autenticação.
 
+## 🕓 Histórico e auditoria de chamados
+
+A Sprint 9.4 adiciona um histórico estruturado para acompanhar as
+principais ações realizadas em cada chamado. A gravação do chamado e do evento
+usa a mesma transação, evitando alterações parciais quando a auditoria falhar.
+
+Eventos suportados:
+
+- `CHAMADO_CRIADO`
+- `CHAMADO_ATUALIZADO`
+- `STATUS_ALTERADO`
+- `PRIORIDADE_ALTERADA`
+- `RESPONSAVEL_ALTERADO`
+- `CLIENTE_ALTERADO`
+- `CHAMADO_RESOLVIDO`
+- `CHAMADO_FECHADO`
+- `CHAMADO_REABERTO`
+- `COMENTARIO_ADICIONADO`
+
+O histórico cronológico está disponível em:
+
+```http
+GET /api/chamados/:id/history
+```
+
+Antes de iniciar a aplicação atualizada, execute no MySQL, depois das migrations
+anteriores:
+
+```text
+backend/sql/006_sprint_9_4_ticket_history.sql
+```
+
+A migration cria `ticket_history` e importa de forma idempotente os eventos
+legados da tabela `auditoria`.
+
+Comandos de validação:
+
+```bash
+cd backend
+npm test
+npm run lint
+
+cd ../frontend
+npm run lint
+npm run build
+```
+
 ## 🗺️ Roadmap
 
 - [x] CRUD de clientes
