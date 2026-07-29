@@ -39,8 +39,8 @@ async function registrar(evento, executor = pool) {
   )
 }
 
-async function listarPorChamado(chamadoId) {
-  const [rows] = await pool.execute(
+async function listarPorChamado(chamadoId, executor = pool) {
+  const [rows] = await executor.execute(
     `
       SELECT
         auditoria.id,
