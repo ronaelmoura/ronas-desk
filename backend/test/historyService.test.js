@@ -162,6 +162,41 @@ test('falha de gravação é propagada para permitir rollback da transação', a
   )
 })
 
+test('inclusão e remoção de anexo geram eventos próprios', async () => {
+  const chamadas = []
+  const executor = {
+    async execute(sql, valores) {
+      chamadas.push({ sql, valores })
+      return [{ insertId: chamadas.length }]
+    },
+  }
+  const anexo = { id: 4, nome_original: 'evidencia.png' }
+
+  const adicionado = await historyService.registrarAnexoAdicionado(
+    10,
+    anexo,
+    7,
+    executor,
+  )
+  const removido = await historyService.registrarAnexoRemovido(
+    10,
+    anexo,
+    7,
+    executor,
+  )
+
+  assert.equal(adicionado.event_type, EVENTOS_HISTORICO.ANEXO_ADICIONADO)
+  assert.equal(removido.event_type, EVENTOS_HISTORICO.ANEXO_REMOVIDO)
+  assert.deepEqual(JSON.parse(chamadas[0].valores[5]).anexo, {
+    id: 4,
+    nome: 'evidencia.png',
+  })
+  assert.deepEqual(JSON.parse(chamadas[1].valores[4]).anexo, {
+    id: 4,
+    nome: 'evidencia.png',
+  })
+})
+
 test('leitura normaliza JSON retornado como string ou objeto', async () => {
   const executor = {
     async execute() {

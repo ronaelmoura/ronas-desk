@@ -1,6 +1,8 @@
 import { Router } from 'express'
 import chamadosController from '../controllers/chamadosController.js'
 import chamadoInteracoesController from '../controllers/chamadoInteracoesController.js'
+import anexosController from '../controllers/anexosController.js'
+import anexoUploadMiddleware from '../middlewares/anexoUploadMiddleware.js'
 
 const chamadosRouter = Router()
 
@@ -20,6 +22,24 @@ chamadosRouter.get(
 chamadosRouter.post(
   '/:id/comentarios',
   chamadoInteracoesController.criarComentario,
+)
+
+chamadosRouter.get('/:id/anexos', anexosController.listar)
+
+chamadosRouter.post(
+  '/:id/anexos',
+  anexoUploadMiddleware,
+  anexosController.criar,
+)
+
+chamadosRouter.get(
+  '/:id/anexos/:anexoId/download',
+  anexosController.gerarDownload,
+)
+
+chamadosRouter.delete(
+  '/:id/anexos/:anexoId',
+  anexosController.excluir,
 )
 
 chamadosRouter.get('/:id', chamadosController.buscarPorId)

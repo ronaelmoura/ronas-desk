@@ -5,9 +5,6 @@ export const EVENTO_SESSAO_EXPIRADA = 'ronas-desk-sessao-expirada'
 
 const apiClient = axios.create({
   baseURL: 'http://localhost:3001/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
 })
 
 apiClient.interceptors.request.use((config) => {

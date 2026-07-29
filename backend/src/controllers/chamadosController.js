@@ -1,4 +1,5 @@
 import chamadoModel from '../models/chamadoModel.js'
+import anexoModel from '../models/anexoModel.js'
 import pool from '../database/db.js'
 import auditoriaService from '../services/auditoriaService.js'
 import historyService from '../services/historyService.js'
@@ -333,15 +334,29 @@ async function excluir(request, response) {
     conexao = await pool.getConnection()
     await conexao.beginTransaction()
 
-    const chamado = await chamadoModel.excluir(id, conexao)
+    const chamadoExistente = await chamadoModel.buscarPorIdParaAtualizacao(
+      id,
+      conexao,
+    )
 
-    if (!chamado) {
+    if (!chamadoExistente) {
       await conexao.rollback()
       return response.status(404).json({
         status: 'erro',
         message: 'Chamado não encontrado.',
       })
     }
+
+    if ((await anexoModel.contarPorChamado(id, conexao)) > 0) {
+      await conexao.rollback()
+      return response.status(409).json({
+        status: 'erro',
+        message:
+          'Exclua os anexos do chamado antes de excluir o chamado.',
+      })
+    }
+
+    const chamado = await chamadoModel.excluir(id, conexao)
 
     await auditoriaService.registrar(
       {

@@ -43,3 +43,26 @@ export function criarComentarioChamadoApi(id, conteudo, tipo) {
     apiClient.post(`/chamados/${id}/comentarios`, { conteudo, tipo }),
   );
 }
+
+export function listarAnexosChamadoApi(id) {
+  return tratarResposta(apiClient.get(`/chamados/${id}/anexos`));
+}
+
+export function criarAnexoChamadoApi(id, arquivo) {
+  const dados = new FormData();
+  dados.append("arquivo", arquivo);
+
+  return tratarResposta(apiClient.post(`/chamados/${id}/anexos`, dados));
+}
+
+export function gerarDownloadAnexoChamadoApi(chamadoId, anexoId) {
+  return tratarResposta(
+    apiClient.get(`/chamados/${chamadoId}/anexos/${anexoId}/download`),
+  );
+}
+
+export function excluirAnexoChamadoApi(chamadoId, anexoId) {
+  return tratarResposta(
+    apiClient.delete(`/chamados/${chamadoId}/anexos/${anexoId}`),
+  );
+}

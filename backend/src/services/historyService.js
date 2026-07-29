@@ -11,6 +11,8 @@ export const EVENTOS_HISTORICO = Object.freeze({
   CHAMADO_FECHADO: 'CHAMADO_FECHADO',
   CHAMADO_REABERTO: 'CHAMADO_REABERTO',
   COMENTARIO_ADICIONADO: 'COMENTARIO_ADICIONADO',
+  ANEXO_ADICIONADO: 'ANEXO_ADICIONADO',
+  ANEXO_REMOVIDO: 'ANEXO_REMOVIDO',
 })
 
 const CAMPOS_GERAIS = ['titulo', 'descricao', 'categoria']
@@ -267,6 +269,52 @@ async function registrarComentario(
   )
 }
 
+async function registrarAnexoAdicionado(
+  chamadoId,
+  anexo,
+  usuarioId,
+  executor = pool,
+) {
+  return registrar(
+    {
+      ticket_id: chamadoId,
+      user_id: usuarioId,
+      event_type: EVENTOS_HISTORICO.ANEXO_ADICIONADO,
+      description: 'Anexo adicionado.',
+      new_values: {
+        anexo: {
+          id: anexo.id,
+          nome: anexo.nome_original,
+        },
+      },
+    },
+    executor,
+  )
+}
+
+async function registrarAnexoRemovido(
+  chamadoId,
+  anexo,
+  usuarioId,
+  executor = pool,
+) {
+  return registrar(
+    {
+      ticket_id: chamadoId,
+      user_id: usuarioId,
+      event_type: EVENTOS_HISTORICO.ANEXO_REMOVIDO,
+      description: 'Anexo removido.',
+      old_values: {
+        anexo: {
+          id: anexo.id,
+          nome: anexo.nome_original,
+        },
+      },
+    },
+    executor,
+  )
+}
+
 async function listarPorChamado(chamadoId, executor = pool) {
   const [rows] = await executor.execute(
     `
@@ -301,5 +349,7 @@ export default {
   registrarCriacao,
   registrarAtualizacao,
   registrarComentario,
+  registrarAnexoAdicionado,
+  registrarAnexoRemovido,
   listarPorChamado,
 }
