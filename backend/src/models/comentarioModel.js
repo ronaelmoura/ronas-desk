@@ -1,7 +1,7 @@
 import pool from '../database/db.js'
 
-async function listarPorChamado(chamadoId) {
-  const [rows] = await pool.execute(
+async function listarPorChamado(chamadoId, executor = pool) {
+  const [rows] = await executor.execute(
     `
       SELECT
         comentarios.id,
