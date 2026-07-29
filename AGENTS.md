@@ -22,7 +22,7 @@ O Ronas Desk é uma aplicação de Help Desk full stack:
 
 Backend e frontend têm `package.json` e `package-lock.json` independentes. Execute comandos no diretório correspondente.
 
-## Forma de trabalhar — estilo Akita
+## Forma de trabalhar
 
 1. **Entenda antes de alterar.** Leia o pedido, a documentação relevante e os arquivos que participam do fluxo completo. Comece por `git status -sb` e preserve alterações existentes do usuário.
 2. **Investigue o código real.** Siga a chamada da interface até o serviço HTTP, rota, middleware, controller, service/model e banco. Não suponha padrões que o repositório não usa.
