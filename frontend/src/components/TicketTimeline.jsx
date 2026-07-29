@@ -7,6 +7,7 @@ import {
   History,
   LockKeyhole,
   MessageSquare,
+  Paperclip,
   RefreshCw,
   RotateCcw,
   UserRound,
@@ -25,6 +26,8 @@ const iconesEventos = {
   CHAMADO_FECHADO: LockKeyhole,
   CHAMADO_REABERTO: RotateCcw,
   COMENTARIO_ADICIONADO: MessageSquare,
+  ANEXO_ADICIONADO: Paperclip,
+  ANEXO_REMOVIDO: Paperclip,
 };
 
 const rotulosCampos = {

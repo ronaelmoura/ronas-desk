@@ -30,6 +30,7 @@ O projeto aplica separação de responsabilidades no backend, autenticação com
 - Associação de chamados a clientes e responsáveis
 - Controle de categoria, prioridade e status
 - Comentários, linha do tempo e auditoria por chamado
+- Anexos privados de imagens e PDFs por chamado
 - Dashboard com indicadores de atendimento
 - Registro da data real de resolução ou fechamento
 - Cálculo de SLA e tempo médio de resolução
@@ -56,6 +57,8 @@ O projeto aplica separação de responsabilidades no backend, autenticação com
 - bcryptjs
 - CORS
 - dotenv
+- Cloudinary
+- Multer
 
 ### Banco de dados e ferramentas
 
@@ -74,10 +77,8 @@ API REST (Express)
   │
   ├── Rotas e middlewares
   ├── Controllers
-  └── Models
-        │
-        ▼
-      MySQL
+  ├── Models ──────────────► MySQL
+  └── Serviço de anexos ───► Cloudinary
 ```
 
 ## 📂 Estrutura do projeto
@@ -139,6 +140,9 @@ DB_PORT=3306
 PORT=3001
 JWT_SECRET=uma_chave_secreta_forte
 JWT_EXPIRES_IN=8h
+CLOUDINARY_CLOUD_NAME=seu_cloud_name
+CLOUDINARY_API_KEY=sua_api_key
+CLOUDINARY_API_SECRET=seu_api_secret
 ```
 
 Crie o banco `ronas_desk` e execute, em ordem, os scripts SQL disponíveis em `backend/sql`.
@@ -205,6 +209,8 @@ Eventos suportados:
 - `CHAMADO_FECHADO`
 - `CHAMADO_REABERTO`
 - `COMENTARIO_ADICIONADO`
+- `ANEXO_ADICIONADO`
+- `ANEXO_REMOVIDO`
 
 O histórico cronológico está disponível em:
 
@@ -221,6 +227,31 @@ backend/sql/006_sprint_9_4_ticket_history.sql
 
 A migration cria `ticket_history` e importa de forma idempotente os eventos
 legados da tabela `auditoria`.
+
+## 📎 Anexos em chamados
+
+A Sprint 9.5 permite enviar imagens JPG, PNG, WEBP e GIF ou documentos PDF de
+até 10 MB. Os arquivos são armazenados como ativos autenticados no Cloudinary;
+o MySQL mantém somente metadados e o backend gera links temporários de cinco
+minutos após validar a sessão.
+
+Rotas protegidas:
+
+```http
+GET    /api/chamados/:id/anexos
+POST   /api/chamados/:id/anexos
+GET    /api/chamados/:id/anexos/:anexoId/download
+DELETE /api/chamados/:id/anexos/:anexoId
+```
+
+Antes de usar os anexos, execute no MySQL:
+
+```text
+backend/sql/007_sprint_9_5_anexos.sql
+```
+
+As credenciais do Cloudinary devem existir somente em `backend/.env`. Nunca
+publique esse arquivo ou exponha `CLOUDINARY_API_SECRET` no frontend.
 
 Comandos de validação:
 
@@ -244,7 +275,7 @@ npm run build
 - [x] Autenticação JWT
 - [x] Controle de usuários
 - [x] Indicadores de SLA e resolução
-- [ ] Anexos em chamados
+- [x] Anexos em chamados
 - [ ] Relatórios
 - [ ] Docker
 - [ ] Deploy de demonstração

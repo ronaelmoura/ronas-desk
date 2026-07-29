@@ -44,3 +44,16 @@ Cadastro de Clientes.
 - Endpoint `GET /api/chamados/:id/history`
 - Timeline reutilizável no modal de detalhes
 - Testes unitários do `historyService`
+
+---
+
+## Sprint 9.5
+
+### ✅ Anexos privados em chamados
+
+- Migration `007_sprint_9_5_anexos.sql`
+- Upload autenticado no Cloudinary
+- Validação de formato, assinatura e limite de 10 MB
+- Listagem, abertura por URL temporária e exclusão de anexos
+- Registro de inclusão e remoção na timeline
+- Aba de anexos no modal de detalhes

@@ -880,3 +880,190 @@
     width: 100%;
   }
 }
+
+.attachment-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px 18px;
+  padding: 18px;
+  border: 1px solid #dfe6ef;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.attachment-form > div {
+  grid-column: 1 / -1;
+}
+
+.attachment-form label {
+  color: #2a384c;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.attachment-form p {
+  margin: 4px 0 0;
+  color: #718096;
+  font-size: 0.75rem;
+}
+
+.attachment-form input {
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #d4dee9;
+  border-radius: 10px;
+  background: #fff;
+  color: #536176;
+  font: inherit;
+  font-size: 0.78rem;
+}
+
+.attachment-form input::file-selector-button {
+  margin-right: 10px;
+  padding: 8px 11px;
+  border: 0;
+  border-radius: 7px;
+  background: #e8f3ff;
+  color: #126fc8;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.attachment-form .details-save-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 155px;
+  height: 42px;
+}
+
+.attachment-form button:disabled,
+.attachment-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.attachments-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.attachment-card {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 13px;
+  padding: 15px;
+  border: 1px solid #e2e8f0;
+  border-radius: 13px;
+  background: #fff;
+}
+
+.attachment-icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: #e8f3ff;
+  color: #126fc8;
+}
+
+.attachment-info {
+  min-width: 0;
+}
+
+.attachment-info strong,
+.attachment-info span {
+  display: block;
+}
+
+.attachment-info strong {
+  overflow: hidden;
+  color: #24344a;
+  font-size: 0.84rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachment-info span {
+  margin-top: 5px;
+  color: #7b899c;
+  font-size: 0.7rem;
+}
+
+.attachment-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.attachment-actions button {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 10px;
+  border: 1px solid #d4dee9;
+  border-radius: 8px;
+  background: #fff;
+  color: #40526a;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.attachment-actions .attachment-delete-button {
+  width: 36px;
+  padding: 0;
+  border-color: #ffd0d0;
+  color: #b42318;
+}
+
+.attachment-actions .attachment-confirm-button {
+  border-color: #c9362c;
+  background: #c9362c;
+  color: #fff;
+}
+
+.attachment-actions .attachment-cancel-button {
+  color: #536176;
+}
+
+.timeline-icon.anexo_adicionado {
+  background: #e7f7ed;
+  color: #176d3a;
+}
+
+.timeline-icon.anexo_removido {
+  background: #fff0f0;
+  color: #b52f2f;
+}
+
+@media (max-width: 600px) {
+  .attachment-form {
+    grid-template-columns: 1fr;
+  }
+
+  .attachment-form > div {
+    grid-column: auto;
+  }
+
+  .attachment-form .details-save-button {
+    width: 100%;
+  }
+
+  .attachment-card {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .attachment-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}

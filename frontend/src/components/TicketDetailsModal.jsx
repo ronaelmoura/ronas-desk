@@ -1,12 +1,21 @@
 import { useEffect, useState } from "react";
 import {
+  Download,
+  FileText,
   History,
   Info,
   MessageSquare,
+  Paperclip,
+  Trash2,
+  Upload,
   X,
 } from "lucide-react";
 import {
+  criarAnexoChamadoApi,
   criarComentarioChamadoApi,
+  excluirAnexoChamadoApi,
+  gerarDownloadAnexoChamadoApi,
+  listarAnexosChamadoApi,
   listarComentariosChamadoApi,
 } from "../services/chamadosApi";
 import { listarUsuariosApi } from "../services/usuariosApi";
@@ -26,6 +35,12 @@ function formatarDataHora(data) {
   };
 }
 
+function formatarTamanho(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 function TicketDetailsModal({ chamado, onClose, onUpdate, onDelete }) {
   const [abaAtiva, setAbaAtiva] = useState("informacoes");
   const [titulo, setTitulo] = useState(chamado.titulo);
@@ -38,29 +53,40 @@ function TicketDetailsModal({ chamado, onClose, onUpdate, onDelete }) {
   );
   const [usuarios, setUsuarios] = useState([]);
   const [comentarios, setComentarios] = useState([]);
+  const [anexos, setAnexos] = useState([]);
   const [novoComentario, setNovoComentario] = useState("");
   const [tipoComentario, setTipoComentario] = useState("INTERNO");
+  const [arquivoSelecionado, setArquivoSelecionado] = useState(null);
   const [carregandoUsuarios, setCarregandoUsuarios] = useState(true);
   const [carregandoInteracoes, setCarregandoInteracoes] = useState(true);
+  const [carregandoAnexos, setCarregandoAnexos] = useState(true);
   const [enviandoComentario, setEnviandoComentario] = useState(false);
+  const [enviandoAnexo, setEnviandoAnexo] = useState(false);
+  const [abrindoAnexoId, setAbrindoAnexoId] = useState(null);
+  const [anexoEmExclusao, setAnexoEmExclusao] = useState(null);
+  const [excluindoAnexoId, setExcluindoAnexoId] = useState(null);
   const [erro, setErro] = useState("");
   const [confirmandoExclusao, setConfirmandoExclusao] = useState(false);
 
   useEffect(() => {
     async function carregarDados() {
       try {
-        const [resultadoUsuarios, resultadoComentarios] = await Promise.all([
-          listarUsuariosApi(),
-          listarComentariosChamadoApi(chamado.id),
-        ]);
+        const [resultadoUsuarios, resultadoComentarios, resultadoAnexos] =
+          await Promise.all([
+            listarUsuariosApi(),
+            listarComentariosChamadoApi(chamado.id),
+            listarAnexosChamadoApi(chamado.id),
+          ]);
 
         setUsuarios(resultadoUsuarios.filter((usuario) => usuario.ativo));
         setComentarios(resultadoComentarios);
+        setAnexos(resultadoAnexos);
       } catch (error) {
         setErro(error.message);
       } finally {
         setCarregandoUsuarios(false);
         setCarregandoInteracoes(false);
+        setCarregandoAnexos(false);
       }
     }
 
@@ -119,6 +145,72 @@ function TicketDetailsModal({ chamado, onClose, onUpdate, onDelete }) {
     }
   }
 
+  async function adicionarAnexo(event) {
+    event.preventDefault();
+    if (!arquivoSelecionado) return;
+
+    if (arquivoSelecionado.size > 10 * 1024 * 1024) {
+      setErro("O anexo deve ter no máximo 10 MB.");
+      return;
+    }
+
+    const formulario = event.currentTarget;
+    setEnviandoAnexo(true);
+    setErro("");
+
+    try {
+      const anexo = await criarAnexoChamadoApi(
+        chamado.id,
+        arquivoSelecionado,
+      );
+      setAnexos((atuais) => [...atuais, anexo]);
+      setArquivoSelecionado(null);
+      formulario.reset();
+    } catch (error) {
+      setErro(error.message);
+    } finally {
+      setEnviandoAnexo(false);
+    }
+  }
+
+  async function abrirAnexo(anexo) {
+    const novaAba = window.open("about:blank", "_blank");
+    if (novaAba) novaAba.opener = null;
+
+    setAbrindoAnexoId(anexo.id);
+    setErro("");
+
+    try {
+      const { url } = await gerarDownloadAnexoChamadoApi(
+        chamado.id,
+        anexo.id,
+      );
+
+      if (novaAba) novaAba.location.replace(url);
+      else window.location.assign(url);
+    } catch (error) {
+      novaAba?.close();
+      setErro(error.message);
+    } finally {
+      setAbrindoAnexoId(null);
+    }
+  }
+
+  async function excluirAnexo(anexoId) {
+    setExcluindoAnexoId(anexoId);
+    setErro("");
+
+    try {
+      await excluirAnexoChamadoApi(chamado.id, anexoId);
+      setAnexos((atuais) => atuais.filter((anexo) => anexo.id !== anexoId));
+      setAnexoEmExclusao(null);
+    } catch (error) {
+      setErro(error.message);
+    } finally {
+      setExcluindoAnexoId(null);
+    }
+  }
+
   return (
     <div className="details-backdrop" onMouseDown={onClose}>
       <section
@@ -166,6 +258,16 @@ function TicketDetailsModal({ chamado, onClose, onUpdate, onDelete }) {
             <MessageSquare size={17} aria-hidden="true" />
             Comentários
             <span>{comentarios.length}</span>
+          </button>
+          <button
+            type="button"
+            className={abaAtiva === "anexos" ? "active" : ""}
+            aria-current={abaAtiva === "anexos" ? "page" : undefined}
+            onClick={() => setAbaAtiva("anexos")}
+          >
+            <Paperclip size={17} aria-hidden="true" />
+            Anexos
+            <span>{anexos.length}</span>
           </button>
           <button
             type="button"
@@ -413,6 +515,115 @@ function TicketDetailsModal({ chamado, onClose, onUpdate, onDelete }) {
                 <MessageSquare size={30} aria-hidden="true" />
                 <strong>Nenhum comentário ainda</strong>
                 <p>Seja o primeiro a registrar uma atualização.</p>
+              </div>
+            )}
+          </section>
+        )}
+
+        {abaAtiva === "anexos" && (
+          <section className="ticket-interactions-content">
+            <form className="attachment-form" onSubmit={adicionarAnexo}>
+              <div>
+                <label htmlFor="ticket-attachment">Adicionar anexo</label>
+                <p>Imagens ou PDF, com no máximo 10 MB.</p>
+              </div>
+              <input
+                id="ticket-attachment"
+                type="file"
+                accept=".jpg,.jpeg,.png,.webp,.gif,.pdf,image/jpeg,image/png,image/webp,image/gif,application/pdf"
+                disabled={enviandoAnexo}
+                onChange={(event) =>
+                  setArquivoSelecionado(event.target.files?.[0] || null)
+                }
+              />
+              <button
+                className="details-save-button"
+                type="submit"
+                disabled={enviandoAnexo || !arquivoSelecionado}
+              >
+                <Upload size={17} aria-hidden="true" />
+                {enviandoAnexo ? "Enviando..." : "Enviar arquivo"}
+              </button>
+            </form>
+
+            {carregandoAnexos ? (
+              <div className="interaction-loading">Carregando anexos...</div>
+            ) : anexos.length ? (
+              <div className="attachments-list">
+                {anexos.map((anexo) => {
+                  const dataHora = formatarDataHora(anexo.created_at);
+                  const confirmando = anexoEmExclusao === anexo.id;
+
+                  return (
+                    <article className="attachment-card" key={anexo.id}>
+                      <div className="attachment-icon" aria-hidden="true">
+                        <FileText size={22} />
+                      </div>
+                      <div className="attachment-info">
+                        <strong title={anexo.nome_original}>
+                          {anexo.nome_original}
+                        </strong>
+                        <span>
+                          {formatarTamanho(Number(anexo.tamanho_bytes))} ·{" "}
+                          {anexo.usuario_nome || "Usuário removido"} ·{" "}
+                          {dataHora.data} às {dataHora.hora}
+                        </span>
+                      </div>
+                      <div className="attachment-actions">
+                        {confirmando ? (
+                          <>
+                            <button
+                              className="attachment-cancel-button"
+                              type="button"
+                              disabled={excluindoAnexoId === anexo.id}
+                              onClick={() => setAnexoEmExclusao(null)}
+                            >
+                              Cancelar
+                            </button>
+                            <button
+                              className="attachment-confirm-button"
+                              type="button"
+                              disabled={excluindoAnexoId === anexo.id}
+                              onClick={() => excluirAnexo(anexo.id)}
+                            >
+                              {excluindoAnexoId === anexo.id
+                                ? "Excluindo..."
+                                : "Confirmar"}
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              type="button"
+                              disabled={abrindoAnexoId === anexo.id}
+                              onClick={() => abrirAnexo(anexo)}
+                              aria-label={`Abrir ${anexo.nome_original}`}
+                            >
+                              <Download size={17} aria-hidden="true" />
+                              {abrindoAnexoId === anexo.id
+                                ? "Abrindo..."
+                                : "Abrir"}
+                            </button>
+                            <button
+                              className="attachment-delete-button"
+                              type="button"
+                              onClick={() => setAnexoEmExclusao(anexo.id)}
+                              aria-label={`Excluir ${anexo.nome_original}`}
+                            >
+                              <Trash2 size={17} aria-hidden="true" />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="interaction-empty">
+                <Paperclip size={30} aria-hidden="true" />
+                <strong>Nenhum anexo ainda</strong>
+                <p>Envie uma imagem ou PDF relacionado ao atendimento.</p>
               </div>
             )}
           </section>
