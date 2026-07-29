@@ -57,3 +57,17 @@ Cadastro de Clientes.
 - Listagem, abertura por URL temporária e exclusão de anexos
 - Registro de inclusão e remoção na timeline
 - Aba de anexos no modal de detalhes
+
+---
+
+## Sprint 9.6
+
+### ✅ Relatórios operacionais
+
+- Filtro de chamados por período, com limite máximo de 366 dias
+- Indicadores de volume, SLA e tempo médio de resolução
+- Distribuições por status, prioridade, categoria e responsável
+- Detalhamento dos 100 chamados mais recentes na tela
+- Exportação completa e segura em CSV
+- Endpoint autenticado `GET /api/relatorios/chamados`
+- Testes unitários da consulta e das regras do relatório

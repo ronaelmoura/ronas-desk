@@ -187,9 +187,11 @@ Acesse `http://localhost:5173`.
 | Vários | `/api/clientes` | Gerenciamento de clientes |
 | Vários | `/api/chamados` | Gerenciamento de chamados |
 | `GET` | `/api/dashboard` | Indicadores do dashboard |
+| `GET` | `/api/relatorios/chamados` | Relatório de chamados por período |
 | Vários | `/api/usuarios` | Gerenciamento de usuários |
 
-> As rotas de clientes, chamados, dashboard e usuários exigem autenticação.
+> As rotas de clientes, chamados, dashboard, relatórios e usuários exigem
+> autenticação.
 
 ## 🕓 Histórico e auditoria de chamados
 
@@ -253,6 +255,23 @@ backend/sql/007_sprint_9_5_anexos.sql
 As credenciais do Cloudinary devem existir somente em `backend/.env`. Nunca
 publique esse arquivo ou exponha `CLOUDINARY_API_SECRET` no frontend.
 
+## 📊 Relatórios operacionais
+
+A Sprint 9.6 adiciona uma visão de chamados criados por período, com indicadores
+de volume, cumprimento de SLA, tempo médio de resolução e distribuições por
+status, prioridade, categoria e responsável.
+
+O relatório inclui detalhamento dos chamados e exportação em CSV. O período
+padrão é de 30 dias e o intervalo máximo permitido é de 366 dias.
+
+Rota protegida:
+
+```http
+GET /api/relatorios/chamados?data_inicio=2026-07-01&data_fim=2026-07-30
+```
+
+Essa funcionalidade não exige uma nova migration.
+
 Comandos de validação:
 
 ```bash
@@ -276,7 +295,7 @@ npm run build
 - [x] Controle de usuários
 - [x] Indicadores de SLA e resolução
 - [x] Anexos em chamados
-- [ ] Relatórios
+- [x] Relatórios
 - [ ] Docker
 - [ ] Deploy de demonstração
 

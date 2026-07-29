@@ -6,6 +6,7 @@ import AllTickets from "./AllTickets";
 import ProfileSettings from "./ProfileSettings";
 import Clientes from "../pages/Clientes/clientes";
 import Usuarios from "../pages/Usuarios/Usuarios";
+import Relatorios from "../pages/Relatorios/Relatorios";
 import useAuth from "../hooks/useAuth";
 import {
   criarChamadoApi,
@@ -287,6 +288,17 @@ function Dashboard({ onLogout }) {
           </button>
 
           <button
+            className={`menu-item ${
+              paginaAtiva === "relatorios" ? "active" : ""
+            }`}
+            type="button"
+            onClick={() => setPaginaAtiva("relatorios")}
+          >
+            <span>▥</span>
+            Relatórios
+          </button>
+
+          <button
             className="menu-item"
             type="button"
             onClick={() => setModalAberto(true)}
@@ -328,6 +340,8 @@ function Dashboard({ onLogout }) {
           <Clientes onSelectTicket={setChamadoSelecionado} />
         ) : paginaAtiva === "usuarios" ? (
           <Usuarios administrador={usuario?.cargo === "Administrador"} />
+        ) : paginaAtiva === "relatorios" ? (
+          <Relatorios />
         ) : paginaAtiva === "chamados" ? (
           carregando ? (
             <section className="dashboard-panel">
