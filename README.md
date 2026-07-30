@@ -243,6 +243,58 @@ docker compose --env-file .env.docker down
 Esse comando mantém o volume do MySQL, portanto os dados estarão disponíveis na
 próxima inicialização.
 
+## 🌐 Deploy gratuito com Render e Aiven
+
+O deploy de demonstração usa um único Web Service gratuito no Render para servir
+o frontend e a API. O MySQL permanece em um serviço gratuito separado no Aiven,
+e os anexos continuam no Cloudinary.
+
+### 1. Crie o MySQL gratuito no Aiven
+
+No Aiven Console, crie um serviço **MySQL Free** e aguarde o status `Running`.
+Na tela de conexão, identifique host, porta, usuário, senha e o banco
+`defaultdb`. Esses valores são privados e nunca devem ser enviados, colocados
+no Git ou incluídos em capturas de tela.
+
+### 2. Crie o Blueprint no Render
+
+No Render Dashboard, crie um Blueprint conectado a este repositório. O arquivo
+`render.yaml` configura o serviço `ronas-desk`, a imagem Docker de produção e o
+healthcheck.
+
+Informe diretamente no painel do Render:
+
+- `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` e `DB_NAME`, usando os dados do
+  Aiven;
+- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` e
+  `CLOUDINARY_API_SECRET`, caso os anexos sejam utilizados.
+
+O `JWT_SECRET` é gerado automaticamente pelo Render. O serviço executa as
+migrations pendentes antes de iniciar a aplicação. A execução automática é
+permitida somente em um banco vazio ou em um banco que já possua o histórico
+`schema_migrations`.
+
+### 3. Crie o administrador da demonstração
+
+Depois que o deploy estiver saudável, execute na raiz do projeto:
+
+```powershell
+.\scripts\create-aiven-admin.ps1
+```
+
+O assistente solicita localmente os dados de conexão e do administrador, mascara
+as senhas e remove os valores temporários ao terminar. Não envie essas
+informações pelo chat.
+
+### Limitações do plano gratuito
+
+- O Web Service do Render entra em suspensão após 15 minutos sem tráfego. O
+  primeiro acesso seguinte pode levar cerca de um minuto.
+- O Aiven Free oferece 1 GB de armazenamento e pode suspender serviços sem
+  atividade contínua, mediante aviso.
+- Esse ambiente é indicado para demonstração e portfólio, não para operação
+  crítica ou de alto tráfego.
+
 ## 📡 Principais rotas da API
 
 | Método | Endpoint | Descrição |
