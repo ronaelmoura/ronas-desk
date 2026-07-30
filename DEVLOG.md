@@ -71,3 +71,19 @@ Cadastro de Clientes.
 - Exportação completa e segura em CSV
 - Endpoint autenticado `GET /api/relatorios/chamados`
 - Testes unitários da consulta e das regras do relatório
+
+---
+
+## Sprint 10
+
+### ✅ Docker
+
+- Imagens separadas para backend e frontend
+- Build em múltiplos estágios do frontend servido por Nginx
+- Stack com frontend, backend e MySQL isolado
+- Volume persistente para os dados do MySQL
+- Healthchecks e ordem segura de inicialização
+- Banco inicial reproduzível com migrations automáticas
+- Credenciais aleatórias geradas localmente e fora do Git
+- Assistentes seguros para criar o primeiro administrador e redefinir sua senha
+- Login, reinício dos serviços e persistência do volume validados localmente

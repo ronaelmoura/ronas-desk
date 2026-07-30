@@ -63,6 +63,8 @@ O projeto aplica separação de responsabilidades no backend, autenticação com
 ### Banco de dados e ferramentas
 
 - MySQL
+- Docker Compose
+- Nginx
 - Git e GitHub
 - ESLint e Prettier
 - Node Test Runner
@@ -102,6 +104,8 @@ ronas-desk/
 │       ├── hooks/
 │       ├── pages/
 │       └── services/
+├── compose.yaml
+├── .env.docker.example
 ├── .env.example
 └── README.md
 ```
@@ -176,6 +180,68 @@ npm run dev
 ```
 
 Acesse `http://localhost:5173`.
+
+## 🐳 Como executar com Docker
+
+O Docker inicia frontend, backend e um MySQL próprio e persistente. Esse banco é
+isolado e não altera nem importa os dados do MySQL instalado no Windows.
+
+### 1. Pré-requisito
+
+Instale e inicie o Docker Desktop.
+
+### 2. Configure o ambiente do Docker
+
+No PowerShell, a partir da raiz do projeto:
+
+```powershell
+.\scripts\configure-docker-env.ps1
+```
+
+O assistente gera senhas aleatórias para o MySQL e uma chave JWT sem mostrá-las
+no terminal. O arquivo `.env.docker` é ignorado pelo Git e não deve ser aberto,
+copiado ou enviado. As credenciais do Cloudinary são opcionais e podem ser
+configuradas separadamente quando os anexos forem necessários.
+
+### 3. Inicie a aplicação
+
+```powershell
+docker compose --env-file .env.docker up --build -d
+docker compose --env-file .env.docker ps
+```
+
+Na primeira inicialização de um banco vazio, os scripts de `backend/sql` são
+executados automaticamente em ordem. Aguarde os três serviços ficarem
+saudáveis e acesse `http://localhost:5173`.
+
+### 4. Crie o primeiro administrador
+
+Execute o assistente interativo:
+
+```powershell
+.\scripts\create-docker-admin.ps1
+```
+
+O assistente solicita nome e email, oculta a senha durante a digitação e remove
+esses dados da memória do processo ao terminar. A senha do administrador não
+fica armazenada em `.env.docker`.
+
+Para redefinir a senha de um administrador ativo sem apagar dados:
+
+```powershell
+.\scripts\reset-docker-admin-password.ps1
+```
+
+Os dois assistentes pedem a confirmação da senha para evitar erros de digitação.
+
+### 5. Encerre a aplicação
+
+```powershell
+docker compose --env-file .env.docker down
+```
+
+Esse comando mantém o volume do MySQL, portanto os dados estarão disponíveis na
+próxima inicialização.
 
 ## 📡 Principais rotas da API
 
@@ -296,7 +362,7 @@ npm run build
 - [x] Indicadores de SLA e resolução
 - [x] Anexos em chamados
 - [x] Relatórios
-- [ ] Docker
+- [x] Docker
 - [ ] Deploy de demonstração
 
 ## 👨‍💻 Autor

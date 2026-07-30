@@ -12,10 +12,11 @@ import pool from './database/db.js'
 
 const app = express()
 const PORT = process.env.PORT || 3000
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173'
 
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: CORS_ORIGIN,
   }),
 )
 
@@ -31,13 +32,14 @@ app.get('/api/health', async (request, response) => {
       database: 'MySQL conectado.',
     })
   } catch (error) {
-    console.error('=== ERRO COMPLETO ===')
-    console.error(error)
+    console.error(
+      'Falha na verificação de saúde do banco:',
+      error?.code || 'erro_desconhecido',
+    )
 
     response.status(500).json({
       status: 'erro',
       message: 'API funcionando, mas o MySQL não conectou.',
-      erro: String(error),
     })
   }
 })
