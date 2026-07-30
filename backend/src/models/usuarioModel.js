@@ -124,6 +124,20 @@ async function alterarStatus(id, ativo) {
   return buscarPorId(id)
 }
 
+async function atualizarSenhaPorEmail(email, senha_hash, executor = pool) {
+  const [resultado] = await executor.execute(
+    `
+      UPDATE usuarios
+      SET senha_hash = ?
+      WHERE email = ?
+        AND ativo = 1
+    `,
+    [senha_hash, email],
+  )
+
+  return resultado.affectedRows > 0
+}
+
 async function excluir(id) {
   const [resultado] = await pool.execute('DELETE FROM usuarios WHERE id = ?', [
     id,
@@ -139,5 +153,6 @@ export default {
   criar,
   atualizar,
   alterarStatus,
+  atualizarSenhaPorEmail,
   excluir,
 }
