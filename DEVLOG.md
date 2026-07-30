@@ -87,3 +87,15 @@ Cadastro de Clientes.
 - Credenciais aleatórias geradas localmente e fora do Git
 - Assistentes seguros para criar o primeiro administrador e redefinir sua senha
 - Login, reinício dos serviços e persistência do volume validados localmente
+
+---
+
+## Sprint 11
+
+### 🚧 Deploy gratuito em preparação
+
+- Render configurado para servir frontend e backend em uma única imagem
+- MySQL externo preparado para conexão TLS com o Aiven
+- Migrations automáticas com histórico e proteção para bancos existentes
+- Blueprint sem credenciais versionadas
+- Assistente local para criar o administrador da demonstração

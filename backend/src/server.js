@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import path from 'node:path'
 import express from 'express'
 import cors from 'cors'
 import chamadosRouter from './routes/chamados.routes.js'
@@ -12,13 +13,22 @@ import pool from './database/db.js'
 
 const app = express()
 const PORT = process.env.PORT || 3000
-const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173'
+const HOST = process.env.HOST || '0.0.0.0'
+const CORS_ORIGIN =
+  process.env.CORS_ORIGIN ||
+  (process.env.NODE_ENV === 'production' ? null : 'http://localhost:5173')
+const FRONTEND_DIST_PATH = process.env.FRONTEND_DIST_PATH
+const FRONTEND_INDEX_PATH = FRONTEND_DIST_PATH
+  ? path.join(FRONTEND_DIST_PATH, 'index.html')
+  : null
 
-app.use(
-  cors({
-    origin: CORS_ORIGIN,
-  }),
-)
+if (CORS_ORIGIN) {
+  app.use(
+    cors({
+      origin: CORS_ORIGIN,
+    }),
+  )
+}
 
 app.use(express.json())
 
@@ -51,6 +61,25 @@ app.use('/api/dashboard', authMiddleware, dashboardRouter)
 app.use('/api/usuarios', authMiddleware, usuariosRouter)
 app.use('/api/relatorios', authMiddleware, relatoriosRouter)
 
+app.use('/api', (request, response) => {
+  response.status(404).json({
+    status: 'erro',
+    message: 'Rota não encontrada.',
+  })
+})
+
+if (FRONTEND_DIST_PATH) {
+  app.use(express.static(FRONTEND_DIST_PATH))
+
+  app.use((request, response, next) => {
+    if (request.method !== 'GET') {
+      return next()
+    }
+
+    return response.sendFile(FRONTEND_INDEX_PATH)
+  })
+}
+
 app.use((request, response) => {
   response.status(404).json({
     status: 'erro',
@@ -58,7 +87,7 @@ app.use((request, response) => {
   })
 })
 
-app.listen(PORT, () => {
+app.listen(PORT, HOST, () => {
   console.log(`API do Ronas Desk executando na porta ${PORT}`)
   console.log(`Teste: http://localhost:${PORT}/api/health`)
 })
