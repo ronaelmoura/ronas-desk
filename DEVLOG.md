@@ -27,12 +27,6 @@
 
 ---
 
-## Próxima Sprint
-
-Cadastro de Clientes.
-
----
-
 ## Sprint 9.4
 
 ### ✅ Auditoria e timeline de chamados
@@ -102,3 +96,18 @@ Cadastro de Clientes.
 - Aplicação publicada em `https://ronas-desk.onrender.com`
 - Login do primeiro administrador validado em produção
 - Limitações de suspensão dos planos gratuitos documentadas
+
+---
+
+## Sprint 12
+
+### ✅ Segurança e confiabilidade em produção
+
+- Headers HTTP de segurança centralizados com Helmet
+- Limite de cinco tentativas falhas de login a cada 15 minutos por IP
+- Suporte seguro ao proxy reverso do Render
+- Corpo JSON limitado explicitamente a 100 KB
+- Healthcheck público mínimo, com `503` sem detalhes internos em falhas
+- Aplicação Express separada da inicialização para permitir testes integrados
+- Testes de headers, healthcheck e bloqueio de autenticação
+- CI no GitHub Actions para testes, lint e build em cada PR e push na `main`

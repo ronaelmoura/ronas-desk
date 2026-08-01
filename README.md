@@ -319,6 +319,39 @@ O ambiente publicado pode ser acessado em
 - Esse ambiente é indicado para demonstração e portfólio, não para operação
   crítica ou de alto tráfego.
 
+## 🛡️ Segurança e integração contínua
+
+O backend aplica headers HTTP de segurança com Helmet, remove a identificação do
+Express e limita o corpo JSON a 100 KB. O login aceita por padrão até cinco
+tentativas falhas por IP em uma janela de 15 minutos; logins bem-sucedidos não
+consomem o limite.
+
+Os limites podem ser ajustados sem alterar o código:
+
+```env
+LOGIN_RATE_LIMIT_MAX=5
+LOGIN_RATE_LIMIT_WINDOW_MS=900000
+TRUST_PROXY_HOPS=1
+```
+
+Em produção, `TRUST_PROXY_HOPS` informa quantos proxies confiáveis existem entre
+o cliente e a aplicação. O valor padrão é `1`, adequado ao Web Service atual do
+Render. Em desenvolvimento, cabeçalhos enviados pelo cliente não são tratados
+como proxy confiável.
+
+O endpoint `GET /api/health` retorna somente o estado público necessário. Falhas
+de banco produzem HTTP `503` e uma mensagem genérica; o código interno do erro
+fica restrito ao log do servidor.
+
+O workflow `.github/workflows/ci.yml` usa Node.js 22 e executa automaticamente:
+
+- testes e lint do backend;
+- lint e build do frontend.
+
+O CI roda em Pull Requests e em pushes para `main`, sem acesso a credenciais de
+produção. O `format:check` será incluído depois que a dívida de formatação antiga
+for corrigida em uma mudança isolada.
+
 ## 📡 Principais rotas da API
 
 | Método | Endpoint | Descrição |
@@ -440,6 +473,7 @@ npm run build
 - [x] Relatórios
 - [x] Docker
 - [x] Deploy de demonstração
+- [x] Segurança HTTP e integração contínua
 
 ## 👨‍💻 Autor
 
