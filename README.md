@@ -256,6 +256,10 @@ Na tela de conexão, identifique host, porta, usuário, senha e o banco
 `defaultdb`. Esses valores são privados e nunca devem ser enviados, colocados
 no Git ou incluídos em capturas de tela.
 
+Na mesma tela, baixe o **CA Certificate** como `ca.pem`. O certificado permite
+que o cliente valide a identidade do banco em vez de apenas criptografar a
+conexão.
+
 ### 2. Crie o Blueprint no Render
 
 No Render Dashboard, crie um Blueprint conectado a este repositório. O arquivo
@@ -266,8 +270,24 @@ Informe diretamente no painel do Render:
 
 - `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` e `DB_NAME`, usando os dados do
   Aiven;
+- `DB_SSL_CA_BASE64`, usando o certificado `ca.pem` convertido para Base64;
 - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` e
   `CLOUDINARY_API_SECRET`, caso os anexos sejam utilizados.
+
+No PowerShell, copie o certificado convertido diretamente para a área de
+transferência sem imprimi-lo no terminal:
+
+```powershell
+$caBytes = [IO.File]::ReadAllBytes("$env:USERPROFILE\Downloads\ca.pem")
+$caBase64 = [Convert]::ToBase64String($caBytes)
+Set-Clipboard -Value $caBase64
+$caBytes = $null
+$caBase64 = $null
+```
+
+Cole o conteúdo no valor de `DB_SSL_CA_BASE64`. Em um Blueprint novo, o Render
+solicita essa variável durante a criação. Em um serviço já existente, adicione-a
+manualmente em **Environment**.
 
 O `JWT_SECRET` é gerado automaticamente pelo Render. O serviço executa as
 migrations pendentes antes de iniciar a aplicação. A execução automática é
@@ -283,8 +303,12 @@ Depois que o deploy estiver saudável, execute na raiz do projeto:
 ```
 
 O assistente solicita localmente os dados de conexão e do administrador, mascara
-as senhas e remove os valores temporários ao terminar. Não envie essas
-informações pelo chat.
+as senhas, carrega por padrão o certificado
+`$env:USERPROFILE\Downloads\ca.pem` e remove os valores temporários ao terminar.
+Não envie essas informações pelo chat.
+
+O ambiente publicado pode ser acessado em
+[ronas-desk.onrender.com](https://ronas-desk.onrender.com).
 
 ### Limitações do plano gratuito
 
@@ -415,7 +439,7 @@ npm run build
 - [x] Anexos em chamados
 - [x] Relatórios
 - [x] Docker
-- [ ] Deploy de demonstração
+- [x] Deploy de demonstração
 
 ## 👨‍💻 Autor
 

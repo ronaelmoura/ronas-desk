@@ -27,10 +27,20 @@ $databasePort = Read-Host 'Porta do MySQL no Aiven'
 $databaseName = Read-Host 'Nome do banco [defaultdb]'
 $databaseUser = Read-Host 'Usuário do MySQL no Aiven'
 $secureDatabasePassword = Read-Host 'Senha do MySQL no Aiven' -AsSecureString
+$defaultCaCertificatePath =
+  Join-Path ([Environment]::GetFolderPath('UserProfile')) 'Downloads\ca.pem'
+$caCertificatePath =
+  Read-Host "Caminho do certificado CA [$defaultCaCertificatePath]"
 
 if ([string]::IsNullOrWhiteSpace($databaseName)) {
   $databaseName = 'defaultdb'
 }
+
+if ([string]::IsNullOrWhiteSpace($caCertificatePath)) {
+  $caCertificatePath = $defaultCaCertificatePath
+}
+
+$caCertificatePath = $caCertificatePath.Trim('"')
 
 if (
   [string]::IsNullOrWhiteSpace($databaseHost) -or
@@ -42,6 +52,27 @@ if (
 ) {
   exit 10
 }
+
+if (-not (Test-Path -LiteralPath $caCertificatePath -PathType Leaf)) {
+  Write-Host 'O certificado CA informado não foi encontrado.' `
+    -ForegroundColor Yellow
+  exit 15
+}
+
+$caCertificateBytes = [IO.File]::ReadAllBytes($caCertificatePath)
+$caCertificateText = [Text.Encoding]::UTF8.GetString($caCertificateBytes)
+
+if ($caCertificateText -notmatch '-----BEGIN CERTIFICATE-----') {
+  Write-Host 'O arquivo informado não contém um certificado CA válido.' `
+    -ForegroundColor Yellow
+  $caCertificateBytes = $null
+  $caCertificateText = $null
+  exit 16
+}
+
+$caCertificateBase64 = [Convert]::ToBase64String($caCertificateBytes)
+$caCertificateBytes = $null
+$caCertificateText = $null
 
 $adminName = Read-Host 'Nome do administrador'
 $adminEmail = Read-Host 'Email do administrador'
@@ -102,6 +133,7 @@ try {
   $env:DB_USER = $databaseUser
   $env:DB_PASSWORD = $plainDatabasePassword
   $env:DB_SSL = 'true'
+  $env:DB_SSL_CA_BASE64 = $caCertificateBase64
   $env:ADMIN_NOME = $adminName
   $env:ADMIN_EMAIL = $adminEmail
   $env:ADMIN_SENHA = $plainAdminPassword
@@ -138,12 +170,14 @@ try {
   Remove-Item Env:DB_USER -ErrorAction SilentlyContinue
   Remove-Item Env:DB_PASSWORD -ErrorAction SilentlyContinue
   Remove-Item Env:DB_SSL -ErrorAction SilentlyContinue
+  Remove-Item Env:DB_SSL_CA_BASE64 -ErrorAction SilentlyContinue
   Remove-Item Env:ADMIN_NOME -ErrorAction SilentlyContinue
   Remove-Item Env:ADMIN_EMAIL -ErrorAction SilentlyContinue
   Remove-Item Env:ADMIN_SENHA -ErrorAction SilentlyContinue
   Remove-Item Env:ADMIN_CARGO -ErrorAction SilentlyContinue
   $plainDatabasePassword = $null
   $plainAdminPassword = $null
+  $caCertificateBase64 = $null
 }
 
 exit $scriptExitCode
