@@ -92,10 +92,13 @@ Cadastro de Clientes.
 
 ## Sprint 11
 
-### 🚧 Deploy gratuito em preparação
+### ✅ Deploy gratuito com Render e Aiven
 
 - Render configurado para servir frontend e backend em uma única imagem
-- MySQL externo preparado para conexão TLS com o Aiven
+- MySQL externo conectado ao Aiven com TLS e validação pelo certificado CA
 - Migrations automáticas com histórico e proteção para bancos existentes
 - Blueprint sem credenciais versionadas
-- Assistente local para criar o administrador da demonstração
+- Assistente local com certificado CA para criar o administrador da demonstração
+- Aplicação publicada em `https://ronas-desk.onrender.com`
+- Login do primeiro administrador validado em produção
+- Limitações de suspensão dos planos gratuitos documentadas
