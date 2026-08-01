@@ -111,3 +111,19 @@
 - Aplicação Express separada da inicialização para permitir testes integrados
 - Testes de headers, healthcheck e bloqueio de autenticação
 - CI no GitHub Actions para testes, lint e build em cada PR e push na `main`
+
+---
+
+## Sprint 13
+
+### ✅ Perfil do usuário e segurança da conta
+
+- Perfil real carregado da sessão autenticada, sem dados fictícios no navegador
+- Atualização protegida de nome e email no MySQL
+- Cargo mantido como campo somente administrativo
+- Bloqueio de email duplicado e validação de conta ativa
+- Troca de senha com confirmação da senha atual e bcrypt com custo 12
+- Formulários independentes com estados de envio, erro e sucesso
+- Atualização imediata do nome e avatar exibidos no painel
+- Limpeza automática do perfil legado salvo no `localStorage`
+- Testes de contrato, validação, persistência parametrizada e senha

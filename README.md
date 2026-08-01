@@ -352,6 +352,20 @@ O CI roda em Pull Requests e em pushes para `main`, sem acesso a credenciais de
 produção. O `format:check` será incluído depois que a dívida de formatação antiga
 for corrigida em uma mudança isolada.
 
+## 👤 Perfil e segurança da conta
+
+A área de configurações usa os dados reais do usuário autenticado. Nome e email
+podem ser atualizados pelo próprio usuário e permanecem sincronizados com o
+banco; o cargo é somente leitura e continua sob controle administrativo.
+
+A troca de senha exige a senha atual, confirmação da nova senha e no mínimo oito
+caracteres. O backend valida novamente a conta ativa, compara a senha atual com o
+hash armazenado e grava a nova senha com bcrypt. Nenhum hash ou detalhe interno é
+retornado pela API.
+
+O perfil fictício que versões anteriores mantinham no `localStorage` deixa de
+ser usado e é removido automaticamente ao validar a sessão.
+
 ## 📡 Principais rotas da API
 
 | Método | Endpoint | Descrição |
@@ -359,14 +373,16 @@ for corrigida em uma mudança isolada.
 | `GET` | `/api/health` | Verifica a API e a conexão com o banco |
 | `POST` | `/api/auth/login` | Autenticação |
 | `GET` | `/api/auth/me` | Consulta da sessão autenticada |
+| `PATCH` | `/api/auth/me` | Atualiza nome e email da própria conta |
+| `PATCH` | `/api/auth/me/password` | Altera a própria senha com confirmação |
 | Vários | `/api/clientes` | Gerenciamento de clientes |
 | Vários | `/api/chamados` | Gerenciamento de chamados |
 | `GET` | `/api/dashboard` | Indicadores do dashboard |
 | `GET` | `/api/relatorios/chamados` | Relatório de chamados por período |
 | Vários | `/api/usuarios` | Gerenciamento de usuários |
 
-> As rotas de clientes, chamados, dashboard, relatórios e usuários exigem
-> autenticação.
+> As rotas de perfil, clientes, chamados, dashboard, relatórios e usuários
+> exigem autenticação.
 
 ## 🕓 Histórico e auditoria de chamados
 
@@ -474,6 +490,7 @@ npm run build
 - [x] Docker
 - [x] Deploy de demonstração
 - [x] Segurança HTTP e integração contínua
+- [x] Perfil real e troca segura de senha
 
 ## 👨‍💻 Autor
 

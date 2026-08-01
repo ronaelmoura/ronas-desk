@@ -14,3 +14,15 @@ export async function buscarUsuarioAtualApi() {
 
   return response.data
 }
+
+export async function atualizarPerfilApi(dados) {
+  const response = await apiClient.patch('/auth/me', dados)
+
+  return response.data
+}
+
+export async function alterarSenhaApi(dados) {
+  const response = await apiClient.patch('/auth/me/password', dados)
+
+  return response.data
+}
