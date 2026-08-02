@@ -50,10 +50,29 @@ async function buscarPorEmail(email) {
   return normalizarUsuario(rows[0])
 }
 
-async function buscarPorId(id) {
-  const [rows] = await pool.execute(
+async function buscarPorId(id, executor = pool) {
+  const [rows] = await executor.execute(
     `
       SELECT ${camposPublicos}
+      FROM usuarios
+      WHERE id = ?
+    `,
+    [id],
+  )
+
+  return normalizarUsuario(rows[0])
+}
+
+async function buscarPorIdComSenha(id, executor = pool) {
+  const [rows] = await executor.execute(
+    `
+      SELECT
+        id,
+        nome,
+        email,
+        senha_hash,
+        cargo,
+        ativo
       FROM usuarios
       WHERE id = ?
     `,
@@ -107,6 +126,24 @@ async function atualizar(id, { nome, email, senha_hash, cargo }) {
   return buscarPorId(id)
 }
 
+async function atualizarPerfil(id, { nome, email }, executor = pool) {
+  const [resultado] = await executor.execute(
+    `
+      UPDATE usuarios
+      SET nome = ?, email = ?
+      WHERE id = ?
+        AND ativo = 1
+    `,
+    [nome, email, id],
+  )
+
+  if (resultado.affectedRows === 0) {
+    return null
+  }
+
+  return buscarPorId(id, executor)
+}
+
 async function alterarStatus(id, ativo) {
   const [resultado] = await pool.execute(
     `
@@ -138,6 +175,20 @@ async function atualizarSenhaPorEmail(email, senha_hash, executor = pool) {
   return resultado.affectedRows > 0
 }
 
+async function atualizarSenhaPorId(id, senha_hash, executor = pool) {
+  const [resultado] = await executor.execute(
+    `
+      UPDATE usuarios
+      SET senha_hash = ?
+      WHERE id = ?
+        AND ativo = 1
+    `,
+    [senha_hash, id],
+  )
+
+  return resultado.affectedRows > 0
+}
+
 async function excluir(id) {
   const [resultado] = await pool.execute('DELETE FROM usuarios WHERE id = ?', [
     id,
@@ -150,9 +201,12 @@ export default {
   listar,
   buscarPorEmail,
   buscarPorId,
+  buscarPorIdComSenha,
   criar,
   atualizar,
+  atualizarPerfil,
   alterarStatus,
   atualizarSenhaPorEmail,
+  atualizarSenhaPorId,
   excluir,
 }

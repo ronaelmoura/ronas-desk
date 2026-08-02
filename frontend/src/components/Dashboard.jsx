@@ -35,13 +35,6 @@ const dashboardInicial = {
   chamados_recentes: [],
 };
 
-const perfilInicial = {
-  nome: "Ronael Moura",
-  email: "ronael@email.com",
-  cargo: "Administrador",
-  notificacoes: true,
-};
-
 function obterIniciais(nome = "") {
   const nomeSeguro = typeof nome === "string" ? nome : "";
 
@@ -71,55 +64,10 @@ function formatarTempoMedio(minutos) {
   return minutosRestantes ? `${horas}h ${minutosRestantes}min` : `${horas}h`;
 }
 
-function carregarPerfil() {
-  try {
-    const perfilSalvo = localStorage.getItem("ronas-desk-perfil");
-
-    if (!perfilSalvo) {
-      return perfilInicial;
-    }
-
-    const perfilConvertido = JSON.parse(perfilSalvo);
-
-    if (
-      !perfilConvertido ||
-      typeof perfilConvertido !== "object" ||
-      Array.isArray(perfilConvertido)
-    ) {
-      return perfilInicial;
-    }
-
-    return {
-      nome:
-        typeof perfilConvertido.nome === "string" &&
-        perfilConvertido.nome.trim()
-          ? perfilConvertido.nome
-          : perfilInicial.nome,
-      email:
-        typeof perfilConvertido.email === "string" &&
-        perfilConvertido.email.trim()
-          ? perfilConvertido.email
-          : perfilInicial.email,
-      cargo:
-        typeof perfilConvertido.cargo === "string" &&
-        perfilConvertido.cargo.trim()
-          ? perfilConvertido.cargo
-          : perfilInicial.cargo,
-      notificacoes:
-        typeof perfilConvertido.notificacoes === "boolean"
-          ? perfilConvertido.notificacoes
-          : perfilInicial.notificacoes,
-    };
-  } catch {
-    return perfilInicial;
-  }
-}
-
 function Dashboard({ onLogout }) {
   const { usuario } = useAuth();
   const [chamados, setChamados] = useState([]);
   const [dashboard, setDashboard] = useState(dashboardInicial);
-  const [perfil, setPerfil] = useState(carregarPerfil);
   const [carregando, setCarregando] = useState(true);
   const [erroApi, setErroApi] = useState("");
   const [carregandoDashboard, setCarregandoDashboard] = useState(true);
@@ -131,10 +79,6 @@ function Dashboard({ onLogout }) {
   useEffect(() => {
     carregarDashboardDaApi();
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem("ronas-desk-perfil", JSON.stringify(perfil));
-  }, [perfil]);
 
   async function carregarChamadosDaApi() {
     setCarregando(true);
@@ -321,11 +265,11 @@ function Dashboard({ onLogout }) {
 
         <div className="sidebar-footer">
           <div className="sidebar-user">
-            <div className="user-avatar">{obterIniciais(perfil.nome)}</div>
+            <div className="user-avatar">{obterIniciais(usuario?.nome)}</div>
 
             <div>
-              <strong>{perfil.nome}</strong>
-              <span>{perfil.cargo}</span>
+              <strong>{usuario?.nome}</strong>
+              <span>{usuario?.cargo}</span>
             </div>
           </div>
 
@@ -369,7 +313,7 @@ function Dashboard({ onLogout }) {
             />
           )
         ) : paginaAtiva === "configuracoes" ? (
-          <ProfileSettings perfil={perfil} onSave={setPerfil} />
+          <ProfileSettings />
         ) : carregandoDashboard ? (
           <section
             className="dashboard-skeleton"
@@ -411,7 +355,7 @@ function Dashboard({ onLogout }) {
               <div>
                 <p className="dashboard-eyebrow">Painel de controle</p>
 
-                <h1>Olá, {obterPrimeiroNome(perfil.nome)} 👋</h1>
+                <h1>Olá, {obterPrimeiroNome(usuario?.nome)} 👋</h1>
 
                 <p>
                   Acompanhe os chamados e as atividades recentes do suporte.

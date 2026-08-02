@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
+  alterarSenhaApi,
+  atualizarPerfilApi,
   buscarUsuarioAtualApi,
   loginApi,
 } from '../services/authApi'
@@ -9,12 +11,16 @@ import {
 } from '../services/apiClient'
 import AuthContext from './authContextBase'
 
+const CHAVE_PERFIL_LEGADO = 'ronas-desk-perfil'
+
 export function AuthProvider({ children }) {
   const [usuario, setUsuario] = useState(null)
   const [carregando, setCarregando] = useState(true)
 
   useEffect(() => {
     let ativo = true
+
+    localStorage.removeItem(CHAVE_PERFIL_LEGADO)
 
     function encerrarSessao() {
       localStorage.removeItem(CHAVE_TOKEN)
@@ -77,9 +83,28 @@ export function AuthProvider({ children }) {
     setUsuario(null)
   }
 
+  async function atualizarPerfil(dados) {
+    const usuarioAtualizado = await atualizarPerfilApi(dados)
+
+    setUsuario(usuarioAtualizado)
+
+    return usuarioAtualizado
+  }
+
+  async function alterarSenha(dados) {
+    return alterarSenhaApi(dados)
+  }
+
   return (
     <AuthContext.Provider
-      value={{ usuario, carregando, login, logout }}
+      value={{
+        usuario,
+        carregando,
+        login,
+        logout,
+        atualizarPerfil,
+        alterarSenha,
+      }}
     >
       {children}
     </AuthContext.Provider>
