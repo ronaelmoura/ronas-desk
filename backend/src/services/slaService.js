@@ -96,6 +96,17 @@ function filtrarPorStatus(chamados, statusSla, agora = new Date()) {
   return enriquecidos.filter((chamado) => chamado.sla?.status === statusSla)
 }
 
+function calcularTempoPrimeiraResposta(chamado) {
+  const inicio = converterData(chamado?.created_at)
+  const primeiraResposta = converterData(chamado?.first_response_at)
+
+  if (!inicio || !primeiraResposta || primeiraResposta < inicio) return null
+
+  return Number(
+    ((primeiraResposta.getTime() - inicio.getTime()) / MINUTO_EM_MS).toFixed(2),
+  )
+}
+
 function calcularIndicadoresDashboard(chamados, agora = new Date()) {
   const chamadosComSla = enriquecerChamados(chamados, agora)
   const ativos = chamadosComSla.filter(
@@ -109,6 +120,13 @@ function calcularIndicadoresDashboard(chamados, agora = new Date()) {
         0,
       ) / resolvidos.length
     : null
+  const temposPrimeiraResposta = chamadosComSla
+    .map(calcularTempoPrimeiraResposta)
+    .filter((tempo) => tempo !== null)
+  const mediaPrimeiraResposta = temposPrimeiraResposta.length
+    ? temposPrimeiraResposta.reduce((total, tempo) => total + tempo, 0) /
+      temposPrimeiraResposta.length
+    : null
 
   return {
     sla_vencidos: ativos.filter(
@@ -119,7 +137,10 @@ function calcularIndicadoresDashboard(chamados, agora = new Date()) {
     ).length,
     tempo_medio_resolucao_minutos:
       mediaResolucao === null ? null : Number(mediaResolucao.toFixed(2)),
-    tempo_medio_primeira_resposta_minutos: null,
+    tempo_medio_primeira_resposta_minutos:
+      mediaPrimeiraResposta === null
+        ? null
+        : Number(mediaPrimeiraResposta.toFixed(2)),
   }
 }
 

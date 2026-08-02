@@ -33,7 +33,7 @@ O projeto aplica separação de responsabilidades no backend, autenticação com
 - Anexos privados de imagens e PDFs por chamado
 - Dashboard com indicadores de atendimento
 - Registro da data real de resolução ou fechamento
-- Cálculo de SLA e tempo médio de resolução
+- Cálculo de SLA, tempo médio de resolução e primeira resposta
 - Exclusão lógica para preservação de dados
 
 ## 🛠️ Tecnologias
@@ -366,6 +366,17 @@ retornado pela API.
 O perfil fictício que versões anteriores mantinham no `localStorage` deixa de
 ser usado e é removido automaticamente ao validar a sessão.
 
+## ⏱️ Tempo de primeira resposta
+
+A primeira resposta de um chamado é registrada quando a equipe adiciona o
+primeiro comentário público. Comentários internos não alteram esse indicador e
+respostas posteriores preservam o horário original.
+
+A migration `008_sprint_14_first_response_at.sql` adiciona o campo de forma
+idempotente e preenche chamados existentes com a data do primeiro comentário
+público já registrado. O dashboard calcula a média somente entre chamados que
+possuem uma primeira resposta válida.
+
 ## 📡 Principais rotas da API
 
 | Método | Endpoint | Descrição |
@@ -491,6 +502,7 @@ npm run build
 - [x] Deploy de demonstração
 - [x] Segurança HTTP e integração contínua
 - [x] Perfil real e troca segura de senha
+- [x] Tempo médio real de primeira resposta
 
 ## 👨‍💻 Autor
 

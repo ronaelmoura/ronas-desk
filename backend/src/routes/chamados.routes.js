@@ -37,10 +37,7 @@ chamadosRouter.get(
   anexosController.gerarDownload,
 )
 
-chamadosRouter.delete(
-  '/:id/anexos/:anexoId',
-  anexosController.excluir,
-)
+chamadosRouter.delete('/:id/anexos/:anexoId', anexosController.excluir)
 
 chamadosRouter.get('/:id', chamadosController.buscarPorId)
 

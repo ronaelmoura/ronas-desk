@@ -13,6 +13,7 @@ function chamado(overrides = {}) {
     created_at: inicio,
     updated_at: null,
     resolved_at: null,
+    first_response_at: null,
     ...overrides,
   }
 }
@@ -92,6 +93,31 @@ test('dashboard não inventa médias sem dados reais', () => {
   )
   assert.equal(indicadores.tempo_medio_resolucao_minutos, null)
   assert.equal(indicadores.tempo_medio_primeira_resposta_minutos, null)
+})
+
+test('dashboard calcula a média somente com chamados que receberam resposta', () => {
+  const indicadores = slaService.calcularIndicadoresDashboard(
+    [
+      chamado({ first_response_at: '2026-01-01T00:30:00.000Z' }),
+      chamado({ first_response_at: '2026-01-01T01:30:00.000Z' }),
+      chamado(),
+    ],
+    new Date(inicio),
+  )
+
+  assert.equal(indicadores.tempo_medio_primeira_resposta_minutos, 60)
+})
+
+test('dashboard ignora primeira resposta anterior à criação do chamado', () => {
+  const indicadores = slaService.calcularIndicadoresDashboard(
+    [
+      chamado({ first_response_at: '2025-12-31T23:59:00.000Z' }),
+      chamado({ first_response_at: '2026-01-01T00:20:00.000Z' }),
+    ],
+    new Date(inicio),
+  )
+
+  assert.equal(indicadores.tempo_medio_primeira_resposta_minutos, 20)
 })
 
 test('média ignora chamado encerrado legado sem resolved_at', () => {

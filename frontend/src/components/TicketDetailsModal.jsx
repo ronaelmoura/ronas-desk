@@ -41,7 +41,13 @@ function formatarTamanho(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function TicketDetailsModal({ chamado, onClose, onUpdate, onDelete }) {
+function TicketDetailsModal({
+  chamado,
+  onClose,
+  onUpdate,
+  onDelete,
+  onPublicResponse,
+}) {
   const [abaAtiva, setAbaAtiva] = useState("informacoes");
   const [titulo, setTitulo] = useState(chamado.titulo);
   const [descricao, setDescricao] = useState(chamado.descricao);
@@ -138,6 +144,10 @@ function TicketDetailsModal({ chamado, onClose, onUpdate, onDelete }) {
       );
       setComentarios((atuais) => [...atuais, comentario]);
       setNovoComentario("");
+
+      if (comentario.tipo === "PUBLICO") {
+        onPublicResponse?.();
+      }
     } catch (error) {
       setErro(error.message);
     } finally {

@@ -1,0 +1,2 @@
+# O backend usa Prettier com endOfLine=lf. Preserve LF também no Windows.
+backend/** text eol=lf

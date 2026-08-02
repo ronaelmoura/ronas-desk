@@ -1,5 +1,6 @@
 import pool from '../database/db.js'
 import historyService from '../services/historyService.js'
+import primeiraRespostaService from '../services/primeiraRespostaService.js'
 import chamadoModel from '../models/chamadoModel.js'
 import comentarioModel from '../models/comentarioModel.js'
 
@@ -96,6 +97,8 @@ async function criarComentario(request, response) {
       { chamado_id: id, usuario_id: request.usuario.id, conteudo, tipo },
       conexao,
     )
+
+    await primeiraRespostaService.registrarSeAplicavel(id, comentario, conexao)
 
     await historyService.registrarComentario(
       id,

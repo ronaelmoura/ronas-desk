@@ -1,7 +1,7 @@
 import pool from '../database/db.js'
 
-async function listar() {
-  const [rows] = await pool.query(`
+async function listar(executor = pool) {
+  const [rows] = await executor.query(`
     SELECT
       chamados.id,
       chamados.cliente_id,
@@ -15,7 +15,8 @@ async function listar() {
       chamados.status,
       chamados.created_at,
       chamados.updated_at,
-      chamados.resolved_at
+      chamados.resolved_at,
+      chamados.first_response_at
     FROM chamados
     LEFT JOIN clientes
       ON clientes.id = chamados.cliente_id
@@ -43,7 +44,8 @@ async function buscarPorId(id, executor = pool) {
         chamados.status,
         chamados.created_at,
         chamados.updated_at,
-        chamados.resolved_at
+        chamados.resolved_at,
+        chamados.first_response_at
       FROM chamados
       LEFT JOIN clientes
         ON clientes.id = chamados.cliente_id
@@ -190,6 +192,21 @@ async function excluir(id, executor = pool) {
   return chamado
 }
 
+async function registrarPrimeiraResposta(id, respondidoEm, executor = pool) {
+  await executor.execute(
+    `
+      UPDATE chamados
+      SET first_response_at = IF(
+        first_response_at IS NULL OR first_response_at > ?,
+        ?,
+        first_response_at
+      )
+      WHERE id = ?
+    `,
+    [respondidoEm, respondidoEm, id],
+  )
+}
+
 export default {
   listar,
   buscarPorId,
@@ -199,4 +216,5 @@ export default {
   criar,
   atualizar,
   excluir,
+  registrarPrimeiraResposta,
 }
