@@ -377,6 +377,7 @@ function Usuarios({ administrador }) {
             paginaAtual={paginaAtual}
             totalPaginas={totalPaginas}
             onChange={setPaginaAtual}
+            ariaLabel="Paginação da lista de usuários"
           />
         </>
       )}

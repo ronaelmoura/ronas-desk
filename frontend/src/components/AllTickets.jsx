@@ -1,11 +1,67 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   classeChamado,
   PRIORIDADES_CHAMADOS,
   STATUS_CHAMADOS,
 } from "../utils/chamados";
 import SlaBadge from "./sla/SlaBadge";
+import Paginacao from "./ui/Paginacao";
 import "./AllTickets.css";
+
+const ITENS_POR_PAGINA = 10;
+
+const PESOS_PRIORIDADE = {
+  Crítica: 4,
+  Alta: 3,
+  Média: 2,
+  Baixa: 1,
+};
+
+const PESOS_SLA = {
+  Vencido: 3,
+  "Próximo do vencimento": 2,
+  "Dentro do prazo": 1,
+};
+
+function obterTimestamp(valor) {
+  const timestamp = new Date(valor).getTime();
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+}
+
+function compararMaisRecentes(chamadoA, chamadoB) {
+  const diferenca =
+    obterTimestamp(chamadoB.created_at) - obterTimestamp(chamadoA.created_at);
+
+  return diferenca || Number(chamadoB.id) - Number(chamadoA.id);
+}
+
+function ordenarChamados(chamados, ordenacao) {
+  return [...chamados].sort((chamadoA, chamadoB) => {
+    if (ordenacao === "antigos") {
+      return -compararMaisRecentes(chamadoA, chamadoB);
+    }
+
+    if (ordenacao === "prioridade") {
+      return (
+        (PESOS_PRIORIDADE[chamadoB.prioridade] ?? 0) -
+          (PESOS_PRIORIDADE[chamadoA.prioridade] ?? 0) ||
+        compararMaisRecentes(chamadoA, chamadoB)
+      );
+    }
+
+    if (ordenacao === "sla") {
+      return (
+        (PESOS_SLA[chamadoB.sla?.status] ?? 0) -
+          (PESOS_SLA[chamadoA.sla?.status] ?? 0) ||
+        (chamadoB.sla?.percentage ?? 0) -
+          (chamadoA.sla?.percentage ?? 0) ||
+        compararMaisRecentes(chamadoA, chamadoB)
+      );
+    }
+
+    return compararMaisRecentes(chamadoA, chamadoB);
+  });
+}
 
 function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
   const [busca, setBusca] = useState("");
@@ -13,37 +69,99 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
   const [filtroPrioridade, setFiltroPrioridade] = useState("Todas");
   const [filtroCategoria, setFiltroCategoria] = useState("Todas");
   const [filtroSla, setFiltroSla] = useState("Todos");
+  const [ordenacao, setOrdenacao] = useState("recentes");
+  const [paginaAtual, setPaginaAtual] = useState(1);
 
-  const chamadosFiltrados = chamados.filter((chamado) => {
-    const textoBusca = busca.trim().toLowerCase();
+  const categorias = useMemo(
+    () =>
+      [...new Set(chamados.map((chamado) => chamado.categoria).filter(Boolean))]
+        .sort((categoriaA, categoriaB) =>
+          categoriaA.localeCompare(categoriaB, "pt-BR"),
+        ),
+    [chamados],
+  );
 
-    const correspondeBusca =
-      !textoBusca ||
-      chamado.titulo.toLowerCase().includes(textoBusca) ||
-      chamado.descricao.toLowerCase().includes(textoBusca) ||
-      chamado.categoria.toLowerCase().includes(textoBusca) ||
-      chamado.responsavel_nome?.toLowerCase().includes(textoBusca);
+  const chamadosFiltrados = useMemo(() => {
+    const textoBusca = busca.trim().toLocaleLowerCase("pt-BR");
 
-    const correspondeStatus =
-      filtroStatus === "Todos" || chamado.status === filtroStatus;
+    const filtrados = chamados.filter((chamado) => {
+      const camposBusca = [
+        chamado.titulo,
+        chamado.descricao,
+        chamado.categoria,
+        chamado.responsavel_nome,
+      ];
 
-    const correspondePrioridade =
-      filtroPrioridade === "Todas" || chamado.prioridade === filtroPrioridade;
+      const correspondeBusca =
+        !textoBusca ||
+        camposBusca.some((campo) =>
+          String(campo ?? "")
+            .toLocaleLowerCase("pt-BR")
+            .includes(textoBusca),
+        );
 
-    const correspondeCategoria =
-      filtroCategoria === "Todas" || chamado.categoria === filtroCategoria;
+      const correspondeStatus =
+        filtroStatus === "Todos" || chamado.status === filtroStatus;
 
-    const correspondeSla =
-      filtroSla === "Todos" || chamado.sla?.status === filtroSla;
+      const correspondePrioridade =
+        filtroPrioridade === "Todas" || chamado.prioridade === filtroPrioridade;
 
-    return (
-      correspondeBusca &&
-      correspondeStatus &&
-      correspondePrioridade &&
-      correspondeCategoria &&
-      correspondeSla
-    );
-  });
+      const correspondeCategoria =
+        filtroCategoria === "Todas" || chamado.categoria === filtroCategoria;
+
+      const correspondeSla =
+        filtroSla === "Todos" || chamado.sla?.status === filtroSla;
+
+      return (
+        correspondeBusca &&
+        correspondeStatus &&
+        correspondePrioridade &&
+        correspondeCategoria &&
+        correspondeSla
+      );
+    });
+
+    return ordenarChamados(filtrados, ordenacao);
+  }, [
+    busca,
+    chamados,
+    filtroCategoria,
+    filtroPrioridade,
+    filtroSla,
+    filtroStatus,
+    ordenacao,
+  ]);
+
+  const totalPaginas = Math.max(
+    1,
+    Math.ceil(chamadosFiltrados.length / ITENS_POR_PAGINA),
+  );
+  const paginaSegura = Math.min(paginaAtual, totalPaginas);
+  const indiceInicial = (paginaSegura - 1) * ITENS_POR_PAGINA;
+  const chamadosDaPagina = chamadosFiltrados.slice(
+    indiceInicial,
+    indiceInicial + ITENS_POR_PAGINA,
+  );
+  const primeiroResultado = chamadosFiltrados.length ? indiceInicial + 1 : 0;
+  const ultimoResultado = Math.min(
+    indiceInicial + ITENS_POR_PAGINA,
+    chamadosFiltrados.length,
+  );
+
+  useEffect(() => {
+    setPaginaAtual(1);
+  }, [
+    busca,
+    filtroCategoria,
+    filtroPrioridade,
+    filtroSla,
+    filtroStatus,
+    ordenacao,
+  ]);
+
+  useEffect(() => {
+    if (paginaAtual > totalPaginas) setPaginaAtual(totalPaginas);
+  }, [paginaAtual, totalPaginas]);
 
   function limparFiltros() {
     setBusca("");
@@ -51,6 +169,8 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
     setFiltroPrioridade("Todas");
     setFiltroCategoria("Todas");
     setFiltroSla("Todos");
+    setOrdenacao("recentes");
+    setPaginaAtual(1);
   }
 
   function formatarId(id) {
@@ -134,11 +254,11 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
               onChange={(event) => setFiltroCategoria(event.target.value)}
             >
               <option value="Todas">Todas</option>
-              <option value="Hardware">Hardware</option>
-              <option value="Software">Software</option>
-              <option value="Rede">Rede</option>
-              <option value="Acesso">Acesso</option>
-              <option value="Outro">Outro</option>
+              {categorias.map((categoria) => (
+                <option key={categoria} value={categoria}>
+                  {categoria}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -159,6 +279,21 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
             </select>
           </div>
 
+          <div className="all-filter-field">
+            <label htmlFor="all-order-filter">Ordenar por</label>
+
+            <select
+              id="all-order-filter"
+              value={ordenacao}
+              onChange={(event) => setOrdenacao(event.target.value)}
+            >
+              <option value="recentes">Mais recentes</option>
+              <option value="antigos">Mais antigos</option>
+              <option value="prioridade">Maior prioridade</option>
+              <option value="sla">Maior risco de SLA</option>
+            </select>
+          </div>
+
           <button
             className="all-clear-button"
             type="button"
@@ -168,15 +303,24 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
           </button>
         </div>
 
-        <div className="all-tickets-result">
-          <strong>{chamadosFiltrados.length}</strong>{" "}
-          {chamadosFiltrados.length === 1
-            ? "chamado encontrado"
-            : "chamados encontrados"}
+        <div className="all-tickets-result" role="status" aria-live="polite">
+          {chamadosFiltrados.length ? (
+            <>
+              Exibindo <strong>{primeiroResultado}</strong>–
+              <strong>{ultimoResultado}</strong> de{" "}
+              <strong>{chamadosFiltrados.length}</strong>{" "}
+              {chamadosFiltrados.length === 1 ? "chamado" : "chamados"}
+            </>
+          ) : (
+            "Nenhum chamado encontrado"
+          )}
         </div>
 
         <div className="ticket-table-wrapper">
           <table className="ticket-table">
+            <caption className="all-tickets-caption">
+              Chamados encontrados conforme os filtros aplicados
+            </caption>
             <thead>
               <tr>
                 <th>ID</th>
@@ -191,8 +335,8 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
             </thead>
 
             <tbody>
-              {chamadosFiltrados.length > 0 ? (
-                chamadosFiltrados.map((chamado) => (
+              {chamadosDaPagina.length > 0 ? (
+                chamadosDaPagina.map((chamado) => (
                   <tr key={chamado.id}>
                     <td className="ticket-id">{formatarId(chamado.id)}</td>
 
@@ -213,15 +357,15 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
                     </td>
 
                     <td>
-                      {chamado.sla && <SlaBadge status={chamado.sla.status} />}
-                    </td>
-
-                    <td>
                       <span
                         className={`status ${classeChamado("status", chamado.status)}`}
                       >
                         {chamado.status}
                       </span>
+                    </td>
+
+                    <td>
+                      {chamado.sla && <SlaBadge status={chamado.sla.status} />}
                     </td>
 
                     <td>
@@ -245,6 +389,13 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
             </tbody>
           </table>
         </div>
+
+        <Paginacao
+          paginaAtual={paginaSegura}
+          totalPaginas={totalPaginas}
+          onChange={setPaginaAtual}
+          ariaLabel="Paginação da lista de chamados"
+        />
       </section>
     </section>
   );

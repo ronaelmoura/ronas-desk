@@ -34,7 +34,7 @@
   display: grid;
   grid-template-columns:
     minmax(240px, 2fr)
-    repeat(4, minmax(125px, 1fr))
+    repeat(5, minmax(125px, 1fr))
     auto;
   align-items: end;
   gap: 14px;
@@ -106,13 +106,25 @@
   color: #147ee8;
 }
 
+.all-tickets-caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .ticket-responsavel {
   color: #526279;
   font-weight: 700;
   white-space: nowrap;
 }
 
-@media (max-width: 1150px) {
+@media (max-width: 1350px) {
   .all-tickets-filters {
     grid-template-columns: repeat(2, 1fr);
   }

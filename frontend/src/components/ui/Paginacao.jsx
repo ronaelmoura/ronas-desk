@@ -1,15 +1,46 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import "./Paginacao.css";
 
-function Paginacao({ paginaAtual, totalPaginas, onChange }) {
+function montarItensPaginacao(paginaAtual, totalPaginas) {
+  if (totalPaginas <= 7) {
+    return Array.from({ length: totalPaginas }, (_, indice) => indice + 1);
+  }
+
+  const paginas = [
+    ...new Set([
+      1,
+      paginaAtual - 1,
+      paginaAtual,
+      paginaAtual + 1,
+      totalPaginas,
+    ]),
+  ]
+    .filter((pagina) => pagina >= 1 && pagina <= totalPaginas)
+    .sort((paginaA, paginaB) => paginaA - paginaB);
+
+  return paginas.flatMap((pagina, indice) => {
+    const paginaAnterior = paginas[indice - 1];
+
+    if (paginaAnterior && pagina - paginaAnterior > 1) {
+      return [`intervalo-${paginaAnterior}-${pagina}`, pagina];
+    }
+
+    return [pagina];
+  });
+}
+
+function Paginacao({
+  paginaAtual,
+  totalPaginas,
+  onChange,
+  ariaLabel = "Paginação",
+}) {
   if (totalPaginas <= 1) return null;
 
-  const paginas = Array.from(
-    { length: totalPaginas },
-    (_, indice) => indice + 1,
-  );
+  const itens = montarItensPaginacao(paginaAtual, totalPaginas);
 
   return (
-    <nav className="paginacao" aria-label="Paginação de usuários">
+    <nav className="paginacao" aria-label={ariaLabel}>
       <button
         type="button"
         aria-label="Página anterior"
@@ -20,18 +51,24 @@ function Paginacao({ paginaAtual, totalPaginas, onChange }) {
       </button>
 
       <div className="paginacao-numeros">
-        {paginas.map((pagina) => (
-          <button
-            key={pagina}
-            type="button"
-            className={pagina === paginaAtual ? "ativa" : ""}
-            aria-label={`Ir para a página ${pagina}`}
-            aria-current={pagina === paginaAtual ? "page" : undefined}
-            onClick={() => onChange(pagina)}
-          >
-            {pagina}
-          </button>
-        ))}
+        {itens.map((item) =>
+          typeof item === "string" ? (
+            <span key={item} className="paginacao-reticencias" aria-hidden="true">
+              …
+            </span>
+          ) : (
+            <button
+              key={item}
+              type="button"
+              className={item === paginaAtual ? "ativa" : ""}
+              aria-label={`Ir para a página ${item}`}
+              aria-current={item === paginaAtual ? "page" : undefined}
+              onClick={() => onChange(item)}
+            >
+              {item}
+            </button>
+          ),
+        )}
       </div>
 
       <button

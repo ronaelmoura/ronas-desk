@@ -155,3 +155,18 @@
 - Feedback visual reforçado nos estados de foco, passagem do mouse e seleção
 - Página atual informada a tecnologias assistivas com `aria-current`
 - Comportamento responsivo do menu preservado
+
+---
+
+## Sprint 16
+
+### ✅ Listagem profissional de chamados
+
+- Correção da ordem visual das colunas Status e SLA
+- Paginação dos chamados em grupos de dez registros
+- Ordenação por data, prioridade e risco de SLA
+- Retorno automático à primeira página após mudanças nos filtros
+- Categorias do filtro geradas a partir dos dados disponíveis
+- Contagem acessível do intervalo e do total de resultados
+- Componente de paginação desacoplado da tela de usuários e reutilizado
+- Reticências na paginação para evitar excesso de botões em listas extensas
