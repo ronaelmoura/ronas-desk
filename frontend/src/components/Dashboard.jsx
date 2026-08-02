@@ -574,7 +574,9 @@ function Dashboard({ onLogout }) {
 
               <div
                 className="summary-card"
-                aria-label="Tempo médio de primeira resposta ainda não disponível"
+                aria-label={`Tempo médio de primeira resposta: ${formatarTempoMedio(
+                  dashboard.tempo_medio_primeira_resposta_minutos,
+                )}`}
               >
                 <div className="summary-icon blue">◷</div>
 
@@ -585,7 +587,7 @@ function Dashboard({ onLogout }) {
                       dashboard.tempo_medio_primeira_resposta_minutos,
                     )}
                   </strong>
-                  <small>Aguardando registro da primeira resposta</small>
+                  <small>Primeiro comentário público da equipe</small>
                 </div>
               </div>
             </section>
@@ -681,6 +683,7 @@ function Dashboard({ onLogout }) {
           onClose={() => setChamadoSelecionado(null)}
           onUpdate={atualizarChamado}
           onDelete={excluirChamado}
+          onPublicResponse={carregarDashboardDaApi}
         />
       )}
     </div>

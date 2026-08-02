@@ -127,3 +127,18 @@
 - Atualização imediata do nome e avatar exibidos no painel
 - Limpeza automática do perfil legado salvo no `localStorage`
 - Testes de contrato, validação, persistência parametrizada e senha
+
+---
+
+## Sprint 14
+
+### ✅ Tempo real de primeira resposta
+
+- Migration idempotente `008_sprint_14_first_response_at.sql`
+- Backfill seguro a partir do primeiro comentário público existente
+- Registro transacional da primeira resposta junto com comentário e histórico
+- Comentários internos ignorados pelo indicador
+- Preservação do horário original em respostas públicas posteriores
+- Cálculo do tempo médio de primeira resposta no dashboard
+- Tratamento de chamados sem resposta e de datas inconsistentes
+- Testes da regra, da persistência parametrizada e do cálculo da média

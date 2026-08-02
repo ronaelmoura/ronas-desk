@@ -351,8 +351,7 @@ async function excluir(request, response) {
       await conexao.rollback()
       return response.status(409).json({
         status: 'erro',
-        message:
-          'Exclua os anexos do chamado antes de excluir o chamado.',
+        message: 'Exclua os anexos do chamado antes de excluir o chamado.',
       })
     }
 
