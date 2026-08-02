@@ -29,6 +29,7 @@ O projeto aplica separação de responsabilidades no backend, autenticação com
 - Cadastro, consulta e atualização de chamados
 - Associação de chamados a clientes e responsáveis
 - Controle de categoria, prioridade e status
+- Busca, filtros, ordenação e paginação de chamados
 - Comentários, linha do tempo e auditoria por chamado
 - Anexos privados de imagens e PDFs por chamado
 - Dashboard com indicadores de atendimento
@@ -504,6 +505,7 @@ npm run build
 - [x] Perfil real e troca segura de senha
 - [x] Tempo médio real de primeira resposta
 - [x] Navegação lateral padronizada e acessível
+- [x] Listagem de chamados com ordenação e paginação
 
 ## 👨‍💻 Autor
 

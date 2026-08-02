@@ -9,8 +9,6 @@
 .usuarios-acoes,
 .usuario-modal-header,
 .usuario-modal-actions,
-.paginacao,
-.paginacao-numeros,
 .toast {
   display: flex;
   align-items: center;
@@ -445,45 +443,6 @@
   background: linear-gradient(90deg, #edf1f5 25%, #f8fafc 50%, #edf1f5 75%);
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.25s infinite linear;
-}
-
-.paginacao {
-  justify-content: center;
-  gap: 8px;
-  margin-top: 20px;
-}
-
-.paginacao-numeros {
-  gap: 6px;
-}
-
-.paginacao button {
-  min-width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-  border: 1px solid #d5dfe9;
-  border-radius: 9px;
-  background: #fff;
-  color: #536176;
-  font: inherit;
-  font-size: 0.8rem;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 150ms ease;
-}
-
-.paginacao button:hover:not(:disabled),
-.paginacao button.ativa {
-  border-color: #147ee8;
-  background: #147ee8;
-  color: #fff;
-  transform: translateY(-1px);
-}
-
-.paginacao button:disabled {
-  cursor: not-allowed;
-  opacity: 0.42;
 }
 
 .usuario-modal-overlay {
