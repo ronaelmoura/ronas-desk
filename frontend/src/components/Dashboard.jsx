@@ -1,4 +1,13 @@
 import { useEffect, useState } from "react";
+import {
+  ChartNoAxesColumn,
+  CirclePlus,
+  House,
+  Settings,
+  Tickets,
+  UserCog,
+  UsersRound,
+} from "lucide-react";
 import "./Dashboard.css";
 import NewTicketModal from "./NewTicketModal";
 import TicketDetailsModal from "./TicketDetailsModal";
@@ -193,8 +202,9 @@ function Dashboard({ onLogout }) {
             }`}
             type="button"
             onClick={abrirVisaoGeral}
+            aria-current={paginaAtiva === "visao-geral" ? "page" : undefined}
           >
-            <span>⌂</span>
+            <House className="menu-item-icon" aria-hidden="true" />
             Visão geral
           </button>
 
@@ -204,8 +214,9 @@ function Dashboard({ onLogout }) {
             }`}
             type="button"
             onClick={() => setPaginaAtiva("clientes")}
+            aria-current={paginaAtiva === "clientes" ? "page" : undefined}
           >
-            <span>👥</span>
+            <UsersRound className="menu-item-icon" aria-hidden="true" />
             Clientes
           </button>
 
@@ -215,8 +226,9 @@ function Dashboard({ onLogout }) {
             }`}
             type="button"
             onClick={abrirChamados}
+            aria-current={paginaAtiva === "chamados" ? "page" : undefined}
           >
-            <span>▤</span>
+            <Tickets className="menu-item-icon" aria-hidden="true" />
             Chamados
           </button>
 
@@ -226,8 +238,9 @@ function Dashboard({ onLogout }) {
             }`}
             type="button"
             onClick={() => setPaginaAtiva("usuarios")}
+            aria-current={paginaAtiva === "usuarios" ? "page" : undefined}
           >
-            <span>♟</span>
+            <UserCog className="menu-item-icon" aria-hidden="true" />
             Usuários
           </button>
 
@@ -237,8 +250,12 @@ function Dashboard({ onLogout }) {
             }`}
             type="button"
             onClick={() => setPaginaAtiva("relatorios")}
+            aria-current={paginaAtiva === "relatorios" ? "page" : undefined}
           >
-            <span>▥</span>
+            <ChartNoAxesColumn
+              className="menu-item-icon"
+              aria-hidden="true"
+            />
             Relatórios
           </button>
 
@@ -247,7 +264,7 @@ function Dashboard({ onLogout }) {
             type="button"
             onClick={() => setModalAberto(true)}
           >
-            <span>＋</span>
+            <CirclePlus className="menu-item-icon" aria-hidden="true" />
             Novo chamado
           </button>
 
@@ -257,8 +274,9 @@ function Dashboard({ onLogout }) {
             }`}
             type="button"
             onClick={() => setPaginaAtiva("configuracoes")}
+            aria-current={paginaAtiva === "configuracoes" ? "page" : undefined}
           >
-            <span>⚙</span>
+            <Settings className="menu-item-icon" aria-hidden="true" />
             Configurações
           </button>
         </nav>
