@@ -1,3 +1,5 @@
+import "./TabelaSkeleton.css";
+
 function TabelaSkeleton({ colunas = 4, linhas = 5 }) {
   return (
     <tbody aria-label="Carregando dados">

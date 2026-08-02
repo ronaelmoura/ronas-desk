@@ -36,6 +36,7 @@ O projeto aplica separação de responsabilidades no backend, autenticação com
 - Registro da data real de resolução ou fechamento
 - Cálculo de SLA, tempo médio de resolução e primeira resposta
 - Exclusão lógica para preservação de dados
+- Feedback visual consistente, confirmações acessíveis e prevenção de ações duplicadas
 
 ## 🛠️ Tecnologias
 
@@ -506,6 +507,7 @@ npm run build
 - [x] Tempo médio real de primeira resposta
 - [x] Navegação lateral padronizada e acessível
 - [x] Listagem de chamados com ordenação e paginação
+- [x] Feedback consistente e operações mais seguras na interface
 
 ## 👨‍💻 Autor
 

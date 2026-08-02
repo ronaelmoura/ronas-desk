@@ -1,358 +1,414 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from "react";
 import {
-  listarClientesApi,
+  ArrowLeft,
+  ExternalLink,
+  Pencil,
+  UserMinus,
+  UserPlus,
+  UsersRound,
+} from "lucide-react";
+import {
+  atualizarClienteApi,
+  criarClienteApi,
   excluirClienteApi,
   listarChamadosClienteApi,
-} from '../../services/clientesApi'
-import { buscarChamadoApi } from '../../services/chamadosApi'
-import './clientes.css'
-import NovoClienteModal from './NovoClienteModal'
+  listarClientesApi,
+} from "../../services/clientesApi";
+import { buscarChamadoApi } from "../../services/chamadosApi";
+import ModalConfirmacao from "../../components/ui/ModalConfirmacao";
+import TabelaSkeleton from "../../components/ui/TabelaSkeleton";
+import Toast from "../../components/ui/Toast";
+import NovoClienteModal from "./NovoClienteModal";
+import "./clientes.css";
 
+function Clientes({ onSelectTicket }) {
+  const [clientes, setClientes] = useState([]);
+  const [carregandoClientes, setCarregandoClientes] = useState(true);
+  const [erroClientes, setErroClientes] = useState("");
+  const [modalAberto, setModalAberto] = useState(false);
+  const [clienteSelecionado, setClienteSelecionado] = useState(null);
+  const [clienteParaDesativar, setClienteParaDesativar] = useState(null);
+  const [clienteEmDetalhes, setClienteEmDetalhes] = useState(null);
+  const [chamadosCliente, setChamadosCliente] = useState([]);
+  const [carregandoHistorico, setCarregandoHistorico] = useState(false);
+  const [erroHistorico, setErroHistorico] = useState("");
+  const [abrindoChamadoId, setAbrindoChamadoId] = useState(null);
+  const [processandoClienteId, setProcessandoClienteId] = useState(null);
+  const [toast, setToast] = useState(null);
 
-function Clientes({ onSelectTicket }){
+  const fecharToast = useCallback(() => setToast(null), []);
 
-const [clientes,setClientes] = useState([])
-const [modalAberto,setModalAberto] = useState(false)
-const [clienteSelecionado,setClienteSelecionado] = useState(null)
-const [clienteEmDetalhes,setClienteEmDetalhes] = useState(null)
-const [chamadosCliente,setChamadosCliente] = useState([])
-const [carregandoHistorico,setCarregandoHistorico] = useState(false)
-const [erroHistorico,setErroHistorico] = useState('')
+  const carregarClientes = useCallback(async () => {
+    setCarregandoClientes(true);
+    setErroClientes("");
 
+    try {
+      setClientes(await listarClientesApi());
+    } catch (error) {
+      setErroClientes(error.message);
+    } finally {
+      setCarregandoClientes(false);
+    }
+  }, []);
 
-async function abrirDetalhesCliente(cliente){
+  useEffect(() => {
+    carregarClientes();
+  }, [carregarClientes]);
 
-  setClienteEmDetalhes(cliente)
-  setCarregandoHistorico(true)
-  setErroHistorico('')
+  async function abrirDetalhesCliente(cliente) {
+    setClienteEmDetalhes(cliente);
+    setCarregandoHistorico(true);
+    setErroHistorico("");
 
-  try{
-
-    const chamados = await listarChamadosClienteApi(cliente.id)
-    setChamadosCliente(chamados)
-
-  }catch(error){
-
-    setChamadosCliente([])
-    setErroHistorico(error.message)
-
-  }finally{
-
-    setCarregandoHistorico(false)
-
+    try {
+      setChamadosCliente(await listarChamadosClienteApi(cliente.id));
+    } catch (error) {
+      setChamadosCliente([]);
+      setErroHistorico(error.message);
+    } finally {
+      setCarregandoHistorico(false);
+    }
   }
 
-}
-
-
-async function abrirDetalhesChamado(id){
-
-  try{
-
-    const chamado = await buscarChamadoApi(id)
-    onSelectTicket(chamado)
-
-  }catch(error){
-
-    alert(error.message)
-
+  function fecharDetalhesCliente() {
+    setClienteEmDetalhes(null);
+    setChamadosCliente([]);
+    setErroHistorico("");
   }
 
-}
+  async function abrirDetalhesChamado(id) {
+    setAbrindoChamadoId(id);
 
-
-async function desativarCliente(id){
-
-  const confirmar = window.confirm(
-    'Deseja desativar este cliente?'
-  )
-
-  if(!confirmar){
-    return
+    try {
+      onSelectTicket(await buscarChamadoApi(id));
+    } catch (error) {
+      setToast({ tipo: "erro", mensagem: error.message });
+    } finally {
+      setAbrindoChamadoId(null);
+    }
   }
 
-  try{
-
-    await excluirClienteApi(id)
-
-    setClientes(clientes.map(cliente =>
-      cliente.id === id
-      ?
-      {
-        ...cliente,
-        ativo:false
-      }
-      :
-      cliente
-    ))
-
-  }catch(error){
-
-    alert(error.message)
-
+  function abrirCadastro() {
+    setClienteSelecionado(null);
+    setModalAberto(true);
   }
 
-}
+  function abrirEdicao(cliente) {
+    setClienteSelecionado(cliente);
+    setModalAberto(true);
+  }
 
-useEffect(()=>{
+  const fecharModalCliente = useCallback(() => {
+    setModalAberto(false);
+    setClienteSelecionado(null);
+  }, []);
 
-listarClientesApi()
-.then((dados)=>{
+  async function salvarCliente(dados) {
+    const editando = Boolean(clienteSelecionado);
 
-console.log('CLIENTES RECEBIDOS:', dados)
+    const clienteSalvo = editando
+      ? await atualizarClienteApi(clienteSelecionado.id, {
+          ...dados,
+          ativo: true,
+        })
+      : await criarClienteApi({ ...dados, ativo: true });
 
-setClientes(dados)
+    setClientes((atuais) => {
+      const existe = atuais.some((cliente) => cliente.id === clienteSalvo.id);
+      const atualizados = existe
+        ? atuais.map((cliente) =>
+            cliente.id === clienteSalvo.id ? clienteSalvo : cliente,
+          )
+        : [...atuais, clienteSalvo];
 
-})
-.catch((erro)=>{
+      return atualizados.sort((clienteA, clienteB) =>
+        clienteA.nome.localeCompare(clienteB.nome, "pt-BR"),
+      );
+    });
 
-console.error('ERRO CLIENTES:', erro)
+    fecharModalCliente();
+    setToast({
+      tipo: "sucesso",
+      mensagem: editando
+        ? "Cliente atualizado com sucesso."
+        : "Cliente criado com sucesso.",
+    });
+  }
 
-})
+  async function confirmarDesativacao() {
+    if (!clienteParaDesativar) return;
 
-},[])
+    setProcessandoClienteId(clienteParaDesativar.id);
 
+    try {
+      await excluirClienteApi(clienteParaDesativar.id);
+      setClientes((atuais) =>
+        atuais.map((cliente) =>
+          cliente.id === clienteParaDesativar.id
+            ? { ...cliente, ativo: false }
+            : cliente,
+        ),
+      );
+      setClienteParaDesativar(null);
+      setToast({
+        tipo: "sucesso",
+        mensagem: "Cliente desativado com sucesso.",
+      });
+    } catch (error) {
+      setToast({ tipo: "erro", mensagem: error.message });
+    } finally {
+      setProcessandoClienteId(null);
+    }
+  }
 
-return (
+  return (
+    <section className="clientes-page">
+      {clienteEmDetalhes ? (
+        <>
+          <button
+            className="btn-voltar-clientes"
+            type="button"
+            onClick={fecharDetalhesCliente}
+          >
+            <ArrowLeft size={18} aria-hidden="true" />
+            Voltar para clientes
+          </button>
 
-<section className="clientes-page">
+          <div className="cliente-detalhes-card">
+            <div>
+              <span>Cliente</span>
+              <h1>{clienteEmDetalhes.nome}</h1>
+              <p>{clienteEmDetalhes.email}</p>
+            </div>
 
-{clienteEmDetalhes ? (
+            <dl className="cliente-detalhes-dados">
+              <div>
+                <dt>Empresa</dt>
+                <dd>{clienteEmDetalhes.empresa || "Não informada"}</dd>
+              </div>
+              <div>
+                <dt>Telefone</dt>
+                <dd>{clienteEmDetalhes.telefone || "Não informado"}</dd>
+              </div>
+            </dl>
+          </div>
 
-<>
+          <div className="clientes-card historico-card">
+            <div className="historico-header">
+              <div>
+                <h2>Histórico de chamados</h2>
+                <p>Solicitações vinculadas a este cliente.</p>
+              </div>
+            </div>
 
-<button
-  className="btn-voltar-clientes"
-  type="button"
-  onClick={() => setClienteEmDetalhes(null)}
->
-  ← Voltar para clientes
-</button>
+            {carregandoHistorico ? (
+              <p className="historico-mensagem" role="status">
+                Carregando chamados...
+              </p>
+            ) : erroHistorico ? (
+              <div className="historico-mensagem clientes-feedback" role="alert">
+                <p>{erroHistorico}</p>
+                <button
+                  type="button"
+                  className="btn-tentar-novamente"
+                  onClick={() => abrirDetalhesCliente(clienteEmDetalhes)}
+                >
+                  Tentar novamente
+                </button>
+              </div>
+            ) : chamadosCliente.length === 0 ? (
+              <div className="clientes-empty-state compacto">
+                <UsersRound size={32} aria-hidden="true" />
+                <strong>Nenhum chamado registrado</strong>
+                <p>Este cliente ainda não possui solicitações.</p>
+              </div>
+            ) : (
+              <div className="historico-tabela-wrapper">
+                <table className="clientes-table historico-table">
+                  <caption className="clientes-sr-only">
+                    Histórico de chamados do cliente {clienteEmDetalhes.nome}
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th>Título</th>
+                      <th>Categoria</th>
+                      <th>Prioridade</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {chamadosCliente.map((chamado) => (
+                      <tr key={chamado.id}>
+                        <td>
+                          <button
+                            className="historico-link"
+                            type="button"
+                            disabled={abrindoChamadoId === chamado.id}
+                            onClick={() => abrirDetalhesChamado(chamado.id)}
+                          >
+                            {chamado.titulo}
+                            <ExternalLink size={15} aria-hidden="true" />
+                          </button>
+                        </td>
+                        <td>{chamado.categoria}</td>
+                        <td>{chamado.prioridade}</td>
+                        <td>{chamado.status}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          <header className="clientes-header">
+            <div>
+              <p>Relacionamento</p>
+              <h1>Clientes</h1>
+              <span>Gerencie clientes e acompanhe seus chamados.</span>
+            </div>
 
-<div className="cliente-detalhes-card">
-  <div>
-    <span>Cliente</span>
-    <h1>{clienteEmDetalhes.nome}</h1>
-    <p>{clienteEmDetalhes.email}</p>
-  </div>
-
-  <dl className="cliente-detalhes-dados">
-    <div>
-      <dt>Empresa</dt>
-      <dd>{clienteEmDetalhes.empresa || 'Não informada'}</dd>
-    </div>
-    <div>
-      <dt>Telefone</dt>
-      <dd>{clienteEmDetalhes.telefone || 'Não informado'}</dd>
-    </div>
-  </dl>
-</div>
-
-<div className="clientes-card historico-card">
-  <div className="historico-header">
-    <div>
-      <h2>Histórico de Chamados</h2>
-      <p>Solicitações vinculadas a este cliente.</p>
-    </div>
-  </div>
-
-  {carregandoHistorico ? (
-    <p className="historico-mensagem">Carregando chamados...</p>
-  ) : erroHistorico ? (
-    <div className="historico-mensagem">
-      <p>{erroHistorico}</p>
-      <button
-        type="button"
-        className="btn-tentar-novamente"
-        onClick={() => abrirDetalhesCliente(clienteEmDetalhes)}
-      >
-        Tentar novamente
-      </button>
-    </div>
-  ) : chamadosCliente.length === 0 ? (
-    <p className="historico-mensagem">
-      Nenhum chamado registrado para este cliente.
-    </p>
-  ) : (
-    <div className="historico-tabela-wrapper">
-      <table className="clientes-table historico-table">
-        <thead>
-          <tr>
-            <th>Título</th>
-            <th>Categoria</th>
-            <th>Prioridade</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {chamadosCliente.map((chamado) => (
-            <tr
-              key={chamado.id}
-              className="historico-linha"
-              onClick={() => abrirDetalhesChamado(chamado.id)}
+            <button
+              className="btn-novo-cliente"
+              type="button"
+              onClick={abrirCadastro}
             >
-              <td className="historico-titulo">{chamado.titulo}</td>
-              <td>{chamado.categoria}</td>
-              <td>{chamado.prioridade}</td>
-              <td>{chamado.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )}
-</div>
+              <UserPlus size={18} aria-hidden="true" />
+              Novo cliente
+            </button>
+          </header>
 
-</>
+          <div className="clientes-card">
+            {erroClientes ? (
+              <div className="clientes-feedback" role="alert">
+                <strong>Não foi possível carregar os clientes</strong>
+                <p>{erroClientes}</p>
+                <button type="button" onClick={carregarClientes}>
+                  Tentar novamente
+                </button>
+              </div>
+            ) : !carregandoClientes && clientes.length === 0 ? (
+              <div className="clientes-empty-state">
+                <UsersRound size={38} aria-hidden="true" />
+                <strong>Nenhum cliente cadastrado</strong>
+                <p>Cadastre o primeiro cliente para começar a abrir chamados.</p>
+                <button type="button" onClick={abrirCadastro}>
+                  <UserPlus size={18} aria-hidden="true" />
+                  Cadastrar cliente
+                </button>
+              </div>
+            ) : (
+              <div className="clientes-tabela-wrapper">
+                <table
+                  className="clientes-table"
+                  aria-busy={carregandoClientes}
+                >
+                  <caption className="clientes-sr-only">
+                    Clientes cadastrados no Ronas Desk
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Nome</th>
+                      <th>Email</th>
+                      <th>Telefone</th>
+                      <th>Empresa</th>
+                      <th>Status</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
 
-) : (
+                  {carregandoClientes ? (
+                    <TabelaSkeleton colunas={7} linhas={5} />
+                  ) : (
+                    <tbody>
+                      {clientes.map((cliente) => (
+                        <tr key={cliente.id}>
+                          <td>#{String(cliente.id).padStart(3, "0")}</td>
+                          <td>
+                            <button
+                              className="cliente-link"
+                              type="button"
+                              onClick={() => abrirDetalhesCliente(cliente)}
+                            >
+                              {cliente.nome}
+                            </button>
+                          </td>
+                          <td>{cliente.email}</td>
+                          <td>{cliente.telefone || "—"}</td>
+                          <td>{cliente.empresa || "—"}</td>
+                          <td>
+                            <span
+                              className={`cliente-status ${cliente.ativo ? "ativo" : "inativo"}`}
+                            >
+                              {cliente.ativo ? "Ativo" : "Inativo"}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="clientes-acoes">
+                              <button
+                                className="btn-editar"
+                                type="button"
+                                aria-label={`Editar ${cliente.nome}`}
+                                title="Editar"
+                                onClick={() => abrirEdicao(cliente)}
+                              >
+                                <Pencil size={16} aria-hidden="true" />
+                              </button>
+                              <button
+                                className="btn-desativar"
+                                type="button"
+                                aria-label={`Desativar ${cliente.nome}`}
+                                title={
+                                  cliente.ativo
+                                    ? "Desativar"
+                                    : "Cliente já inativo"
+                                }
+                                disabled={
+                                  !cliente.ativo ||
+                                  processandoClienteId === cliente.id
+                                }
+                                onClick={() => setClienteParaDesativar(cliente)}
+                              >
+                                <UserMinus size={16} aria-hidden="true" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  )}
+                </table>
+              </div>
+            )}
+          </div>
+        </>
+      )}
 
-<>
+      {modalAberto && (
+        <NovoClienteModal
+          cliente={clienteSelecionado}
+          fechar={fecharModalCliente}
+          onSave={salvarCliente}
+        />
+      )}
 
-<div className="clientes-header">
+      <ModalConfirmacao
+        aberto={Boolean(clienteParaDesativar)}
+        titulo="Desativar cliente?"
+        mensagem={`${clienteParaDesativar?.nome ?? "Este cliente"} deixará de aparecer nas opções para novos chamados. O histórico será preservado.`}
+        confirmando={processandoClienteId === clienteParaDesativar?.id}
+        onCancel={() => setClienteParaDesativar(null)}
+        onConfirm={confirmarDesativacao}
+        rotuloConfirmar="Desativar cliente"
+        confirmandoTexto="Desativando..."
+      />
 
-<div>
-
-<h1>Clientes</h1>
-
-<p>
-Gerenciamento de clientes do Ronas Desk
-</p>
-
-</div>
-
-
-<button
-  className="btn-novo-cliente"
-  onClick={() => setModalAberto(true)}
->
-
-+ Novo Cliente
-
-</button>
-
-
-</div>
-
-
-<div className="clientes-card">
-
-<table className="clientes-table">
-
-<thead>
-
-<tr>
-<th>ID</th>
-<th>Nome</th>
-<th>Email</th>
-<th>Telefone</th>
-<th>Empresa</th>
-<th>Status</th>
-<th>Ações</th>
-</tr>
-
-</thead>
-
-
-<tbody>
-
-{
-clientes.map(cliente=>(
-
-<tr key={cliente.id}>
-
-<td>{cliente.id}</td>
-<td>
-  <button
-    className="cliente-link"
-    type="button"
-    onClick={() => abrirDetalhesCliente(cliente)}
-  >
-    {cliente.nome}
-  </button>
-</td>
-<td>{cliente.email}</td>
-<td>{cliente.telefone}</td>
-<td>{cliente.empresa}</td>
-<td>
-  {cliente.ativo ? (
-    <span className="status ativo">
-      Ativo
-    </span>
-  ) : (
-    <span className="status inativo">
-      Inativo
-    </span>
-  )}
-</td>
-<td>
-
-<button
- className="btn-editar"
- onClick={() => {
-   setClienteSelecionado(cliente)
-   setModalAberto(true)
- }}
->
-✏️
-</button>
-
-
-<button
- className="btn-excluir"
- onClick={() => desativarCliente(cliente.id)}
->
-🗑️
-</button>
-
-</td>
-</tr>
-
-))
+      <Toast toast={toast} onClose={fecharToast} />
+    </section>
+  );
 }
 
-</tbody>
-
-</table>
-
-</div>
-
-</>
-
-)}
-
-{
-modalAberto && (
-
-<NovoClienteModal
-
-cliente={clienteSelecionado}
-
-fechar={()=>{
- setModalAberto(false)
- setClienteSelecionado(null)
-}}
-
-atualizar={(novo)=>{
-
-setClientes(clientes.map(cliente =>
- cliente.id === novo.id
- ? novo
- : cliente
-))
-
-}}
-
-/>
-
-)
-}
-
-</section>
-
-)
-
-}
-
-
-export default Clientes
+export default Clientes;

@@ -8,8 +8,7 @@
 .usuario-identidade,
 .usuarios-acoes,
 .usuario-modal-header,
-.usuario-modal-actions,
-.toast {
+.usuario-modal-actions {
   display: flex;
   align-items: center;
 }
@@ -42,8 +41,7 @@
 }
 
 .botao-primario,
-.botao-secundario,
-.botao-perigo {
+.botao-secundario {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -74,15 +72,8 @@
   color: #415269;
 }
 
-.botao-perigo {
-  border: 0;
-  background: #c83838;
-  color: #fff;
-}
-
 .botao-primario:hover,
-.botao-secundario:hover,
-.botao-perigo:hover {
+.botao-secundario:hover {
   transform: translateY(-2px);
 }
 
@@ -90,8 +81,7 @@
   box-shadow: 0 14px 30px rgba(20, 126, 232, 0.3);
 }
 
-.botao-primario:disabled,
-.botao-perigo:disabled {
+.botao-primario:disabled {
   cursor: wait;
   opacity: 0.62;
   transform: none;
@@ -435,16 +425,6 @@
   line-height: 1.55;
 }
 
-.skeleton-bloco {
-  display: block;
-  width: min(100%, 180px);
-  height: 18px;
-  border-radius: 7px;
-  background: linear-gradient(90deg, #edf1f5 25%, #f8fafc 50%, #edf1f5 75%);
-  background-size: 200% 100%;
-  animation: skeleton-shimmer 1.25s infinite linear;
-}
-
 .usuario-modal-overlay {
   position: fixed;
   inset: 0;
@@ -457,8 +437,7 @@
   animation: overlay-in 180ms ease-out;
 }
 
-.usuario-modal,
-.confirmacao-modal {
+.usuario-modal {
   position: relative;
   width: min(100%, 520px);
   max-height: calc(100vh - 40px);
@@ -468,11 +447,6 @@
   background: #fff;
   box-shadow: 0 24px 70px rgba(5, 15, 30, 0.3);
   animation: modal-in 200ms ease-out;
-}
-
-.confirmacao-modal {
-  width: min(100%, 430px);
-  text-align: center;
 }
 
 .usuario-modal-header {
@@ -488,14 +462,12 @@
   text-transform: uppercase;
 }
 
-.usuario-modal-header h2,
-.confirmacao-modal h2 {
+.usuario-modal-header h2 {
   margin: 5px 0 0;
   color: #101b2d;
 }
 
-.usuario-modal-header > button,
-.modal-fechar {
+.usuario-modal-header > button {
   width: 36px;
   height: 36px;
   display: grid;
@@ -507,8 +479,7 @@
   cursor: pointer;
 }
 
-.usuario-modal-header > button:hover,
-.modal-fechar:hover {
+.usuario-modal-header > button:hover {
   background: #edf2f7;
   color: #263448;
 }
@@ -536,77 +507,6 @@
   margin-top: 12px;
 }
 
-.confirmacao-icone {
-  width: 58px;
-  height: 58px;
-  display: grid;
-  place-items: center;
-  margin: 0 auto 14px;
-  border-radius: 18px;
-  background: #fff0f0;
-  color: #bd3232;
-}
-
-.confirmacao-modal p {
-  margin: 10px 0 22px;
-  color: #65748a;
-  line-height: 1.55;
-}
-
-.modal-fechar {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-}
-
-.toast {
-  position: fixed;
-  right: 24px;
-  bottom: 24px;
-  z-index: 1200;
-  gap: 10px;
-  width: min(calc(100vw - 32px), 390px);
-  padding: 14px 14px 14px 16px;
-  border: 1px solid;
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 18px 50px rgba(12, 28, 49, 0.2);
-  animation: toast-in 220ms ease-out;
-}
-
-.toast.sucesso {
-  border-color: #b9e3c9;
-  color: #176d3a;
-}
-
-.toast.erro {
-  border-color: #efbaba;
-  color: #a12b2b;
-}
-
-.toast span {
-  flex: 1;
-  color: #263448;
-  font-size: 0.86rem;
-  font-weight: 700;
-}
-
-.toast button {
-  width: 30px;
-  height: 30px;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: currentColor;
-  cursor: pointer;
-}
-
-.toast button:hover {
-  background: #f1f4f7;
-}
-
 .sr-only {
   position: absolute;
   width: 1px;
@@ -626,12 +526,6 @@ select:focus-visible {
   outline-offset: 2px;
 }
 
-@keyframes skeleton-shimmer {
-  to {
-    background-position: -200% 0;
-  }
-}
-
 @keyframes overlay-in {
   from {
     opacity: 0;
@@ -642,13 +536,6 @@ select:focus-visible {
   from {
     opacity: 0;
     transform: translateY(12px) scale(0.98);
-  }
-}
-
-@keyframes toast-in {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
   }
 }
 
@@ -742,10 +629,6 @@ select:focus-visible {
     flex-direction: column-reverse;
   }
 
-  .toast {
-    right: 16px;
-    bottom: 16px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

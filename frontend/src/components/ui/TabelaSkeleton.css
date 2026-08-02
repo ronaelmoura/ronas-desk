@@ -1,0 +1,21 @@
+.skeleton-bloco {
+  display: block;
+  width: min(100%, 180px);
+  height: 18px;
+  border-radius: 7px;
+  background: linear-gradient(90deg, #edf1f5 25%, #f8fafc 50%, #edf1f5 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.25s infinite linear;
+}
+
+@keyframes skeleton-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-bloco {
+    animation: none;
+  }
+}

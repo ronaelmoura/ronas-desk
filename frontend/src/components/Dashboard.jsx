@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ChartNoAxesColumn,
   CirclePlus,
@@ -16,6 +16,7 @@ import ProfileSettings from "./ProfileSettings";
 import Clientes from "../pages/Clientes/clientes";
 import Usuarios from "../pages/Usuarios/Usuarios";
 import Relatorios from "../pages/Relatorios/Relatorios";
+import Toast from "./ui/Toast";
 import useAuth from "../hooks/useAuth";
 import {
   criarChamadoApi,
@@ -84,6 +85,9 @@ function Dashboard({ onLogout }) {
   const [modalAberto, setModalAberto] = useState(false);
   const [chamadoSelecionado, setChamadoSelecionado] = useState(null);
   const [paginaAtiva, setPaginaAtiva] = useState("visao-geral");
+  const [toast, setToast] = useState(null);
+
+  const fecharToast = useCallback(() => setToast(null), []);
 
   useEffect(() => {
     carregarDashboardDaApi();
@@ -128,51 +132,45 @@ function Dashboard({ onLogout }) {
   }
 
   async function criarChamado(dados) {
-    try {
-      const novoChamado = await criarChamadoApi(dados);
+    const novoChamado = await criarChamadoApi(dados);
 
-      setChamados((chamadosAtuais) => [novoChamado, ...chamadosAtuais]);
+    setChamados((chamadosAtuais) => [novoChamado, ...chamadosAtuais]);
 
-      setModalAberto(false);
-      carregarDashboardDaApi();
-    } catch (error) {
-      window.alert(error.message);
-    }
+    setModalAberto(false);
+    carregarDashboardDaApi();
+    setToast({ tipo: "sucesso", mensagem: "Chamado aberto com sucesso." });
   }
 
   async function atualizarChamado(chamadoAtualizado) {
-    try {
-      const chamadoSalvo = await atualizarChamadoApi(
-        chamadoAtualizado.id,
-        chamadoAtualizado,
-      );
+    const chamadoSalvo = await atualizarChamadoApi(
+      chamadoAtualizado.id,
+      chamadoAtualizado,
+    );
 
-      setChamados((chamadosAtuais) =>
-        chamadosAtuais.map((chamado) =>
-          chamado.id === chamadoSalvo.id ? chamadoSalvo : chamado,
-        ),
-      );
+    setChamados((chamadosAtuais) =>
+      chamadosAtuais.map((chamado) =>
+        chamado.id === chamadoSalvo.id ? chamadoSalvo : chamado,
+      ),
+    );
 
-      setChamadoSelecionado(null);
-      carregarDashboardDaApi();
-    } catch (error) {
-      window.alert(error.message);
-    }
+    setChamadoSelecionado(null);
+    carregarDashboardDaApi();
+    setToast({
+      tipo: "sucesso",
+      mensagem: "Chamado atualizado com sucesso.",
+    });
   }
 
   async function excluirChamado(id) {
-    try {
-      await excluirChamadoApi(id);
+    await excluirChamadoApi(id);
 
-      setChamados((chamadosAtuais) =>
-        chamadosAtuais.filter((chamado) => chamado.id !== id),
-      );
+    setChamados((chamadosAtuais) =>
+      chamadosAtuais.filter((chamado) => chamado.id !== id),
+    );
 
-      setChamadoSelecionado(null);
-      carregarDashboardDaApi();
-    } catch (error) {
-      window.alert(error.message);
-    }
+    setChamadoSelecionado(null);
+    carregarDashboardDaApi();
+    setToast({ tipo: "sucesso", mensagem: "Chamado excluído com sucesso." });
   }
 
   function formatarId(id) {
@@ -704,6 +702,8 @@ function Dashboard({ onLogout }) {
           onPublicResponse={carregarDashboardDaApi}
         />
       )}
+
+      <Toast toast={toast} onClose={fecharToast} />
     </div>
   );
 }

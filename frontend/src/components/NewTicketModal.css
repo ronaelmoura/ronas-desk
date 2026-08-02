@@ -50,8 +50,10 @@
 }
 
 .close-modal-button {
+  display: grid;
   min-width: 40px;
   height: 40px;
+  place-items: center;
   border: 1px solid #e0e6ee;
   border-radius: 11px;
   background: #f7f9fc;
@@ -184,4 +186,18 @@
   .save-ticket-button {
     width: 100%;
   }
+}
+
+.close-modal-button:disabled,
+.cancel-ticket-button:disabled,
+.save-ticket-button:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+.close-modal-button:focus-visible,
+.cancel-ticket-button:focus-visible,
+.save-ticket-button:focus-visible {
+  outline: 3px solid rgba(20, 126, 232, 0.28);
+  outline-offset: 2px;
 }

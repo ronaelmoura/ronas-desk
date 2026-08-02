@@ -170,3 +170,18 @@
 - Contagem acessível do intervalo e do total de resultados
 - Componente de paginação desacoplado da tela de usuários e reutilizado
 - Reticências na paginação para evitar excesso de botões em listas extensas
+
+---
+
+## Sprint 17
+
+### ✅ Feedback consistente e operações mais seguras
+
+- Notificações de sucesso e erro padronizadas sem caixas nativas do navegador
+- Confirmação reutilizável e acessível para ações destrutivas ou sensíveis
+- Estados claros de carregamento, erro e lista vazia na gestão de clientes
+- Bloqueio de envios repetidos ao criar, editar ou excluir registros
+- Retorno visual durante abertura, atualização e exclusão de chamados
+- Foco controlado, navegação por teclado e fechamento por `Escape` nos modais
+- Estilos de toast, confirmação e skeleton desacoplados da página de usuários
+- Correção da inclusão imediata de novos clientes na listagem
