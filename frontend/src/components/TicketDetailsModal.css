@@ -50,8 +50,10 @@
 }
 
 .details-close-button {
+  display: grid;
   min-width: 40px;
   height: 40px;
+  place-items: center;
   border: 1px solid #e0e6ee;
   border-radius: 11px;
   background: #f7f9fc;
@@ -183,6 +185,16 @@
   font: inherit;
   font-weight: 800;
   cursor: pointer;
+}
+
+.details-close-button:disabled,
+.details-cancel-button:disabled,
+.details-save-button:disabled,
+.details-delete-button:disabled,
+.delete-cancel-button:disabled,
+.delete-confirm-button:disabled {
+  cursor: wait;
+  opacity: 0.58;
 }
 
 .details-cancel-button {

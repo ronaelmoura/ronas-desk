@@ -397,6 +397,8 @@ function Usuarios({ administrador }) {
         confirmando={processandoId === usuarioParaExcluir?.id}
         onCancel={() => setUsuarioParaExcluir(null)}
         onConfirm={confirmarExclusao}
+        rotuloConfirmar="Excluir usuário"
+        confirmandoTexto="Excluindo..."
       />
 
       <Toast toast={toast} onClose={fecharToast} />

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Download,
   FileText,
@@ -73,6 +73,67 @@ function TicketDetailsModal({
   const [excluindoAnexoId, setExcluindoAnexoId] = useState(null);
   const [erro, setErro] = useState("");
   const [confirmandoExclusao, setConfirmandoExclusao] = useState(false);
+  const [salvando, setSalvando] = useState(false);
+  const [excluindoChamado, setExcluindoChamado] = useState(false);
+  const modalRef = useRef(null);
+  const onCloseRef = useRef(onClose);
+  const operacaoEmAndamentoRef = useRef(false);
+  const confirmandoExclusaoRef = useRef(false);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
+    operacaoEmAndamentoRef.current = salvando || excluindoChamado;
+  }, [salvando, excluindoChamado]);
+
+  useEffect(() => {
+    confirmandoExclusaoRef.current = confirmandoExclusao;
+  }, [confirmandoExclusao]);
+
+  useEffect(() => {
+    const elementoAnterior = document.activeElement;
+    modalRef.current?.querySelector("button")?.focus();
+
+    function controlarTeclado(event) {
+      if (event.key === "Escape") {
+        if (operacaoEmAndamentoRef.current) return;
+
+        if (confirmandoExclusaoRef.current) {
+          setConfirmandoExclusao(false);
+        } else {
+          onCloseRef.current();
+        }
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+
+      const elementos = [
+        ...(modalRef.current?.querySelectorAll(
+          "button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled)",
+        ) ?? []),
+      ];
+      const primeiro = elementos[0];
+      const ultimo = elementos.at(-1);
+
+      if (event.shiftKey && document.activeElement === primeiro) {
+        event.preventDefault();
+        ultimo?.focus();
+      } else if (!event.shiftKey && document.activeElement === ultimo) {
+        event.preventDefault();
+        primeiro?.focus();
+      }
+    }
+
+    document.addEventListener("keydown", controlarTeclado);
+
+    return () => {
+      document.removeEventListener("keydown", controlarTeclado);
+      elementoAnterior?.focus?.();
+    };
+  }, []);
 
   useEffect(() => {
     async function carregarDados() {
@@ -103,8 +164,9 @@ function TicketDetailsModal({
     return `#${String(id).padStart(3, "0")}`;
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
+    if (salvando) return;
 
     if (
       !titulo.trim() ||
@@ -117,15 +179,37 @@ function TicketDetailsModal({
       return;
     }
 
-    onUpdate({
-      ...chamado,
-      titulo: titulo.trim(),
-      descricao: descricao.trim(),
-      categoria,
-      prioridade,
-      status,
-      responsavel_id: responsavelId ? Number(responsavelId) : null,
-    });
+    setSalvando(true);
+    setErro("");
+
+    try {
+      await onUpdate({
+        ...chamado,
+        titulo: titulo.trim(),
+        descricao: descricao.trim(),
+        categoria,
+        prioridade,
+        status,
+        responsavel_id: responsavelId ? Number(responsavelId) : null,
+      });
+    } catch (error) {
+      setErro(error.message);
+      setSalvando(false);
+    }
+  }
+
+  async function excluirChamado() {
+    if (excluindoChamado) return;
+
+    setExcluindoChamado(true);
+    setErro("");
+
+    try {
+      await onDelete(chamado.id);
+    } catch (error) {
+      setErro(error.message);
+      setExcluindoChamado(false);
+    }
   }
 
   async function adicionarComentario(event) {
@@ -222,12 +306,25 @@ function TicketDetailsModal({
   }
 
   return (
-    <div className="details-backdrop" onMouseDown={onClose}>
+    <div
+      className="details-backdrop"
+      onMouseDown={(event) => {
+        if (
+          event.target === event.currentTarget &&
+          !salvando &&
+          !excluindoChamado
+        ) {
+          onClose();
+        }
+      }}
+    >
       <section
         className="ticket-details-modal"
+        ref={modalRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="ticket-details-title"
+        aria-busy={salvando || excluindoChamado}
         onMouseDown={(event) => event.stopPropagation()}
       >
         <header className="ticket-details-header">
@@ -243,6 +340,7 @@ function TicketDetailsModal({
             className="details-close-button"
             type="button"
             onClick={onClose}
+            disabled={salvando || excluindoChamado}
             aria-label="Fechar detalhes"
           >
             <X size={20} aria-hidden="true" />
@@ -403,6 +501,7 @@ function TicketDetailsModal({
                   <button
                     className="delete-cancel-button"
                     type="button"
+                    disabled={excluindoChamado}
                     onClick={() => setConfirmandoExclusao(false)}
                   >
                     Não, cancelar
@@ -410,9 +509,10 @@ function TicketDetailsModal({
                   <button
                     className="delete-confirm-button"
                     type="button"
-                    onClick={() => onDelete(chamado.id)}
+                    disabled={excluindoChamado}
+                    onClick={excluirChamado}
                   >
-                    Sim, excluir
+                    {excluindoChamado ? "Excluindo..." : "Sim, excluir"}
                   </button>
                 </div>
               </div>
@@ -421,6 +521,7 @@ function TicketDetailsModal({
                 <button
                   className="details-delete-button"
                   type="button"
+                  disabled={salvando}
                   onClick={() => setConfirmandoExclusao(true)}
                 >
                   Excluir
@@ -429,6 +530,7 @@ function TicketDetailsModal({
                   <button
                     className="details-cancel-button"
                     type="button"
+                    disabled={salvando}
                     onClick={onClose}
                   >
                     Cancelar
@@ -436,9 +538,9 @@ function TicketDetailsModal({
                   <button
                     className="details-save-button"
                     type="submit"
-                    disabled={carregandoUsuarios}
+                    disabled={carregandoUsuarios || salvando}
                   >
-                    Salvar alterações
+                    {salvando ? "Salvando..." : "Salvar alterações"}
                   </button>
                 </div>
               </div>

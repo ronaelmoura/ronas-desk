@@ -1,0 +1,149 @@
+.confirmacao-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(8, 21, 37, 0.68);
+  backdrop-filter: blur(4px);
+  animation: confirmacao-overlay-in 180ms ease-out;
+}
+
+.confirmacao-modal {
+  position: relative;
+  width: min(100%, 430px);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: 26px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(5, 15, 30, 0.3);
+  text-align: center;
+  animation: confirmacao-modal-in 200ms ease-out;
+}
+
+.confirmacao-modal h2 {
+  margin: 5px 0 0;
+  color: #101b2d;
+}
+
+.confirmacao-modal p {
+  margin: 10px 0 22px;
+  color: #65748a;
+  line-height: 1.55;
+}
+
+.confirmacao-icone {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 14px;
+  border-radius: 18px;
+  background: #fff0f0;
+  color: #bd3232;
+}
+
+.confirmacao-fechar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #65748a;
+  cursor: pointer;
+}
+
+.confirmacao-fechar:hover:not(:disabled) {
+  background: #edf2f7;
+  color: #263448;
+}
+
+.confirmacao-acoes {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.confirmacao-cancelar,
+.confirmacao-confirmar {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 18px;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    transform 150ms ease,
+    opacity 150ms ease;
+}
+
+.confirmacao-cancelar {
+  border: 1px solid #cdd7e3;
+  background: #fff;
+  color: #415269;
+}
+
+.confirmacao-confirmar {
+  border: 0;
+  background: #c83838;
+  color: #fff;
+}
+
+.confirmacao-cancelar:hover:not(:disabled),
+.confirmacao-confirmar:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.confirmacao-fechar:focus-visible,
+.confirmacao-cancelar:focus-visible,
+.confirmacao-confirmar:focus-visible {
+  outline: 3px solid rgba(20, 126, 232, 0.28);
+  outline-offset: 2px;
+}
+
+.confirmacao-fechar:disabled,
+.confirmacao-cancelar:disabled,
+.confirmacao-confirmar:disabled {
+  cursor: wait;
+  opacity: 0.62;
+  transform: none;
+}
+
+@keyframes confirmacao-overlay-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes confirmacao-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+
+@media (max-width: 600px) {
+  .confirmacao-acoes {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confirmacao-overlay,
+  .confirmacao-modal {
+    animation: none;
+  }
+}
