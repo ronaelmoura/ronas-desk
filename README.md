@@ -503,6 +503,7 @@ npm run build
 - [x] Segurança HTTP e integração contínua
 - [x] Perfil real e troca segura de senha
 - [x] Tempo médio real de primeira resposta
+- [x] Navegação lateral padronizada e acessível
 
 ## 👨‍💻 Autor
 

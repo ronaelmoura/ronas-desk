@@ -142,3 +142,16 @@
 - Cálculo do tempo médio de primeira resposta no dashboard
 - Tratamento de chamados sem resposta e de datas inconsistentes
 - Testes da regra, da persistência parametrizada e do cálculo da média
+
+---
+
+## Sprint 15
+
+### ✅ Navegação lateral mais clara e acessível
+
+- Ícones do menu substituídos por componentes vetoriais do Lucide
+- Tamanho, traço, cor e alinhamento padronizados em todos os itens
+- Indicador lateral para destacar a página selecionada
+- Feedback visual reforçado nos estados de foco, passagem do mouse e seleção
+- Página atual informada a tecnologias assistivas com `aria-current`
+- Comportamento responsivo do menu preservado
