@@ -6,12 +6,11 @@
 
 O Ronas Desk centraliza clientes, usuários, chamados e indicadores de atendimento em uma interface moderna de Help Desk.
 
-![Status](https://img.shields.io/badge/Status-Em%20desenvolvimento-2563EB?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Est%C3%A1vel-16A34A?style=for-the-badge)
+![Versão](https://img.shields.io/badge/Vers%C3%A3o-1.0.0-16A34A?style=for-the-badge)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
-
-</div>
 
 ---
 
@@ -20,6 +19,9 @@ O Ronas Desk centraliza clientes, usuários, chamados e indicadores de atendimen
 O **Ronas Desk** é uma aplicação de portfólio criada para simular a rotina de uma equipe de suporte técnico. O sistema possui frontend em React, API REST com Node.js e Express e persistência de dados em MySQL.
 
 O projeto aplica separação de responsabilidades no backend, autenticação com JWT e rotas protegidas para oferecer uma base próxima de um produto real.
+
+A versão `1.0.0` está concluída, publicada para demonstração e validada nos
+principais fluxos públicos e autenticados em produção.
 
 ## ✨ Funcionalidades
 
@@ -32,7 +34,7 @@ O projeto aplica separação de responsabilidades no backend, autenticação com
 - Busca, filtros, ordenação e paginação de chamados
 - Comentários, linha do tempo e auditoria por chamado
 - Anexos privados de imagens e PDFs por chamado
-- Dashboard com indicadores de atendimento
+- Dashboard com indicadores de atendimento, filtros por período e atalhos para os chamados relacionados
 - Registro da data real de resolução ou fechamento
 - Cálculo de SLA, tempo médio de resolução e primeira resposta
 - Exclusão lógica para preservação de dados
@@ -508,6 +510,21 @@ npm run build
 - [x] Navegação lateral padronizada e acessível
 - [x] Listagem de chamados com ordenação e paginação
 - [x] Feedback consistente e operações mais seguras na interface
+- [x] Dashboard com filtros por período e atalhos para a listagem
+- [x] Validação automatizada do backend e build de produção do frontend
+- [x] Validação manual final dos fluxos autenticados em produção
+
+## ✅ Checklist da versão 1.0.0
+
+- [x] Página pública e healthcheck disponíveis em produção
+- [x] Layout público validado em computador e celular
+- [x] Testes, lint, formatação e build aprovados
+- [x] Login e sessão autenticada
+- [x] Clientes e usuários
+- [x] Chamados, comentários, histórico e anexos
+- [x] Dashboard, filtros por período e relatórios
+
+Todos os itens essenciais foram aprovados para a versão estável `1.0.0`.
 
 ## 👨‍💻 Autor
 

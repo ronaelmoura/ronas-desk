@@ -67,10 +67,11 @@ function obterPrimeiroNome(nome = "") {
 
 function formatarTempoMedio(minutos) {
   if (!Number.isFinite(minutos)) return "Ainda não disponível";
-  if (minutos < 60) return `${minutos}min`;
+  const totalMinutos = Math.max(0, Math.round(minutos));
+  if (totalMinutos < 60) return `${totalMinutos}min`;
 
-  const horas = Math.floor(minutos / 60);
-  const minutosRestantes = minutos % 60;
+  const horas = Math.floor(totalMinutos / 60);
+  const minutosRestantes = totalMinutos % 60;
   return minutosRestantes ? `${horas}h ${minutosRestantes}min` : `${horas}h`;
 }
 
