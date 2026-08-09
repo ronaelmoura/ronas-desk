@@ -185,3 +185,35 @@
 - Foco controlado, navegação por teclado e fechamento por `Escape` nos modais
 - Estilos de toast, confirmação e skeleton desacoplados da página de usuários
 - Correção da inclusão imediata de novos clientes na listagem
+
+---
+
+## Sprint 18
+
+### ✅ Dashboard com análise por período
+
+- Seleção rápida de todo o período, últimos 7, 30 ou 90 dias
+- Intervalo personalizado com validação de datas incompletas ou invertidas
+- Indicadores e chamados recentes calculados conforme o período selecionado
+- Cartões do dashboard conectados aos filtros da listagem de chamados
+- Filtros de data adicionados à listagem completa
+- Consultas parametrizadas com inclusão integral da data final
+- Feedback acessível nos campos de período
+- Testes específicos de validação, limites e persistência do filtro
+
+---
+
+## Sprint 19
+
+### ✅ Versão 1.0.0 preparada e validada
+
+- Página pública, healthcheck e headers de segurança validados em produção
+- Layout público conferido em largura de celular, sem rolagem horizontal
+- Documentação e roadmap atualizados com a Sprint 18
+- Checklist final dos fluxos autenticados registrado no README
+- Tela de login refinada com melhor proporção, hierarquia e responsividade
+- Controle acessível para mostrar ou ocultar a senha
+- Arredondamento correto dos minutos nos indicadores do dashboard
+- Login, clientes, usuários, chamados e detalhes validados em produção
+- Dashboard, filtros, relatórios e exportação CSV validados em produção
+- Versão `1.0.0` marcada como estável na documentação

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Eye, EyeOff, LockKeyhole } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import './Login.css'
 
@@ -6,6 +7,7 @@ function Login() {
   const { login } = useAuth()
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
+  const [mostrarSenha, setMostrarSenha] = useState(false)
   const [erro, setErro] = useState('')
   const [enviando, setEnviando] = useState(false)
 
@@ -49,8 +51,7 @@ function Login() {
           <p className="eyebrow">Sistema de chamados</p>
 
           <h1>
-            Organize solicitações e resolva problemas com mais
-            eficiência.
+            Centralize solicitações e resolva cada atendimento com clareza.
           </h1>
 
           <p className="description">
@@ -96,7 +97,7 @@ function Login() {
             Informe seus dados para acessar o painel do Ronas Desk.
           </p>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             <div className="field">
               <label htmlFor="email">E-mail</label>
 
@@ -106,7 +107,13 @@ function Login() {
                 autoComplete="email"
                 placeholder="nome@exemplo.com"
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                aria-invalid={Boolean(erro)}
+                aria-describedby={erro ? 'login-error' : undefined}
+                required
+                onChange={(event) => {
+                  setEmail(event.target.value)
+                  setErro('')
+                }}
                 disabled={enviando}
               />
             </div>
@@ -114,15 +121,38 @@ function Login() {
             <div className="field">
               <label htmlFor="senha">Senha</label>
 
-              <input
-                id="senha"
-                type="password"
-                autoComplete="current-password"
-                placeholder="Digite sua senha"
-                value={senha}
-                onChange={(event) => setSenha(event.target.value)}
-                disabled={enviando}
-              />
+              <div className="password-input">
+                <input
+                  id="senha"
+                  type={mostrarSenha ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  placeholder="Digite sua senha"
+                  value={senha}
+                  aria-invalid={Boolean(erro)}
+                  aria-describedby={erro ? 'login-error' : undefined}
+                  required
+                  onChange={(event) => {
+                    setSenha(event.target.value)
+                    setErro('')
+                  }}
+                  disabled={enviando}
+                />
+
+                <button
+                  className="password-toggle"
+                  type="button"
+                  aria-label={mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'}
+                  aria-pressed={mostrarSenha}
+                  onClick={() => setMostrarSenha((visivel) => !visivel)}
+                  disabled={enviando}
+                >
+                  {mostrarSenha ? (
+                    <EyeOff size={20} aria-hidden="true" />
+                  ) : (
+                    <Eye size={20} aria-hidden="true" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <button
@@ -134,11 +164,16 @@ function Login() {
             </button>
 
             {erro && (
-              <p className="form-message erro" role="alert">
+              <p id="login-error" className="form-message erro" role="alert">
                 {erro}
               </p>
             )}
           </form>
+
+          <p className="login-security-note">
+            <LockKeyhole size={16} aria-hidden="true" />
+            Acesso protegido para usuários cadastrados.
+          </p>
         </div>
       </section>
     </main>
