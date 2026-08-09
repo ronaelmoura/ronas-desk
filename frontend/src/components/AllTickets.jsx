@@ -63,14 +63,33 @@ function ordenarChamados(chamados, ordenacao) {
   });
 }
 
-function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
+function AllTickets({
+  chamados,
+  onSelectTicket,
+  onNewTicket,
+  filtrosIniciais,
+}) {
   const [busca, setBusca] = useState("");
   const [filtroStatus, setFiltroStatus] = useState("Todos");
   const [filtroPrioridade, setFiltroPrioridade] = useState("Todas");
   const [filtroCategoria, setFiltroCategoria] = useState("Todas");
   const [filtroSla, setFiltroSla] = useState("Todos");
+  const [filtroDataInicio, setFiltroDataInicio] = useState("");
+  const [filtroDataFim, setFiltroDataFim] = useState("");
   const [ordenacao, setOrdenacao] = useState("recentes");
   const [paginaAtual, setPaginaAtual] = useState(1);
+
+  useEffect(() => {
+    setBusca(filtrosIniciais?.busca ?? "");
+    setFiltroStatus(filtrosIniciais?.status ?? "Todos");
+    setFiltroPrioridade(filtrosIniciais?.prioridade ?? "Todas");
+    setFiltroCategoria(filtrosIniciais?.categoria ?? "Todas");
+    setFiltroSla(filtrosIniciais?.sla ?? "Todos");
+    setFiltroDataInicio(filtrosIniciais?.data_inicio ?? "");
+    setFiltroDataFim(filtrosIniciais?.data_fim ?? "");
+    setOrdenacao(filtrosIniciais?.ordenacao ?? "recentes");
+    setPaginaAtual(1);
+  }, [filtrosIniciais]);
 
   const categorias = useMemo(
     () =>
@@ -112,12 +131,32 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
       const correspondeSla =
         filtroSla === "Todos" || chamado.sla?.status === filtroSla;
 
+      const criadoEm = new Date(chamado.created_at);
+
+      const inicio = filtroDataInicio
+        ? new Date(`${filtroDataInicio}T00:00:00`)
+        : null;
+
+      const fimExclusivo = filtroDataFim
+        ? new Date(`${filtroDataFim}T00:00:00`)
+        : null;
+
+      if (fimExclusivo) {
+        fimExclusivo.setDate(fimExclusivo.getDate() + 1);
+      }
+
+      const correspondePeriodo =
+        !Number.isNaN(criadoEm.getTime()) &&
+        (!inicio || criadoEm >= inicio) &&
+        (!fimExclusivo || criadoEm < fimExclusivo);
+
       return (
         correspondeBusca &&
         correspondeStatus &&
         correspondePrioridade &&
         correspondeCategoria &&
-        correspondeSla
+        correspondeSla &&
+        correspondePeriodo
       );
     });
 
@@ -129,6 +168,8 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
     filtroPrioridade,
     filtroSla,
     filtroStatus,
+    filtroDataInicio,
+    filtroDataFim,
     ordenacao,
   ]);
 
@@ -156,6 +197,8 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
     filtroPrioridade,
     filtroSla,
     filtroStatus,
+    filtroDataInicio,
+    filtroDataFim,
     ordenacao,
   ]);
 
@@ -169,6 +212,8 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
     setFiltroPrioridade("Todas");
     setFiltroCategoria("Todas");
     setFiltroSla("Todos");
+    setFiltroDataInicio("");
+    setFiltroDataFim("");
     setOrdenacao("recentes");
     setPaginaAtual(1);
   }
@@ -277,6 +322,27 @@ function AllTickets({ chamados, onSelectTicket, onNewTicket }) {
               </option>
               <option value="Vencido">Vencido</option>
             </select>
+          </div>
+
+          <div className="all-filter-field">
+            <label htmlFor="all-start-date-filter">Data inicial</label>
+            <input
+              id="all-start-date-filter"
+              type="date"
+              value={filtroDataInicio}
+              onChange={(event) => setFiltroDataInicio(event.target.value)}
+            />
+          </div>
+
+          <div className="all-filter-field">
+            <label htmlFor="all-end-date-filter">Data final</label>
+            <input
+              id="all-end-date-filter"
+              type="date"
+              value={filtroDataFim}
+              min={filtroDataInicio || undefined}
+              onChange={(event) => setFiltroDataFim(event.target.value)}
+            />
           </div>
 
           <div className="all-filter-field">

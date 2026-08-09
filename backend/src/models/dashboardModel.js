@@ -1,8 +1,32 @@
 import pool from '../database/db.js'
 
-async function buscarResumo() {
+export function criarFiltroPeriodo(dataInicio, dataFim) {
+  if (!dataInicio || !dataFim) {
+    return {
+      clausula: '',
+      parametros: [],
+    }
+  }
+
+  return {
+    clausula: `
+      WHERE chamados.created_at >= ?
+        AND chamados.created_at < DATE_ADD(?, INTERVAL 1 DAY)
+    `,
+    parametros: [dataInicio, dataFim],
+  }
+}
+
+export async function buscarResumo(
+  dataInicio = null,
+  dataFim = null,
+  executor = pool,
+) {
+  const filtroPeriodo = criarFiltroPeriodo(dataInicio, dataFim)
+
   const [resumoResultado, chamadosRecentesResultado] = await Promise.all([
-    pool.query(`
+    executor.execute(
+      `
         SELECT
           (SELECT COUNT(*) FROM clientes) AS total_clientes,
           (SELECT COUNT(*) FROM usuarios) AS total_usuarios,
@@ -15,8 +39,12 @@ async function buscarResumo() {
           SUM(status = 'Cancelado') AS chamados_cancelados,
           SUM(prioridade = 'Crítica') AS chamados_criticos
         FROM chamados
-      `),
-    pool.query(`
+        ${filtroPeriodo.clausula}
+      `,
+      filtroPeriodo.parametros,
+    ),
+    executor.execute(
+      `
         SELECT
           chamados.id,
           chamados.titulo,
@@ -25,13 +53,17 @@ async function buscarResumo() {
           chamados.created_at,
           chamados.updated_at,
           chamados.resolved_at,
+          chamados.first_response_at,
           usuarios.nome AS responsavel_nome
         FROM chamados
         LEFT JOIN usuarios
           ON usuarios.id = chamados.responsavel_id
-        ORDER BY chamados.id DESC
+        ${filtroPeriodo.clausula}
+        ORDER BY chamados.created_at DESC, chamados.id DESC
         LIMIT 5
-      `),
+      `,
+      filtroPeriodo.parametros,
+    ),
   ])
 
   const [resumoRows] = resumoResultado
@@ -39,16 +71,18 @@ async function buscarResumo() {
   const resumo = resumoRows[0]
 
   return {
-    total_clientes: Number(resumo.total_clientes),
-    total_usuarios: Number(resumo.total_usuarios),
-    total_chamados: Number(resumo.total_chamados),
-    chamados_novos: Number(resumo.chamados_novos),
-    chamados_em_atendimento: Number(resumo.chamados_em_atendimento),
-    chamados_aguardando_cliente: Number(resumo.chamados_aguardando_cliente),
-    chamados_resolvidos: Number(resumo.chamados_resolvidos),
-    chamados_fechados: Number(resumo.chamados_fechados),
-    chamados_cancelados: Number(resumo.chamados_cancelados),
-    chamados_criticos: Number(resumo.chamados_criticos),
+    total_clientes: Number(resumo.total_clientes ?? 0),
+    total_usuarios: Number(resumo.total_usuarios ?? 0),
+    total_chamados: Number(resumo.total_chamados ?? 0),
+    chamados_novos: Number(resumo.chamados_novos ?? 0),
+    chamados_em_atendimento: Number(resumo.chamados_em_atendimento ?? 0),
+    chamados_aguardando_cliente: Number(
+      resumo.chamados_aguardando_cliente ?? 0,
+    ),
+    chamados_resolvidos: Number(resumo.chamados_resolvidos ?? 0),
+    chamados_fechados: Number(resumo.chamados_fechados ?? 0),
+    chamados_cancelados: Number(resumo.chamados_cancelados ?? 0),
+    chamados_criticos: Number(resumo.chamados_criticos ?? 0),
     chamados_recentes: chamadosRecentes,
   }
 }
