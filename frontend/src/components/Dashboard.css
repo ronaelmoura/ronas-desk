@@ -193,7 +193,6 @@
   margin-top: 20px;
 }
 
-.dashboard-period-selector > label,
 .periodo-personalizado-inputs label {
   display: grid;
   gap: 7px;
@@ -225,6 +224,19 @@
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+}
+
+.dashboard-period-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #536176;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.dashboard-period-control > span {
+  line-height: 42px;
 }
 
 .dashboard-period-feedback {
@@ -319,13 +331,18 @@
 }
 
 .summary-icon {
+  flex: 0 0 48px;
   min-width: 48px;
   height: 48px;
   display: grid;
   place-items: center;
   border-radius: 14px;
-  font-size: 1.2rem;
-  font-weight: 900;
+}
+
+.summary-icon svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2;
 }
 
 .summary-icon.blue {
@@ -730,6 +747,17 @@ button:focus-visible {
     width: 100%;
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .dashboard-period-control {
+    width: 100%;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .dashboard-period-control > span {
+    line-height: normal;
   }
 
   .dashboard-period-selector select,
