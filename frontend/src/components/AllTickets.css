@@ -61,6 +61,7 @@
 .all-search-field input,
 .all-filter-field select,
 .all-filter-field input {
+  box-sizing: border-box;
   width: 100%;
   height: 44px;
   padding: 0 12px;
@@ -128,7 +129,10 @@
 
 @media (max-width: 1350px) {
   .all-tickets-filters {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(min(100%, 220px), 1fr)
+    );
   }
 
   .all-clear-button {
