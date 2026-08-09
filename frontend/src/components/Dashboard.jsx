@@ -86,12 +86,96 @@ function Dashboard({ onLogout }) {
   const [chamadoSelecionado, setChamadoSelecionado] = useState(null);
   const [paginaAtiva, setPaginaAtiva] = useState("visao-geral");
   const [toast, setToast] = useState(null);
+  const [periodoDashboard, setPeriodoDashboard] = useState({ tipo: "todo" });
+  const [filtroInicialChamados, setFiltroInicialChamados] = useState(null);
 
   const fecharToast = useCallback(() => setToast(null), []);
 
+  const periodoPersonalizadoIncompleto =
+    periodoDashboard.tipo === "personalizado" &&
+    (!periodoDashboard.data_inicio || !periodoDashboard.data_fim);
+  const periodoPersonalizadoInvertido =
+    periodoDashboard.tipo === "personalizado" &&
+    periodoDashboard.data_inicio &&
+    periodoDashboard.data_fim &&
+    periodoDashboard.data_inicio > periodoDashboard.data_fim;
+  const mensagemErroPeriodo = periodoPersonalizadoIncompleto
+    ? "Informe a data inicial e a data final."
+    : periodoPersonalizadoInvertido
+      ? "A data inicial não pode ser posterior à data final."
+      : "";
+
+  function normalizarPeriodoDashboard(periodo) {
+    if (!periodo || periodo.tipo === "todo") {
+      return null;
+    }
+
+    const hoje = new Date();
+    const formatarDataLocal = (data) => {
+      const ano = data.getFullYear();
+      const mes = String(data.getMonth() + 1).padStart(2, "0");
+      const dia = String(data.getDate()).padStart(2, "0");
+
+      return `${ano}-${mes}-${dia}`;
+    };
+
+    if (periodo.tipo === "personalizado") {
+      return periodo.data_inicio && periodo.data_fim
+        ? {
+            data_inicio: periodo.data_inicio,
+            data_fim: periodo.data_fim,
+          }
+        : null;
+    }
+
+    const dias =
+      periodo.tipo === "7"
+        ? 7
+        : periodo.tipo === "30"
+        ? 30
+        : periodo.tipo === "90"
+        ? 90
+        : null;
+
+    if (!dias) {
+      return null;
+    }
+
+    const dataFim = formatarDataLocal(hoje);
+    const dataInicio = new Date(hoje);
+    dataInicio.setDate(dataInicio.getDate() - (dias - 1));
+
+    return {
+      data_inicio: formatarDataLocal(dataInicio),
+      data_fim: dataFim,
+    };
+  }
+
+  function obterFiltrosPeriodoAtual() {
+    const periodo = normalizarPeriodoDashboard(periodoDashboard);
+
+    return periodo
+      ? {
+          data_inicio: periodo.data_inicio,
+          data_fim: periodo.data_fim,
+        }
+      : {};
+  }
+
+  function recarregarDashboardAtual() {
+    return carregarDashboardDaApi(
+      normalizarPeriodoDashboard(periodoDashboard),
+    );
+  }
+
   useEffect(() => {
-    carregarDashboardDaApi();
-  }, []);
+    if (mensagemErroPeriodo) {
+      return;
+    }
+
+    const periodoNormalizado = normalizarPeriodoDashboard(periodoDashboard);
+    carregarDashboardDaApi(periodoNormalizado);
+  }, [periodoDashboard, mensagemErroPeriodo]);
 
   async function carregarChamadosDaApi() {
     setCarregando(true);
@@ -107,12 +191,12 @@ function Dashboard({ onLogout }) {
     }
   }
 
-  async function carregarDashboardDaApi() {
+  async function carregarDashboardDaApi(periodo = null) {
     setCarregandoDashboard(true);
     setErroDashboard("");
 
     try {
-      const dados = await buscarDashboardApi();
+      const dados = await buscarDashboardApi(periodo);
       setDashboard(dados);
     } catch (error) {
       setErroDashboard(error.message);
@@ -123,10 +207,27 @@ function Dashboard({ onLogout }) {
 
   function abrirVisaoGeral() {
     setPaginaAtiva("visao-geral");
-    carregarDashboardDaApi();
   }
 
   function abrirChamados() {
+    const filtrosPeriodo = obterFiltrosPeriodoAtual();
+
+    setPaginaAtiva("chamados");
+    setFiltroInicialChamados(
+      Object.keys(filtrosPeriodo).length ? filtrosPeriodo : null,
+    );
+    carregarChamadosDaApi();
+  }
+
+  function abrirChamadosComFiltro(filtros) {
+    const filtrosCompletos = {
+      ...obterFiltrosPeriodoAtual(),
+      ...(filtros || {}),
+    };
+
+    setFiltroInicialChamados(
+      Object.keys(filtrosCompletos).length ? filtrosCompletos : null,
+    );
     setPaginaAtiva("chamados");
     carregarChamadosDaApi();
   }
@@ -137,7 +238,7 @@ function Dashboard({ onLogout }) {
     setChamados((chamadosAtuais) => [novoChamado, ...chamadosAtuais]);
 
     setModalAberto(false);
-    carregarDashboardDaApi();
+    recarregarDashboardAtual();
     setToast({ tipo: "sucesso", mensagem: "Chamado aberto com sucesso." });
   }
 
@@ -154,7 +255,7 @@ function Dashboard({ onLogout }) {
     );
 
     setChamadoSelecionado(null);
-    carregarDashboardDaApi();
+    recarregarDashboardAtual();
     setToast({
       tipo: "sucesso",
       mensagem: "Chamado atualizado com sucesso.",
@@ -169,7 +270,7 @@ function Dashboard({ onLogout }) {
     );
 
     setChamadoSelecionado(null);
-    carregarDashboardDaApi();
+    recarregarDashboardAtual();
     setToast({ tipo: "sucesso", mensagem: "Chamado excluído com sucesso." });
   }
 
@@ -326,6 +427,7 @@ function Dashboard({ onLogout }) {
               chamados={chamados}
               onSelectTicket={setChamadoSelecionado}
               onNewTicket={() => setModalAberto(true)}
+              filtrosIniciais={filtroInicialChamados}
             />
           )
         ) : paginaAtiva === "configuracoes" ? (
@@ -360,7 +462,7 @@ function Dashboard({ onLogout }) {
             <button
               className="new-ticket-button"
               type="button"
-              onClick={carregarDashboardDaApi}
+              onClick={recarregarDashboardAtual}
             >
               Tentar novamente
             </button>
@@ -376,6 +478,78 @@ function Dashboard({ onLogout }) {
                 <p>
                   Acompanhe os chamados e as atividades recentes do suporte.
                 </p>
+
+                <div className="dashboard-period-selector">
+                  <label htmlFor="periodo-dashboard">Período</label>
+                  <select
+                    id="periodo-dashboard"
+                    value={periodoDashboard.tipo}
+                    onChange={(event) => {
+                      const tipo = event.target.value;
+                      setPeriodoDashboard((atual) => ({
+                        tipo,
+                        data_inicio:
+                          tipo === "personalizado" ? atual.data_inicio : undefined,
+                        data_fim:
+                          tipo === "personalizado" ? atual.data_fim : undefined,
+                      }));
+                    }}
+                  >
+                    <option value="todo">Todo o período</option>
+                    <option value="7">Últimos 7 dias</option>
+                    <option value="30">Últimos 30 dias</option>
+                    <option value="90">Últimos 90 dias</option>
+                    <option value="personalizado">Personalizado</option>
+                  </select>
+
+                  {periodoDashboard.tipo === "personalizado" && (
+                    <div className="periodo-personalizado-inputs">
+                      <label>
+                        Data início
+                        <input
+                          type="date"
+                          value={periodoDashboard.data_inicio || ""}
+                          max={periodoDashboard.data_fim || undefined}
+                          aria-invalid={Boolean(mensagemErroPeriodo)}
+                          aria-describedby="periodo-dashboard-feedback"
+                          onChange={(event) =>
+                            setPeriodoDashboard((atual) => ({
+                              ...atual,
+                              data_inicio: event.target.value,
+                            }))
+                          }
+                        />
+                      </label>
+
+                      <label>
+                        Data fim
+                        <input
+                          type="date"
+                          value={periodoDashboard.data_fim || ""}
+                          min={periodoDashboard.data_inicio || undefined}
+                          aria-invalid={Boolean(mensagemErroPeriodo)}
+                          aria-describedby="periodo-dashboard-feedback"
+                          onChange={(event) =>
+                            setPeriodoDashboard((atual) => ({
+                              ...atual,
+                              data_fim: event.target.value,
+                            }))
+                          }
+                        />
+                      </label>
+                    </div>
+                  )}
+
+                  {mensagemErroPeriodo && (
+                    <p
+                      id="periodo-dashboard-feedback"
+                      className="dashboard-period-feedback"
+                      role="alert"
+                    >
+                      {mensagemErroPeriodo}
+                    </p>
+                  )}
+                </div>
               </div>
 
               <button
@@ -408,7 +582,7 @@ function Dashboard({ onLogout }) {
                 className="summary-card"
                 type="button"
                 aria-label="Ver chamados novos"
-                onClick={abrirChamados}
+                onClick={() => abrirChamadosComFiltro({ status: "Novo" })}
               >
                 <div className="summary-icon red">!</div>
 
@@ -423,7 +597,7 @@ function Dashboard({ onLogout }) {
                 className="summary-card"
                 type="button"
                 aria-label="Ver chamados em atendimento"
-                onClick={abrirChamados}
+                onClick={() => abrirChamadosComFiltro({ status: "Em Atendimento" })}
               >
                 <div className="summary-icon orange">◷</div>
 
@@ -438,7 +612,7 @@ function Dashboard({ onLogout }) {
                 className="summary-card"
                 type="button"
                 aria-label="Ver chamados aguardando cliente"
-                onClick={abrirChamados}
+                onClick={() => abrirChamadosComFiltro({ status: "Aguardando Cliente" })}
               >
                 <div className="summary-icon green">✓</div>
 
@@ -453,7 +627,7 @@ function Dashboard({ onLogout }) {
                 className="summary-card"
                 type="button"
                 aria-label="Ver chamados resolvidos"
-                onClick={abrirChamados}
+                onClick={() => abrirChamadosComFiltro({ status: "Resolvido" })}
               >
                 <div className="summary-icon green">✓</div>
 
@@ -468,7 +642,7 @@ function Dashboard({ onLogout }) {
                 className="summary-card"
                 type="button"
                 aria-label="Ver chamados fechados"
-                onClick={abrirChamados}
+                onClick={() => abrirChamadosComFiltro({ status: "Fechado" })}
               >
                 <div className="summary-icon purple">■</div>
 
@@ -483,7 +657,7 @@ function Dashboard({ onLogout }) {
                 className="summary-card"
                 type="button"
                 aria-label="Ver chamados cancelados"
-                onClick={abrirChamados}
+                onClick={() => abrirChamadosComFiltro({ status: "Cancelado" })}
               >
                 <div className="summary-icon red">×</div>
 
@@ -513,7 +687,7 @@ function Dashboard({ onLogout }) {
                 className="summary-card"
                 type="button"
                 aria-label="Ver chamados de prioridade crítica"
-                onClick={abrirChamados}
+                onClick={() => abrirChamadosComFiltro({ prioridade: "Crítica" })}
               >
                 <div className="summary-icon red">↑</div>
 
@@ -543,7 +717,7 @@ function Dashboard({ onLogout }) {
                 className="summary-card"
                 type="button"
                 aria-label="Ver chamados com SLA vencido"
-                onClick={abrirChamados}
+                onClick={() => abrirChamadosComFiltro({ sla: "Vencido" })}
               >
                 <div className="summary-icon red">!</div>
 
@@ -558,7 +732,7 @@ function Dashboard({ onLogout }) {
                 className="summary-card"
                 type="button"
                 aria-label="Ver chamados próximos do vencimento do SLA"
-                onClick={abrirChamados}
+                onClick={() => abrirChamadosComFiltro({ sla: "Próximo do vencimento" })}
               >
                 <div className="summary-icon orange">◷</div>
 
@@ -699,7 +873,7 @@ function Dashboard({ onLogout }) {
           onClose={() => setChamadoSelecionado(null)}
           onUpdate={atualizarChamado}
           onDelete={excluirChamado}
-          onPublicResponse={carregarDashboardDaApi}
+          onPublicResponse={recarregarDashboardAtual}
         />
       )}
 

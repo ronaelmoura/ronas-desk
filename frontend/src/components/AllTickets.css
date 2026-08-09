@@ -34,7 +34,7 @@
   display: grid;
   grid-template-columns:
     minmax(240px, 2fr)
-    repeat(5, minmax(125px, 1fr))
+    repeat(7, minmax(125px, 1fr))
     auto;
   align-items: end;
   gap: 14px;
@@ -59,7 +59,8 @@
 }
 
 .all-search-field input,
-.all-filter-field select {
+.all-filter-field select,
+.all-filter-field input {
   width: 100%;
   height: 44px;
   padding: 0 12px;
@@ -73,7 +74,8 @@
 }
 
 .all-search-field input:focus,
-.all-filter-field select:focus {
+.all-filter-field select:focus,
+.all-filter-field input:focus {
   border-color: #1682ff;
   box-shadow: 0 0 0 3px rgba(22, 130, 255, 0.1);
 }

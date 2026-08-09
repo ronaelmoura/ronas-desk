@@ -185,6 +185,60 @@
   gap: 30px;
 }
 
+.dashboard-period-selector {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.dashboard-period-selector > label,
+.periodo-personalizado-inputs label {
+  display: grid;
+  gap: 7px;
+  color: #536176;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.dashboard-period-selector select,
+.periodo-personalizado-inputs input {
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid #d8e0e9;
+  border-radius: 10px;
+  outline: none;
+  background: #ffffff;
+  color: #17263a;
+  font: inherit;
+  font-size: 0.84rem;
+}
+
+.dashboard-period-selector select:focus,
+.periodo-personalizado-inputs input:focus {
+  border-color: #1682ff;
+  box-shadow: 0 0 0 3px rgba(22, 130, 255, 0.1);
+}
+
+.periodo-personalizado-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.dashboard-period-feedback {
+  flex-basis: 100%;
+  margin: 0;
+  color: #c62828;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.periodo-personalizado-inputs input[aria-invalid="true"] {
+  border-color: #e05252;
+}
+
 .dashboard-eyebrow {
   margin-bottom: 7px;
   color: #1682ff;
@@ -669,6 +723,18 @@ button:focus-visible {
   .dashboard-header {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .dashboard-period-selector,
+  .periodo-personalizado-inputs {
+    width: 100%;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .dashboard-period-selector select,
+  .periodo-personalizado-inputs input {
+    width: 100%;
   }
 
   .new-ticket-button {
