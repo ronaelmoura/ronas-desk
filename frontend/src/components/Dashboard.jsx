@@ -1,11 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
 import {
+  Archive,
+  Ban,
   ChartNoAxesColumn,
+  CircleAlert,
+  CircleCheck,
   CirclePlus,
+  Clock3,
+  Gauge,
   House,
+  MessageCircle,
   Settings,
+  ShieldAlert,
+  Timer,
+  TimerOff,
   Tickets,
   UserCog,
+  UserRoundCheck,
   UsersRound,
 } from "lucide-react";
 import "./Dashboard.css";
@@ -481,27 +492,36 @@ function Dashboard({ onLogout }) {
                 </p>
 
                 <div className="dashboard-period-selector">
-                  <label htmlFor="periodo-dashboard">Período</label>
-                  <select
-                    id="periodo-dashboard"
-                    value={periodoDashboard.tipo}
-                    onChange={(event) => {
-                      const tipo = event.target.value;
-                      setPeriodoDashboard((atual) => ({
-                        tipo,
-                        data_inicio:
-                          tipo === "personalizado" ? atual.data_inicio : undefined,
-                        data_fim:
-                          tipo === "personalizado" ? atual.data_fim : undefined,
-                      }));
-                    }}
+                  <label
+                    className="dashboard-period-control"
+                    htmlFor="periodo-dashboard"
                   >
-                    <option value="todo">Todo o período</option>
-                    <option value="7">Últimos 7 dias</option>
-                    <option value="30">Últimos 30 dias</option>
-                    <option value="90">Últimos 90 dias</option>
-                    <option value="personalizado">Personalizado</option>
-                  </select>
+                    <span>Período</span>
+                    <select
+                      id="periodo-dashboard"
+                      value={periodoDashboard.tipo}
+                      onChange={(event) => {
+                        const tipo = event.target.value;
+                        setPeriodoDashboard((atual) => ({
+                          tipo,
+                          data_inicio:
+                            tipo === "personalizado"
+                              ? atual.data_inicio
+                              : undefined,
+                          data_fim:
+                            tipo === "personalizado"
+                              ? atual.data_fim
+                              : undefined,
+                        }));
+                      }}
+                    >
+                      <option value="todo">Todo o período</option>
+                      <option value="7">Últimos 7 dias</option>
+                      <option value="30">Últimos 30 dias</option>
+                      <option value="90">Últimos 90 dias</option>
+                      <option value="personalizado">Personalizado</option>
+                    </select>
+                  </label>
 
                   {periodoDashboard.tipo === "personalizado" && (
                     <div className="periodo-personalizado-inputs">
@@ -570,7 +590,9 @@ function Dashboard({ onLogout }) {
                 aria-label="Ver todos os chamados"
                 onClick={abrirChamados}
               >
-                <div className="summary-icon blue">▤</div>
+                <div className="summary-icon blue">
+                  <Tickets aria-hidden="true" />
+                </div>
 
                 <div>
                   <span>Total de chamados</span>
@@ -585,7 +607,9 @@ function Dashboard({ onLogout }) {
                 aria-label="Ver chamados novos"
                 onClick={() => abrirChamadosComFiltro({ status: "Novo" })}
               >
-                <div className="summary-icon red">!</div>
+                <div className="summary-icon red">
+                  <CircleAlert aria-hidden="true" />
+                </div>
 
                 <div>
                   <span>Novos</span>
@@ -600,7 +624,9 @@ function Dashboard({ onLogout }) {
                 aria-label="Ver chamados em atendimento"
                 onClick={() => abrirChamadosComFiltro({ status: "Em Atendimento" })}
               >
-                <div className="summary-icon orange">◷</div>
+                <div className="summary-icon orange">
+                  <Clock3 aria-hidden="true" />
+                </div>
 
                 <div>
                   <span>Em atendimento</span>
@@ -615,7 +641,9 @@ function Dashboard({ onLogout }) {
                 aria-label="Ver chamados aguardando cliente"
                 onClick={() => abrirChamadosComFiltro({ status: "Aguardando Cliente" })}
               >
-                <div className="summary-icon green">✓</div>
+                <div className="summary-icon green">
+                  <UserRoundCheck aria-hidden="true" />
+                </div>
 
                 <div>
                   <span>Aguardando cliente</span>
@@ -630,7 +658,9 @@ function Dashboard({ onLogout }) {
                 aria-label="Ver chamados resolvidos"
                 onClick={() => abrirChamadosComFiltro({ status: "Resolvido" })}
               >
-                <div className="summary-icon green">✓</div>
+                <div className="summary-icon green">
+                  <CircleCheck aria-hidden="true" />
+                </div>
 
                 <div>
                   <span>Resolvidos</span>
@@ -645,7 +675,9 @@ function Dashboard({ onLogout }) {
                 aria-label="Ver chamados fechados"
                 onClick={() => abrirChamadosComFiltro({ status: "Fechado" })}
               >
-                <div className="summary-icon purple">■</div>
+                <div className="summary-icon purple">
+                  <Archive aria-hidden="true" />
+                </div>
 
                 <div>
                   <span>Fechados</span>
@@ -660,7 +692,9 @@ function Dashboard({ onLogout }) {
                 aria-label="Ver chamados cancelados"
                 onClick={() => abrirChamadosComFiltro({ status: "Cancelado" })}
               >
-                <div className="summary-icon red">×</div>
+                <div className="summary-icon red">
+                  <Ban aria-hidden="true" />
+                </div>
 
                 <div>
                   <span>Cancelados</span>
@@ -675,7 +709,9 @@ function Dashboard({ onLogout }) {
                 aria-label="Ver clientes cadastrados"
                 onClick={() => setPaginaAtiva("clientes")}
               >
-                <div className="summary-icon purple">♟</div>
+                <div className="summary-icon purple">
+                  <UsersRound aria-hidden="true" />
+                </div>
 
                 <div>
                   <span>Total de clientes</span>
@@ -690,7 +726,9 @@ function Dashboard({ onLogout }) {
                 aria-label="Ver chamados de prioridade crítica"
                 onClick={() => abrirChamadosComFiltro({ prioridade: "Crítica" })}
               >
-                <div className="summary-icon red">↑</div>
+                <div className="summary-icon red">
+                  <ShieldAlert aria-hidden="true" />
+                </div>
 
                 <div>
                   <span>Prioridade crítica</span>
@@ -705,7 +743,9 @@ function Dashboard({ onLogout }) {
                 aria-label="Ver usuários cadastrados"
                 onClick={() => setPaginaAtiva("usuarios")}
               >
-                <div className="summary-icon blue">♟</div>
+                <div className="summary-icon blue">
+                  <UserCog aria-hidden="true" />
+                </div>
 
                 <div>
                   <span>Total de usuários</span>
@@ -720,7 +760,9 @@ function Dashboard({ onLogout }) {
                 aria-label="Ver chamados com SLA vencido"
                 onClick={() => abrirChamadosComFiltro({ sla: "Vencido" })}
               >
-                <div className="summary-icon red">!</div>
+                <div className="summary-icon red">
+                  <TimerOff aria-hidden="true" />
+                </div>
 
                 <div>
                   <span>SLA vencido</span>
@@ -735,7 +777,9 @@ function Dashboard({ onLogout }) {
                 aria-label="Ver chamados próximos do vencimento do SLA"
                 onClick={() => abrirChamadosComFiltro({ sla: "Próximo do vencimento" })}
               >
-                <div className="summary-icon orange">◷</div>
+                <div className="summary-icon orange">
+                  <Timer aria-hidden="true" />
+                </div>
 
                 <div>
                   <span>SLA próximo do vencimento</span>
@@ -750,7 +794,9 @@ function Dashboard({ onLogout }) {
                 aria-label="Ver chamados e tempo médio de resolução"
                 onClick={abrirChamados}
               >
-                <div className="summary-icon green">◴</div>
+                <div className="summary-icon green">
+                  <Gauge aria-hidden="true" />
+                </div>
 
                 <div>
                   <span>Tempo médio de resolução</span>
@@ -769,7 +815,9 @@ function Dashboard({ onLogout }) {
                   dashboard.tempo_medio_primeira_resposta_minutos,
                 )}`}
               >
-                <div className="summary-icon blue">◷</div>
+                <div className="summary-icon blue">
+                  <MessageCircle aria-hidden="true" />
+                </div>
 
                 <div>
                   <span>Tempo médio de primeira resposta</span>
