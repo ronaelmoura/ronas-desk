@@ -1,10 +1,19 @@
 :root {
-  font-family:
-    Inter, Arial, Helvetica, sans-serif;
+  --font-sans: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-regular);
   color: #142238;
   background: #f4f7fb;
   font-synthesis: none;
+  font-variant-numeric: tabular-nums;
   text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
@@ -23,8 +32,20 @@ body {
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font-family: inherit;
+}
+
+button,
+label,
+strong,
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
 }
 
 p {

@@ -269,7 +269,7 @@ function ProfileSettings() {
 
         <aside className="settings-info-card">
           <div className="settings-logo">
-            <img src="/logo-ronas-desk.png" alt="Logo Ronas Desk" />
+            <img src="/brand-mark.svg" alt="Logo Ronas Desk" />
           </div>
 
           <h2>Ronas Desk</h2>

@@ -25,14 +25,15 @@
 .brand-logo-image {
   width: 58px;
   height: 58px;
-  object-fit: cover;
-  border-radius: 50%;
-  box-shadow: 0 12px 35px rgba(22, 130, 255, 0.35);
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0, 19, 40, 0.3);
 }
 
 .brand strong {
   display: block;
   font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
 }
 
 .brand span {
@@ -138,9 +139,8 @@
   width: 82px;
   height: 82px;
   margin-bottom: 28px;
-  object-fit: cover;
-  border-radius: 50%;
-  box-shadow: 0 12px 35px rgba(22, 130, 255, 0.25);
+  border-radius: 22px;
+  box-shadow: 0 12px 35px rgba(22, 130, 255, 0.2);
 }
 
 .login-card h2 {

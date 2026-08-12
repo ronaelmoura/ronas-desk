@@ -163,9 +163,8 @@
 .settings-logo img {
   width: 110px;
   height: 110px;
-  object-fit: cover;
-  border-radius: 50%;
-  box-shadow: 0 16px 40px rgba(22, 130, 255, 0.22);
+  border-radius: 28px;
+  box-shadow: 0 16px 40px rgba(22, 130, 255, 0.18);
 }
 
 .settings-info-card h2 {

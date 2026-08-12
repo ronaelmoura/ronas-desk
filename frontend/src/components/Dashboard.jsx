@@ -307,7 +307,7 @@ function Dashboard({ onLogout }) {
         <div className="sidebar-brand">
           <img
             className="sidebar-logo-image"
-            src="/logo-ronas-desk.png"
+            src="/brand-mark.svg"
             alt="Logo Ronas Desk"
           />
 
