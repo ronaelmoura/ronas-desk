@@ -1,0 +1,9 @@
+.portal-rating { padding: 20px 25px 25px; border-top: 1px solid #e5ebf3; }
+.portal-rating h3 { margin: 0 0 6px; color: #213653; }
+.portal-rating > p { margin: 0; color: #71819c; }
+.portal-rating form { padding: 16px 0 0; }
+.portal-rating form > label { margin-top: 14px; }
+.portal-rating-stars { display: flex; gap: 7px; margin: 14px 0; }
+.portal-rating-stars button, .portal-rating-stars span { border: 0; padding: 0; background: transparent; color: #d6dde7; font-size: 1.9rem; line-height: 1; }
+.portal-rating-stars button { cursor: pointer; }
+.portal-rating-stars .selected { color: #f2ae19; }

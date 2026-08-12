@@ -3,6 +3,8 @@ import { CirclePlus, MessageSquare, RefreshCw, TicketCheck, X } from 'lucide-rea
 import useAuth from '../../hooks/useAuth'
 import useCompanyBrand from '../../hooks/useCompanyBrand'
 import {
+  avaliarChamadoApi,
+  buscarMinhaAvaliacaoApi,
   criarMeuChamadoApi,
   enviarMensagemChamadoApi,
   listarMensagensChamadoApi,
@@ -10,12 +12,254 @@ import {
 } from '../../services/portalClienteApi'
 import { classeChamado } from '../../utils/chamados'
 import './PortalCliente.css'
+import './AvaliacaoPortal.css'
 
 const CATEGORIAS = ['Hardware', 'Software', 'Rede', 'Acesso', 'Outro']
 const PRIORIDADES = ['Crítica', 'Alta', 'Média', 'Baixa']
+const STATUS_ENCERRADOS = new Set(['Resolvido', 'Fechado'])
 
 function formatarData(data) {
-  return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(data))
+  return new Intl.DateTimeFormat('pt-BR', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(new Date(data))
+}
+
+function ModalPortal({ children, onClose, tituloId }) {
+  return (
+    <div className="portal-modal-backdrop" onMouseDown={onClose}>
+      <section
+        aria-labelledby={tituloId}
+        aria-modal="true"
+        className="portal-modal"
+        onMouseDown={(event) => event.stopPropagation()}
+        role="dialog"
+      >
+        {children}
+      </section>
+    </div>
+  )
+}
+
+function NovoChamadoPortal({ onClose, onCreated }) {
+  const [formulario, setFormulario] = useState({
+    titulo: '',
+    descricao: '',
+    categoria: '',
+    prioridade: '',
+  })
+  const [erro, setErro] = useState('')
+  const [salvando, setSalvando] = useState(false)
+
+  function atualizarCampo(event) {
+    const { name, value } = event.target
+    setFormulario((atual) => ({ ...atual, [name]: value }))
+  }
+
+  async function enviar(event) {
+    event.preventDefault()
+    setSalvando(true)
+    setErro('')
+
+    try {
+      await onCreated(await criarMeuChamadoApi(formulario))
+    } catch (error) {
+      setErro(error.message)
+      setSalvando(false)
+    }
+  }
+
+  return (
+    <ModalPortal onClose={onClose} tituloId="novo-chamado-portal">
+      <header>
+        <div>
+          <p>NOVA SOLICITAÇÃO</p>
+          <h2 id="novo-chamado-portal">Como podemos ajudar?</h2>
+        </div>
+        <button aria-label="Fechar" disabled={salvando} onClick={onClose} type="button">
+          <X />
+        </button>
+      </header>
+      <form onSubmit={enviar}>
+        {erro ? <p className="portal-form-error" role="alert">{erro}</p> : null}
+        <label>
+          Título
+          <input autoFocus maxLength="200" name="titulo" onChange={atualizarCampo} placeholder="Ex.: Não consigo acessar o sistema" required value={formulario.titulo} />
+        </label>
+        <div className="portal-form-grid">
+          <label>
+            Categoria
+            <select name="categoria" onChange={atualizarCampo} required value={formulario.categoria}>
+              <option value="">Selecione</option>
+              {CATEGORIAS.map((item) => <option key={item} value={item}>{item}</option>)}
+            </select>
+          </label>
+          <label>
+            Prioridade
+            <select name="prioridade" onChange={atualizarCampo} required value={formulario.prioridade}>
+              <option value="">Selecione</option>
+              {PRIORIDADES.map((item) => <option key={item} value={item}>{item}</option>)}
+            </select>
+          </label>
+        </div>
+        <label>
+          Descreva o problema
+          <textarea maxLength="10000" name="descricao" onChange={atualizarCampo} placeholder="Conte o que aconteceu e, se possível, quando o problema começou." required rows="6" value={formulario.descricao} />
+        </label>
+        <footer>
+          <button disabled={salvando} onClick={onClose} type="button">Cancelar</button>
+          <button className="portal-primary-button" disabled={salvando} type="submit">{salvando ? 'Enviando...' : 'Abrir chamado'}</button>
+        </footer>
+      </form>
+    </ModalPortal>
+  )
+}
+
+function AvaliacaoChamado({ chamadoId, avaliacao, onAvaliada }) {
+  const [nota, setNota] = useState(0)
+  const [comentario, setComentario] = useState('')
+  const [erro, setErro] = useState('')
+  const [enviando, setEnviando] = useState(false)
+
+  async function enviarAvaliacao(event) {
+    event.preventDefault()
+    if (!nota) {
+      setErro('Escolha uma nota de 1 a 5.')
+      return
+    }
+
+    setEnviando(true)
+    setErro('')
+    try {
+      onAvaliada(await avaliarChamadoApi(chamadoId, { nota, comentario }))
+    } catch (error) {
+      setErro(error.message)
+    } finally {
+      setEnviando(false)
+    }
+  }
+
+  if (avaliacao) {
+    return (
+      <section className="portal-rating">
+        <h3>Avaliação enviada</h3>
+        <div aria-label={`${avaliacao.nota} de 5 estrelas`} className="portal-rating-stars readonly">
+          {Array.from({ length: 5 }, (_, indice) => <span className={indice < avaliacao.nota ? 'selected' : ''} key={indice}>★</span>)}
+        </div>
+        <p>Obrigado por compartilhar sua experiência.</p>
+      </section>
+    )
+  }
+
+  return (
+    <section className="portal-rating">
+      <h3>Como foi seu atendimento?</h3>
+      <p>Seu feedback ajuda nossa equipe a melhorar.</p>
+      <form onSubmit={enviarAvaliacao}>
+        {erro ? <p className="portal-form-error" role="alert">{erro}</p> : null}
+        <div className="portal-rating-stars" role="group" aria-label="Nota do atendimento">
+          {Array.from({ length: 5 }, (_, indice) => (
+            <button className={indice < nota ? 'selected' : ''} key={indice} onClick={() => setNota(indice + 1)} type="button" aria-label={`${indice + 1} estrela${indice ? 's' : ''}`}>★</button>
+          ))}
+        </div>
+        <label htmlFor="portal-rating-comment">Comentário opcional</label>
+        <textarea id="portal-rating-comment" maxLength="1000" onChange={(event) => setComentario(event.target.value)} placeholder="Conte como foi sua experiência..." rows="3" value={comentario} />
+        <footer>
+          <small>{comentario.length}/1000</small>
+          <button className="portal-primary-button" disabled={enviando} type="submit">{enviando ? 'Enviando...' : 'Enviar avaliação'}</button>
+        </footer>
+      </form>
+    </section>
+  )
+}
+
+function DetalhesChamadoPortal({ chamado, onClose }) {
+  const [mensagens, setMensagens] = useState([])
+  const [avaliacao, setAvaliacao] = useState(undefined)
+  const [carregando, setCarregando] = useState(true)
+  const [novaMensagem, setNovaMensagem] = useState('')
+  const [erro, setErro] = useState('')
+  const [enviando, setEnviando] = useState(false)
+
+  useEffect(() => {
+    let ativo = true
+    const carregamentos = [listarMensagensChamadoApi(chamado.id)]
+    if (STATUS_ENCERRADOS.has(chamado.status)) {
+      carregamentos.push(buscarMinhaAvaliacaoApi(chamado.id))
+    }
+
+    Promise.all(carregamentos)
+      .then(([mensagensCarregadas, avaliacaoCarregada]) => {
+        if (!ativo) return
+        setMensagens(mensagensCarregadas)
+        if (STATUS_ENCERRADOS.has(chamado.status)) setAvaliacao(avaliacaoCarregada)
+      })
+      .catch((error) => {
+        if (ativo) setErro(error.message)
+      })
+      .finally(() => {
+        if (ativo) setCarregando(false)
+      })
+
+    return () => {
+      ativo = false
+    }
+  }, [chamado.id, chamado.status])
+
+  async function enviar(event) {
+    event.preventDefault()
+    const conteudo = novaMensagem.trim()
+    if (!conteudo) return
+
+    setEnviando(true)
+    setErro('')
+    try {
+      const mensagem = await enviarMensagemChamadoApi(chamado.id, conteudo)
+      setMensagens((atuais) => [...atuais, mensagem])
+      setNovaMensagem('')
+    } catch (error) {
+      setErro(error.message)
+    } finally {
+      setEnviando(false)
+    }
+  }
+
+  return (
+    <ModalPortal onClose={onClose} tituloId="detalhe-chamado-portal">
+      <header>
+        <div>
+          <p>#{String(chamado.id).padStart(3, '0')}</p>
+          <h2 id="detalhe-chamado-portal">{chamado.titulo}</h2>
+          <span>{chamado.categoria} · {formatarData(chamado.created_at)}</span>
+        </div>
+        <button aria-label="Fechar" onClick={onClose} type="button"><X /></button>
+      </header>
+      <div className="portal-ticket-info">
+        <span className={`portal-status ${classeChamado('status', chamado.status)}`}>{chamado.status}</span>
+        <p>{chamado.descricao}</p>
+      </div>
+      <section className="portal-messages">
+        <h3>Mensagens da equipe</h3>
+        {erro ? <p className="portal-form-error" role="alert">{erro}</p> : null}
+        {carregando ? <p>Carregando mensagens...</p> : mensagens.length ? mensagens.map((mensagem) => (
+          <article key={mensagem.id}>
+            <strong>{mensagem.usuario_nome || 'Equipe de suporte'}</strong>
+            <span>{formatarData(mensagem.created_at)}</span>
+            <p>{mensagem.conteudo}</p>
+          </article>
+        )) : <p>Nenhuma mensagem pública ainda.</p>}
+        <form onSubmit={enviar}>
+          <label htmlFor="portal-message">Enviar mensagem para a equipe</label>
+          <textarea id="portal-message" maxLength="2000" onChange={(event) => setNovaMensagem(event.target.value)} placeholder="Acrescente uma informação sobre o atendimento..." rows="4" value={novaMensagem} />
+          <footer>
+            <small>{novaMensagem.length}/2000</small>
+            <button className="portal-primary-button" disabled={enviando || !novaMensagem.trim()} type="submit">{enviando ? 'Enviando...' : 'Enviar mensagem'}</button>
+          </footer>
+        </form>
+      </section>
+      {STATUS_ENCERRADOS.has(chamado.status) && avaliacao !== undefined ? <AvaliacaoChamado chamadoId={chamado.id} avaliacao={avaliacao} onAvaliada={setAvaliacao} /> : null}
+    </ModalPortal>
+  )
 }
 
 function PortalCliente() {
@@ -39,12 +283,19 @@ function PortalCliente() {
     }
   }, [])
 
-  useEffect(() => { carregar() }, [carregar])
+  useEffect(() => {
+    carregar()
+  }, [carregar])
 
-  const resumo = useMemo(() => ({
-    abertos: chamados.filter((chamado) => !['Resolvido', 'Fechado', 'Cancelado'].includes(chamado.status)).length,
-    resolvidos: chamados.filter((chamado) => chamado.status === 'Resolvido').length,
-  }), [chamados])
+  const resumo = useMemo(() => {
+    let abertos = 0
+    let resolvidos = 0
+    for (const chamado of chamados) {
+      if (!['Resolvido', 'Fechado', 'Cancelado'].includes(chamado.status)) abertos += 1
+      if (chamado.status === 'Resolvido') resolvidos += 1
+    }
+    return { abertos, resolvidos }
+  }, [chamados])
 
   async function criado(chamado) {
     setChamados((atuais) => [chamado, ...atuais])
@@ -55,62 +306,31 @@ function PortalCliente() {
     <main className="portal-page">
       <header className="portal-header">
         <div className="portal-brand">
-          <img src={configuracao.logo_url || '/brand-mark.svg'} alt="" onError={(event) => { event.currentTarget.src = '/brand-mark.svg' }} />
+          <img alt="" onError={(event) => { event.currentTarget.src = '/brand-mark.svg' }} src={configuracao.logo_url || '/brand-mark.svg'} />
           <div><strong>{configuracao.nome_empresa}</strong><span>Portal do Cliente</span></div>
         </div>
-        <div className="portal-user"><span>Olá, {usuario.nome.split(' ')[0]}</span><button type="button" onClick={logout}>Sair</button></div>
+        <div className="portal-user"><span>Olá, {usuario.nome.split(' ')[0]}</span><button onClick={logout} type="button">Sair</button></div>
       </header>
-
       <section className="portal-content">
         <header className="portal-intro">
           <div><p>ACOMPANHAMENTO</p><h1>Seus chamados de suporte</h1><span>Abra solicitações e acompanhe todas as atualizações da equipe.</span></div>
-          <button className="portal-primary-button" type="button" onClick={() => setModalAberto(true)}><CirclePlus size={18} /> Novo chamado</button>
+          <button className="portal-primary-button" onClick={() => setModalAberto(true)} type="button"><CirclePlus size={18} /> Novo chamado</button>
         </header>
-
-        <div className="portal-summary" aria-label="Resumo dos chamados">
+        <div aria-label="Resumo dos chamados" className="portal-summary">
           <article><TicketCheck size={20} /><div><span>Total de chamados</span><strong>{chamados.length}</strong></div></article>
           <article><RefreshCw size={20} /><div><span>Em acompanhamento</span><strong>{resumo.abertos}</strong></div></article>
           <article><MessageSquare size={20} /><div><span>Resolvidos</span><strong>{resumo.resolvidos}</strong></div></article>
         </div>
-
-        {erro ? <div className="portal-alert" role="alert"><span>{erro}</span><button type="button" onClick={carregar}>Tentar novamente</button></div> : null}
-        <section className="portal-ticket-list" aria-busy={carregando}>
-          <header><div><h2>Chamados recentes</h2><span>{carregando ? 'Carregando...' : `${chamados.length} registro(s)`}</span></div><button type="button" onClick={carregar} disabled={carregando}><RefreshCw size={17} /> Atualizar</button></header>
-          {carregando ? <p className="portal-empty">Carregando seus chamados...</p> : chamados.length ? (
-            <div className="portal-ticket-table">
-              {chamados.map((chamado) => <button type="button" key={chamado.id} className="portal-ticket-row" onClick={() => setSelecionado(chamado)}>
-                <span className="portal-ticket-id">#{String(chamado.id).padStart(3, '0')}</span><span><strong>{chamado.titulo}</strong><small>{chamado.categoria} · {formatarData(chamado.created_at)}</small></span><span className={`portal-status ${classeChamado('status', chamado.status)}`}>{chamado.status}</span><span className={`portal-priority ${classeChamado('priority', chamado.prioridade)}`}>{chamado.prioridade}</span>
-              </button>)}
-            </div>
-          ) : <div className="portal-empty"><TicketCheck size={32} /><strong>Nenhum chamado ainda</strong><p>Quando precisar de ajuda, abra sua primeira solicitação.</p><button className="portal-primary-button" type="button" onClick={() => setModalAberto(true)}>Abrir chamado</button></div>}
+        {erro ? <div className="portal-alert" role="alert"><span>{erro}</span><button onClick={carregar} type="button">Tentar novamente</button></div> : null}
+        <section aria-busy={carregando} className="portal-ticket-list">
+          <header><div><h2>Chamados recentes</h2><span>{carregando ? 'Carregando...' : `${chamados.length} registro(s)`}</span></div><button disabled={carregando} onClick={carregar} type="button"><RefreshCw size={17} /> Atualizar</button></header>
+          {carregando ? <p className="portal-empty">Carregando seus chamados...</p> : chamados.length ? <div className="portal-ticket-table">{chamados.map((chamado) => <button className="portal-ticket-row" key={chamado.id} onClick={() => setSelecionado(chamado)} type="button"><span className="portal-ticket-id">#{String(chamado.id).padStart(3, '0')}</span><span><strong>{chamado.titulo}</strong><small>{chamado.categoria} · {formatarData(chamado.created_at)}</small></span><span className={`portal-status ${classeChamado('status', chamado.status)}`}>{chamado.status}</span><span className={`portal-priority ${classeChamado('priority', chamado.prioridade)}`}>{chamado.prioridade}</span></button>)}</div> : <div className="portal-empty"><TicketCheck size={32} /><strong>Nenhum chamado ainda</strong><p>Quando precisar de ajuda, abra sua primeira solicitação.</p><button className="portal-primary-button" onClick={() => setModalAberto(true)} type="button">Abrir chamado</button></div>}
         </section>
       </section>
       {modalAberto ? <NovoChamadoPortal onClose={() => setModalAberto(false)} onCreated={criado} /> : null}
       {selecionado ? <DetalhesChamadoPortal chamado={selecionado} onClose={() => setSelecionado(null)} /> : null}
     </main>
   )
-}
-
-function NovoChamadoPortal({ onClose, onCreated }) {
-  const [formulario, setFormulario] = useState({ titulo: '', descricao: '', categoria: '', prioridade: '' })
-  const [erro, setErro] = useState('')
-  const [salvando, setSalvando] = useState(false)
-  async function enviar(event) {
-    event.preventDefault(); setSalvando(true); setErro('')
-    try { await onCreated(await criarMeuChamadoApi(formulario)) } catch (error) { setErro(error.message); setSalvando(false) }
-  }
-  return <div className="portal-modal-backdrop" onMouseDown={onClose}><section className="portal-modal" role="dialog" aria-modal="true" aria-labelledby="novo-chamado-portal" onMouseDown={(event) => event.stopPropagation()}><header><div><p>NOVA SOLICITAÇÃO</p><h2 id="novo-chamado-portal">Como podemos ajudar?</h2></div><button type="button" onClick={onClose} disabled={salvando} aria-label="Fechar"><X /></button></header><form onSubmit={enviar}>{erro ? <p className="portal-form-error" role="alert">{erro}</p> : null}<label>Título<input autoFocus maxLength="200" required value={formulario.titulo} onChange={(event) => setFormulario({ ...formulario, titulo: event.target.value })} placeholder="Ex.: Não consigo acessar o sistema" /></label><div className="portal-form-grid"><label>Categoria<select required value={formulario.categoria} onChange={(event) => setFormulario({ ...formulario, categoria: event.target.value })}><option value="">Selecione</option>{CATEGORIAS.map((item) => <option key={item}>{item}</option>)}</select></label><label>Prioridade<select required value={formulario.prioridade} onChange={(event) => setFormulario({ ...formulario, prioridade: event.target.value })}><option value="">Selecione</option>{PRIORIDADES.map((item) => <option key={item}>{item}</option>)}</select></label></div><label>Descreva o problema<textarea rows="6" maxLength="10000" required value={formulario.descricao} onChange={(event) => setFormulario({ ...formulario, descricao: event.target.value })} placeholder="Conte o que aconteceu e, se possível, quando o problema começou." /></label><footer><button type="button" onClick={onClose} disabled={salvando}>Cancelar</button><button className="portal-primary-button" type="submit" disabled={salvando}>{salvando ? 'Enviando...' : 'Abrir chamado'}</button></footer></form></section></div>
-}
-
-function DetalhesChamadoPortal({ chamado, onClose }) {
-  const [mensagens, setMensagens] = useState([])
-  const [carregando, setCarregando] = useState(true)
-  const [novaMensagem, setNovaMensagem] = useState('')
-  const [erro, setErro] = useState('')
-  const [enviando, setEnviando] = useState(false)
-  useEffect(() => { listarMensagensChamadoApi(chamado.id).then(setMensagens).catch((error) => setErro(error.message)).finally(() => setCarregando(false)) }, [chamado.id])
-  async function enviar(event) { event.preventDefault(); if (!novaMensagem.trim()) return; setEnviando(true); setErro(''); try { const mensagem = await enviarMensagemChamadoApi(chamado.id, novaMensagem.trim()); setMensagens((atuais) => [...atuais, mensagem]); setNovaMensagem('') } catch (error) { setErro(error.message) } finally { setEnviando(false) } }
-  return <div className="portal-modal-backdrop" onMouseDown={onClose}><section className="portal-modal portal-ticket-details" role="dialog" aria-modal="true" aria-labelledby="detalhe-chamado-portal" onMouseDown={(event) => event.stopPropagation()}><header><div><p>#{String(chamado.id).padStart(3, '0')}</p><h2 id="detalhe-chamado-portal">{chamado.titulo}</h2><span>{chamado.categoria} · {formatarData(chamado.created_at)}</span></div><button type="button" onClick={onClose} aria-label="Fechar"><X /></button></header><div className="portal-ticket-info"><span className={`portal-status ${classeChamado('status', chamado.status)}`}>{chamado.status}</span><p>{chamado.descricao}</p></div><section className="portal-messages"><h3>Mensagens da equipe</h3>{erro ? <p className="portal-form-error" role="alert">{erro}</p> : null}{carregando ? <p>Carregando mensagens...</p> : mensagens.length ? mensagens.map((mensagem) => <article key={mensagem.id}><strong>{mensagem.usuario_nome || 'Equipe de suporte'}</strong><span>{formatarData(mensagem.created_at)}</span><p>{mensagem.conteudo}</p></article>) : <p>Nenhuma mensagem pública ainda.</p>}<form onSubmit={enviar}><label htmlFor="portal-message">Enviar mensagem para a equipe</label><textarea id="portal-message" rows="4" maxLength="2000" value={novaMensagem} onChange={(event) => setNovaMensagem(event.target.value)} placeholder="Acrescente uma informação sobre o atendimento..." /><footer><small>{novaMensagem.length}/2000</small><button className="portal-primary-button" type="submit" disabled={enviando || !novaMensagem.trim()}>{enviando ? 'Enviando...' : 'Enviar mensagem'}</button></footer></form></section></section></div>
 }
 
 export default PortalCliente

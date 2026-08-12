@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   Archive,
   Ban,
+  BellRing,
   ChartNoAxesColumn,
   CircleAlert,
   CircleCheck,
@@ -11,6 +12,7 @@ import {
   Globe2,
   House,
   MessageCircle,
+  MessageSquareHeart,
   MonitorPlay,
   Settings,
   ShieldAlert,
@@ -30,6 +32,8 @@ import Clientes from "../pages/Clientes/clientes";
 import Usuarios from "../pages/Usuarios/Usuarios";
 import Relatorios from "../pages/Relatorios/Relatorios";
 import Visitas from "../pages/Visitas/Visitas";
+import Notificacoes from "../pages/Notificacoes/Notificacoes";
+import Avaliacoes from "../pages/Avaliacoes/Avaliacoes";
 import Toast from "./ui/Toast";
 import useAuth from "../hooks/useAuth";
 import useCompanyBrand from "../hooks/useCompanyBrand";
@@ -360,6 +364,18 @@ function Dashboard({ onLogout }) {
 
           <button
             className={`menu-item ${
+              paginaAtiva === "notificacoes" ? "active" : ""
+            }`}
+            type="button"
+            onClick={() => setPaginaAtiva("notificacoes")}
+            aria-current={paginaAtiva === "notificacoes" ? "page" : undefined}
+          >
+            <BellRing className="menu-item-icon" aria-hidden="true" />
+            Notificações
+          </button>
+
+          <button
+            className={`menu-item ${
               paginaAtiva === "usuarios" ? "active" : ""
             }`}
             type="button"
@@ -384,6 +400,20 @@ function Dashboard({ onLogout }) {
             />
             Relatórios
           </button>
+
+          {usuario?.cargo === "Administrador" && !somenteLeitura && (
+            <button
+              className={`menu-item ${
+                paginaAtiva === "avaliacoes" ? "active" : ""
+              }`}
+              type="button"
+              onClick={() => setPaginaAtiva("avaliacoes")}
+              aria-current={paginaAtiva === "avaliacoes" ? "page" : undefined}
+            >
+              <MessageSquareHeart className="menu-item-icon" aria-hidden="true" />
+              Avaliações
+            </button>
+          )}
 
           {usuario?.cargo === "Administrador" && !somenteLeitura && (
             <button
@@ -460,6 +490,12 @@ function Dashboard({ onLogout }) {
           <Usuarios administrador={usuario?.cargo === "Administrador"} />
         ) : paginaAtiva === "relatorios" ? (
           <Relatorios />
+        ) : paginaAtiva === "notificacoes" ? (
+          <Notificacoes />
+        ) : paginaAtiva === "avaliacoes" &&
+          usuario?.cargo === "Administrador" &&
+          !somenteLeitura ? (
+          <Avaliacoes />
         ) : paginaAtiva === "visitas" &&
           usuario?.cargo === "Administrador" &&
           !somenteLeitura ? (

@@ -3,6 +3,7 @@ import historyService from '../services/historyService.js'
 import primeiraRespostaService from '../services/primeiraRespostaService.js'
 import chamadoModel from '../models/chamadoModel.js'
 import comentarioModel from '../models/comentarioModel.js'
+import notificacaoService from '../services/notificacaoService.js'
 
 function validarId(id) {
   return Number.isInteger(id) && id > 0
@@ -88,7 +89,8 @@ async function criarComentario(request, response) {
   let conexao
 
   try {
-    if (!(await obterChamado(id, response))) return
+    const chamado = await obterChamado(id, response)
+    if (!chamado) return
 
     conexao = await pool.getConnection()
     await conexao.beginTransaction()
@@ -106,6 +108,10 @@ async function criarComentario(request, response) {
       request.usuario.id,
       conexao,
     )
+
+    if (comentario.tipo === 'PUBLICO') {
+      await notificacaoService.comentarioDaEquipe(chamado, conexao)
+    }
 
     await conexao.commit()
     return response.status(201).json(comentario)

@@ -95,6 +95,19 @@ async function buscarPorClienteId(clienteId, executor = pool) {
   return normalizarUsuario(rows[0])
 }
 
+async function listarEquipeAtiva(executor = pool) {
+  const [rows] = await executor.query(`
+    SELECT ${camposPublicos}
+    FROM usuarios
+    WHERE ativo = 1
+      AND is_demo = 0
+      AND cargo IN ('Administrador', 'Atendente')
+    ORDER BY id ASC
+  `)
+
+  return rows.map(normalizarUsuario)
+}
+
 async function buscarPorIdComSenha(id, executor = pool) {
   const [rows] = await executor.execute(
     `
@@ -248,6 +261,7 @@ export default {
   buscarDemoAtivo,
   buscarPorId,
   buscarPorClienteId,
+  listarEquipeAtiva,
   buscarPorIdComSenha,
   criar,
   atualizar,
