@@ -31,6 +31,8 @@ Memória operacional do projeto. Este arquivo registra o ponto atual para facili
 ## Ponto atual do Git
 
 - A implementação da Conta Demo está na branch `codex/conta-demo-segura`.
+- O cenário demonstrativo pode ser preenchido com atendentes, clientes,
+  chamados, comentários e histórico fictícios usando `npm run seed-demo`.
 - A branch foi criada após a melhoria dos ícones, já mesclada pela PR #22.
 - Antes da próxima alteração, confirmar novamente a branch e o estado real do repositório.
 
