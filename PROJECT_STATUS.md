@@ -6,7 +6,7 @@ Memória operacional do projeto. Este arquivo registra o ponto atual para facili
 
 - Data: 12 de agosto de 2026
 - Versão publicada: `1.0.0`
-- Situação local: conta Demo segura implementada e aguardando publicação
+- Situação local: Conta Demo segura publicada, preenchida e validada
 - Produção: https://ronas-desk.onrender.com
 - Repositório: `ronaelmoura/ronas-desk`
 
@@ -18,7 +18,9 @@ Memória operacional do projeto. Este arquivo registra o ponto atual para facili
 - Armazenamento de anexos integrado ao Cloudinary.
 - Versão `1.0.0` documentada como estável no `README.md`.
 - Correções posteriores da interface incluíram responsividade dos filtros e melhoria dos ícones e alinhamento do dashboard.
-- Conta Demo somente leitura preparada no backend e no frontend; a conta real ainda não foi criada no Aiven.
+- Conta Demo somente leitura criada no Aiven e validada no site público.
+- Cenário demonstrativo preenchido com 4 atendentes, 6 clientes e 15 chamados
+  fictícios, além dos registros que já existiam no ambiente.
 
 ## Decisões permanentes
 
@@ -30,17 +32,16 @@ Memória operacional do projeto. Este arquivo registra o ponto atual para facili
 
 ## Ponto atual do Git
 
-- A implementação da Conta Demo está na branch `codex/conta-demo-segura`.
+- A implementação da Conta Demo foi mesclada na `main` pela PR #23.
 - O cenário demonstrativo pode ser preenchido com atendentes, clientes,
   chamados, comentários e histórico fictícios usando `npm run seed-demo`.
-- A branch foi criada após a melhoria dos ícones, já mesclada pela PR #22.
+- A divulgação está sendo preparada na branch `codex/divulgacao-conta-demo`.
 - Antes da próxima alteração, confirmar novamente a branch e o estado real do repositório.
 
 ## Próximo passo sugerido
 
-- Revisar e publicar a implementação da conta Demo.
-- Depois do deploy, aplicar a migration e criar a conta Demo no Aiven com autorização separada.
-- Atualizar a divulgação do projeto com o link direto para a demonstração.
+- Destacar o link direto da demonstração no README, portfólio e LinkedIn.
+- Manter a demonstração segura, sem divulgar credenciais administrativas.
 - Antes de iniciar nova funcionalidade, registrar objetivo, escopo e critério de conclusão.
 
 ## Como manter esta memória

@@ -12,6 +12,13 @@ O Ronas Desk centraliza clientes, usuários, chamados e indicadores de atendimen
 ![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 
+### [🚀 Acessar demonstração online](https://ronas-desk.onrender.com)
+
+Clique em **Acessar demonstração** na tela de login. Não é necessário informar
+email ou senha. O ambiente apresenta atendentes, clientes, chamados,
+comentários, histórico, indicadores e relatórios fictícios em modo seguro
+somente leitura.
+
 ---
 
 ## 📖 Sobre o projeto
@@ -22,6 +29,9 @@ O projeto aplica separação de responsabilidades no backend, autenticação com
 
 A versão `1.0.0` está concluída, publicada para demonstração e validada nos
 principais fluxos públicos e autenticados em produção.
+
+> **Conheça o sistema:** [abra a Conta Demo segura](https://ronas-desk.onrender.com)
+> e explore uma operação fictícia de suporte técnico sem cadastro.
 
 ## ✨ Funcionalidades
 
