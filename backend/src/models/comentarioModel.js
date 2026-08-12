@@ -60,7 +60,30 @@ async function criar(
   return rows[0]
 }
 
+async function listarPublicosPorChamado(chamadoId, executor = pool) {
+  const [rows] = await executor.execute(
+    `
+      SELECT
+        comentarios.id,
+        comentarios.chamado_id,
+        comentarios.conteudo,
+        comentarios.tipo,
+        comentarios.created_at,
+        usuarios.nome AS usuario_nome
+      FROM comentarios
+      LEFT JOIN usuarios ON usuarios.id = comentarios.usuario_id
+      WHERE comentarios.chamado_id = ?
+        AND comentarios.tipo = 'PUBLICO'
+      ORDER BY comentarios.created_at ASC, comentarios.id ASC
+    `,
+    [chamadoId],
+  )
+
+  return rows
+}
+
 export default {
   listarPorChamado,
+  listarPublicosPorChamado,
   criar,
 }

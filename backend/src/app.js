@@ -10,8 +10,11 @@ import usuariosRouter from './routes/usuarios.routes.js'
 import relatoriosRouter from './routes/relatorios.routes.js'
 import visitasRouter from './routes/visitas.routes.js'
 import configuracaoEmpresaRouter from './routes/configuracaoEmpresa.routes.js'
+import portalClienteRouter from './routes/portalCliente.routes.js'
 import authMiddleware from './middlewares/authMiddleware.js'
 import demoReadOnlyMiddleware from './middlewares/demoReadOnlyMiddleware.js'
+import equipeMiddleware from './middlewares/equipeMiddleware.js'
+import portalClienteMiddleware from './middlewares/portalClienteMiddleware.js'
 import { criarLimitadorLogin } from './middlewares/loginRateLimitMiddleware.js'
 import { criarHealthController } from './controllers/healthController.js'
 import { criarConfiguracaoSeguranca } from './config/security.js'
@@ -62,22 +65,31 @@ export function criarApp({ database = pool, variaveis = process.env } = {}) {
     '/api/chamados',
     authMiddleware,
     demoReadOnlyMiddleware,
+    equipeMiddleware,
     chamadosRouter,
   )
   app.use(
     '/api/clientes',
     authMiddleware,
     demoReadOnlyMiddleware,
+    equipeMiddleware,
     clientesRouter,
   )
-  app.use('/api/dashboard', authMiddleware, dashboardRouter)
+  app.use('/api/dashboard', authMiddleware, equipeMiddleware, dashboardRouter)
   app.use(
     '/api/usuarios',
     authMiddleware,
     demoReadOnlyMiddleware,
+    equipeMiddleware,
     usuariosRouter,
   )
-  app.use('/api/relatorios', authMiddleware, relatoriosRouter)
+  app.use('/api/relatorios', authMiddleware, equipeMiddleware, relatoriosRouter)
+  app.use(
+    '/api/portal',
+    authMiddleware,
+    portalClienteMiddleware,
+    portalClienteRouter,
+  )
 
   app.use('/api', (request, response) => {
     response.status(404).json({

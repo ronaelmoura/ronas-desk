@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { listarClientesApi } from "../../services/clientesApi";
 
 const formularioInicial = {
   nome: "",
   email: "",
   cargo: "Atendente",
+  cliente_id: "",
   senha: "",
 };
 
@@ -12,6 +14,8 @@ function UsuarioModal({ usuario, onClose, onSave }) {
   const [formulario, setFormulario] = useState(formularioInicial);
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
+  const [clientes, setClientes] = useState([]);
+  const [carregandoClientes, setCarregandoClientes] = useState(false);
 
   useEffect(() => {
     if (usuario) {
@@ -19,10 +23,32 @@ function UsuarioModal({ usuario, onClose, onSave }) {
         nome: usuario.nome,
         email: usuario.email,
         cargo: usuario.cargo,
+        cliente_id: usuario.cliente_id ? String(usuario.cliente_id) : "",
         senha: "",
       });
     }
   }, [usuario]);
+
+  useEffect(() => {
+    if (formulario.cargo !== "Cliente") return;
+
+    let ativo = true;
+    setCarregandoClientes(true);
+    listarClientesApi()
+      .then((resultado) => {
+        if (ativo) setClientes(resultado.filter((cliente) => cliente.ativo));
+      })
+      .catch((error) => {
+        if (ativo) setErro(error.message);
+      })
+      .finally(() => {
+        if (ativo) setCarregandoClientes(false);
+      });
+
+    return () => {
+      ativo = false;
+    };
+  }, [formulario.cargo]);
 
   useEffect(() => {
     function fecharComEscape(event) {
@@ -35,7 +61,11 @@ function UsuarioModal({ usuario, onClose, onSave }) {
 
   function atualizarCampo(event) {
     const { name, value } = event.target;
-    setFormulario((atual) => ({ ...atual, [name]: value }));
+    setFormulario((atual) => ({
+      ...atual,
+      [name]: value,
+      ...(name === "cargo" && value !== "Cliente" ? { cliente_id: "" } : {}),
+    }));
   }
 
   async function enviar(event) {
@@ -114,8 +144,32 @@ function UsuarioModal({ usuario, onClose, onSave }) {
             >
               <option value="Atendente">Atendente</option>
               <option value="Administrador">Administrador</option>
+              <option value="Cliente">Cliente (Portal)</option>
             </select>
           </label>
+
+          {formulario.cargo === "Cliente" && (
+            <label>
+              Cliente vinculado
+              <select
+                name="cliente_id"
+                value={formulario.cliente_id}
+                onChange={atualizarCampo}
+                disabled={carregandoClientes}
+                required
+              >
+                <option value="">
+                  {carregandoClientes ? "Carregando clientes..." : "Selecione o cliente"}
+                </option>
+                {clientes.map((cliente) => (
+                  <option key={cliente.id} value={cliente.id}>
+                    {cliente.nome}{cliente.empresa ? ` — ${cliente.empresa}` : ""}
+                  </option>
+                ))}
+              </select>
+              <small>O e-mail da conta deve ser o mesmo do cadastro selecionado.</small>
+            </label>
+          )}
 
           <label>
             {usuario ? "Nova senha (opcional)" : "Senha"}

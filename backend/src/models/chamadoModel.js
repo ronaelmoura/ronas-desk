@@ -59,6 +59,35 @@ async function buscarPorId(id, executor = pool) {
   return rows[0] || null
 }
 
+async function listarPorCliente(clienteId, executor = pool) {
+  const [rows] = await executor.execute(
+    `
+      SELECT id, cliente_id, titulo, descricao, categoria, prioridade, status,
+        created_at, updated_at, resolved_at, first_response_at
+      FROM chamados
+      WHERE cliente_id = ?
+      ORDER BY id DESC
+    `,
+    [clienteId],
+  )
+
+  return rows
+}
+
+async function buscarPorIdDoCliente(id, clienteId, executor = pool) {
+  const [rows] = await executor.execute(
+    `
+      SELECT id, cliente_id, titulo, descricao, categoria, prioridade, status,
+        created_at, updated_at, resolved_at, first_response_at
+      FROM chamados
+      WHERE id = ? AND cliente_id = ?
+    `,
+    [id, clienteId],
+  )
+
+  return rows[0] || null
+}
+
 async function buscarPorIdParaAtualizacao(id, executor) {
   const [rows] = await executor.execute(
     'SELECT id FROM chamados WHERE id = ? FOR UPDATE',
@@ -210,6 +239,8 @@ async function registrarPrimeiraResposta(id, respondidoEm, executor = pool) {
 export default {
   listar,
   buscarPorId,
+  listarPorCliente,
+  buscarPorIdDoCliente,
   buscarPorIdParaAtualizacao,
   buscarClienteAtivo,
   buscarResponsavelAtivo,

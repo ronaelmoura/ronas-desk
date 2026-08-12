@@ -23,3 +23,35 @@ test('lista chamados com a data da primeira resposta', async () => {
   assert.equal(chamadas.length, 1)
   assert.match(chamadas[0], /chamados\.first_response_at/)
 })
+
+test('consulta chamados do portal com o cliente parametrizado', async () => {
+  const chamadas = []
+  const executor = {
+    async execute(sql, parametros) {
+      chamadas.push({ sql, parametros })
+      return [[{ id: 3, cliente_id: 8 }], []]
+    },
+  }
+
+  const chamados = await chamadoModel.listarPorCliente(8, executor)
+
+  assert.equal(chamados[0].cliente_id, 8)
+  assert.match(chamadas[0].sql, /WHERE cliente_id = \?/)
+  assert.deepEqual(chamadas[0].parametros, [8])
+})
+
+test('busca do portal exige o id do chamado e o cliente vinculado', async () => {
+  const chamadas = []
+  const executor = {
+    async execute(sql, parametros) {
+      chamadas.push({ sql, parametros })
+      return [[{ id: 9, cliente_id: 8 }], []]
+    },
+  }
+
+  const chamado = await chamadoModel.buscarPorIdDoCliente(9, 8, executor)
+
+  assert.equal(chamado.id, 9)
+  assert.match(chamadas[0].sql, /id = \? AND cliente_id = \?/)
+  assert.deepEqual(chamadas[0].parametros, [9, 8])
+})

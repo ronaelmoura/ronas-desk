@@ -95,6 +95,22 @@ test('busca hash da senha somente pelo id parametrizado', async () => {
   assert.equal(usuario.ativo, true)
 })
 
+test('busca conta vinculada ao cliente com consulta parametrizada', async () => {
+  const chamadas = []
+  const executor = {
+    async execute(sql, parametros) {
+      chamadas.push({ sql, parametros })
+      return [[], []]
+    },
+  }
+
+  const usuario = await usuarioModel.buscarPorClienteId(12, executor)
+
+  assert.equal(usuario, null)
+  assert.match(chamadas[0].sql, /WHERE cliente_id = \?/)
+  assert.deepEqual(chamadas[0].parametros, [12])
+})
+
 test('altera a própria senha por id somente para usuário ativo', async () => {
   const chamadas = []
   const executor = {

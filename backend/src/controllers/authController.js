@@ -15,6 +15,7 @@ function dadosPublicosUsuario(usuario) {
     nome: usuario.nome,
     email: usuario.email,
     cargo: usuario.cargo,
+    cliente_id: usuario.cliente_id ?? null,
     is_demo: Boolean(usuario.is_demo),
   }
 }
@@ -240,6 +241,17 @@ export function criarAuthController({
         return response.status(401).json({
           status: 'erro',
           message: mensagemSessaoInvalida,
+        })
+      }
+
+      if (
+        usuarioAtual.cargo === 'Cliente' &&
+        usuarioAtual.email !== validacao.dados.email
+      ) {
+        return response.status(400).json({
+          status: 'erro',
+          message:
+            'O email de acesso da conta do cliente é alterado pelo administrador.',
         })
       }
 

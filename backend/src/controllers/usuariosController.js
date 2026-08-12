@@ -1,5 +1,8 @@
 import bcrypt from 'bcryptjs'
 import usuarioModel from '../models/usuarioModel.js'
+import clienteModel from '../models/clienteModel.js'
+
+const cargosPermitidos = new Set(['Administrador', 'Atendente', 'Cliente'])
 
 function validarId(id) {
   return Number.isInteger(id) && id > 0
@@ -29,6 +32,12 @@ function prepararDados(dadosRecebidos, senhaObrigatoria) {
     typeof dados.email === 'string' ? dados.email.trim().toLowerCase() : ''
   const cargo = typeof dados.cargo === 'string' ? dados.cargo.trim() : ''
   const senha = typeof dados.senha === 'string' ? dados.senha : ''
+  const clienteId =
+    dados.cliente_id === null ||
+    dados.cliente_id === '' ||
+    dados.cliente_id === undefined
+      ? null
+      : Number(dados.cliente_id)
 
   if (!nome || !email || !cargo || (senhaObrigatoria && !senha)) {
     return { erro: 'Nome, email, cargo e senha são obrigatórios.' }
@@ -46,11 +55,48 @@ function prepararDados(dadosRecebidos, senhaObrigatoria) {
     return { erro: 'Cargo deve ter no máximo 50 caracteres.' }
   }
 
+  if (!cargosPermitidos.has(cargo)) {
+    return { erro: 'Cargo inválido.' }
+  }
+
+  if (cargo === 'Cliente' && !validarId(clienteId)) {
+    return { erro: 'Selecione o cliente vinculado à conta.' }
+  }
+
+  if (cargo !== 'Cliente' && clienteId !== null) {
+    return { erro: 'Apenas contas de cliente podem ter um cliente vinculado.' }
+  }
+
   if (senha && (senha.length < 8 || senha.length > 200)) {
     return { erro: 'Senha deve ter entre 8 e 200 caracteres.' }
   }
 
-  return { dados: { nome, email, cargo, senha } }
+  return { dados: { nome, email, cargo, senha, cliente_id: clienteId } }
+}
+
+async function validarClienteVinculado(dados) {
+  if (dados.cargo !== 'Cliente') return null
+
+  const cliente = await clienteModel.buscarPorId(dados.cliente_id)
+  if (!cliente) return 'Cliente não encontrado ou inativo.'
+
+  if (cliente.email.toLowerCase() !== dados.email) {
+    return 'O email da conta deve ser o mesmo do cliente vinculado.'
+  }
+
+  return null
+}
+
+async function validarContaClienteUnica(clienteId, usuarioId = null) {
+  if (clienteId === null) return null
+
+  const usuarioVinculado = await usuarioModel.buscarPorClienteId(clienteId)
+
+  if (usuarioVinculado && usuarioVinculado.id !== usuarioId) {
+    return 'Este cliente já possui uma conta de acesso vinculada.'
+  }
+
+  return null
 }
 
 function responderErro(error, response, contexto) {
@@ -113,6 +159,20 @@ async function criar(request, response) {
   }
 
   try {
+    const erroCliente = await validarClienteVinculado(validacao.dados)
+    if (erroCliente) {
+      return response.status(400).json({ status: 'erro', message: erroCliente })
+    }
+
+    const erroContaCliente = await validarContaClienteUnica(
+      validacao.dados.cliente_id,
+    )
+    if (erroContaCliente) {
+      return response
+        .status(409)
+        .json({ status: 'erro', message: erroContaCliente })
+    }
+
     const usuarioExistente = await usuarioModel.buscarPorEmail(
       validacao.dados.email,
     )
@@ -173,6 +233,21 @@ async function atualizar(request, response) {
         status: 'erro',
         message: 'Já existe um usuário com este email.',
       })
+    }
+
+    const erroCliente = await validarClienteVinculado(validacao.dados)
+    if (erroCliente) {
+      return response.status(400).json({ status: 'erro', message: erroCliente })
+    }
+
+    const erroContaCliente = await validarContaClienteUnica(
+      validacao.dados.cliente_id,
+      id,
+    )
+    if (erroContaCliente) {
+      return response
+        .status(409)
+        .json({ status: 'erro', message: erroContaCliente })
     }
 
     const senha_hash = validacao.dados.senha
