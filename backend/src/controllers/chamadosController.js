@@ -5,6 +5,7 @@ import auditoriaService from '../services/auditoriaService.js'
 import historyService from '../services/historyService.js'
 import slaService from '../services/slaService.js'
 import resolucaoChamadoService from '../services/resolucaoChamadoService.js'
+import notificacaoService from '../services/notificacaoService.js'
 
 const categoriasPermitidas = ['Hardware', 'Software', 'Rede', 'Acesso', 'Outro']
 
@@ -201,6 +202,7 @@ async function criar(request, response) {
     )
 
     await historyService.registrarCriacao(chamado, request.usuario.id, conexao)
+    await notificacaoService.novoChamado(chamado, request.usuario.id, conexao)
 
     await conexao.commit()
     return response.status(201).json(slaService.enriquecerChamado(chamado))
@@ -297,6 +299,12 @@ async function atualizar(request, response) {
     )
 
     await historyService.registrarAtualizacao(
+      chamadoExistente,
+      chamado,
+      request.usuario.id,
+      conexao,
+    )
+    await notificacaoService.atualizacaoChamado(
       chamadoExistente,
       chamado,
       request.usuario.id,

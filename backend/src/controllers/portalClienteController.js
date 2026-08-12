@@ -3,6 +3,7 @@ import chamadoModel from '../models/chamadoModel.js'
 import comentarioModel from '../models/comentarioModel.js'
 import historyService from '../services/historyService.js'
 import slaService from '../services/slaService.js'
+import notificacaoService from '../services/notificacaoService.js'
 
 const categoriasPermitidas = new Set([
   'Hardware',
@@ -118,6 +119,7 @@ async function criar(request, response) {
       conexao,
     )
     await historyService.registrarCriacao(chamado, request.usuario.id, conexao)
+    await notificacaoService.novoChamado(chamado, request.usuario.id, conexao)
     await conexao.commit()
     return response.status(201).json(slaService.enriquecerChamado(chamado))
   } catch (error) {
@@ -186,6 +188,11 @@ async function criarComentario(request, response) {
     await historyService.registrarComentario(
       chamado.id,
       comentario,
+      request.usuario.id,
+      conexao,
+    )
+    await notificacaoService.comentarioDoCliente(
+      chamado,
       request.usuario.id,
       conexao,
     )

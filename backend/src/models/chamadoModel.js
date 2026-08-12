@@ -62,7 +62,7 @@ async function buscarPorId(id, executor = pool) {
 async function listarPorCliente(clienteId, executor = pool) {
   const [rows] = await executor.execute(
     `
-      SELECT id, cliente_id, titulo, descricao, categoria, prioridade, status,
+      SELECT id, cliente_id, responsavel_id, titulo, descricao, categoria, prioridade, status,
         created_at, updated_at, resolved_at, first_response_at
       FROM chamados
       WHERE cliente_id = ?
@@ -77,7 +77,7 @@ async function listarPorCliente(clienteId, executor = pool) {
 async function buscarPorIdDoCliente(id, clienteId, executor = pool) {
   const [rows] = await executor.execute(
     `
-      SELECT id, cliente_id, titulo, descricao, categoria, prioridade, status,
+      SELECT id, cliente_id, responsavel_id, titulo, descricao, categoria, prioridade, status,
         created_at, updated_at, resolved_at, first_response_at
       FROM chamados
       WHERE id = ? AND cliente_id = ?

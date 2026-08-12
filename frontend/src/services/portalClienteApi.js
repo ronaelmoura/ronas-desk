@@ -10,3 +10,5 @@ export const buscarMeuChamadoApi = (id) => dados(apiClient.get(`/portal/chamados
 export const criarMeuChamadoApi = (formulario) => dados(apiClient.post('/portal/chamados', formulario))
 export const listarMensagensChamadoApi = (id) => dados(apiClient.get(`/portal/chamados/${id}/comentarios`))
 export const enviarMensagemChamadoApi = (id, conteudo) => dados(apiClient.post(`/portal/chamados/${id}/comentarios`, { conteudo }))
+export const buscarMinhaAvaliacaoApi = (id) => dados(apiClient.get(`/portal/chamados/${id}/avaliacao`))
+export const avaliarChamadoApi = (id, dadosAvaliacao) => dados(apiClient.post(`/portal/chamados/${id}/avaliacao`, dadosAvaliacao))

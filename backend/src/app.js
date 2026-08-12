@@ -11,6 +11,8 @@ import relatoriosRouter from './routes/relatorios.routes.js'
 import visitasRouter from './routes/visitas.routes.js'
 import configuracaoEmpresaRouter from './routes/configuracaoEmpresa.routes.js'
 import portalClienteRouter from './routes/portalCliente.routes.js'
+import notificacoesRouter from './routes/notificacoes.routes.js'
+import avaliacoesRouter from './routes/avaliacoes.routes.js'
 import authMiddleware from './middlewares/authMiddleware.js'
 import demoReadOnlyMiddleware from './middlewares/demoReadOnlyMiddleware.js'
 import equipeMiddleware from './middlewares/equipeMiddleware.js'
@@ -84,6 +86,20 @@ export function criarApp({ database = pool, variaveis = process.env } = {}) {
     usuariosRouter,
   )
   app.use('/api/relatorios', authMiddleware, equipeMiddleware, relatoriosRouter)
+  app.use(
+    '/api/notificacoes',
+    authMiddleware,
+    demoReadOnlyMiddleware,
+    equipeMiddleware,
+    notificacoesRouter,
+  )
+  app.use(
+    '/api/avaliacoes',
+    authMiddleware,
+    demoReadOnlyMiddleware,
+    equipeMiddleware,
+    avaliacoesRouter,
+  )
   app.use(
     '/api/portal',
     authMiddleware,
