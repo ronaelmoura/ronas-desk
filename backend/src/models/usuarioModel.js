@@ -6,6 +6,7 @@ const camposPublicos = `
   email,
   cargo,
   ativo,
+  is_demo,
   created_at,
   updated_at
 `
@@ -18,6 +19,7 @@ function normalizarUsuario(usuario) {
   return {
     ...usuario,
     ativo: Boolean(usuario.ativo),
+    is_demo: Boolean(usuario.is_demo),
   }
 }
 
@@ -40,12 +42,26 @@ async function buscarPorEmail(email) {
         email,
         senha_hash,
         cargo,
-        ativo
+        ativo,
+        is_demo
       FROM usuarios
       WHERE email = ?
     `,
     [email],
   )
+
+  return normalizarUsuario(rows[0])
+}
+
+async function buscarDemoAtivo() {
+  const [rows] = await pool.query(`
+    SELECT ${camposPublicos}
+    FROM usuarios
+    WHERE is_demo = 1
+      AND ativo = 1
+    ORDER BY id ASC
+    LIMIT 1
+  `)
 
   return normalizarUsuario(rows[0])
 }
@@ -82,18 +98,19 @@ async function buscarPorIdComSenha(id, executor = pool) {
   return normalizarUsuario(rows[0])
 }
 
-async function criar({ nome, email, senha_hash, cargo }) {
+async function criar({ nome, email, senha_hash, cargo, is_demo = false }) {
   const [resultado] = await pool.execute(
     `
       INSERT INTO usuarios (
         nome,
         email,
         senha_hash,
-        cargo
+        cargo,
+        is_demo
       )
-      VALUES (?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?)
     `,
-    [nome, email, senha_hash, cargo],
+    [nome, email, senha_hash, cargo, is_demo],
   )
 
   return buscarPorId(resultado.insertId)
@@ -200,6 +217,7 @@ async function excluir(id) {
 export default {
   listar,
   buscarPorEmail,
+  buscarDemoAtivo,
   buscarPorId,
   buscarPorIdComSenha,
   criar,

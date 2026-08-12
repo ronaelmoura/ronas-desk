@@ -10,6 +10,7 @@ import {
   Gauge,
   House,
   MessageCircle,
+  MonitorPlay,
   Settings,
   ShieldAlert,
   Timer,
@@ -88,6 +89,7 @@ function formatarTempoMedio(minutos) {
 
 function Dashboard({ onLogout }) {
   const { usuario } = useAuth();
+  const somenteLeitura = Boolean(usuario?.is_demo);
   const [chamados, setChamados] = useState([]);
   const [dashboard, setDashboard] = useState(dashboardInicial);
   const [carregando, setCarregando] = useState(true);
@@ -370,16 +372,19 @@ function Dashboard({ onLogout }) {
             Relatórios
           </button>
 
-          <button
-            className="menu-item"
-            type="button"
-            onClick={() => setModalAberto(true)}
-          >
-            <CirclePlus className="menu-item-icon" aria-hidden="true" />
-            Novo chamado
-          </button>
+          {!somenteLeitura && (
+            <button
+              className="menu-item"
+              type="button"
+              onClick={() => setModalAberto(true)}
+            >
+              <CirclePlus className="menu-item-icon" aria-hidden="true" />
+              Novo chamado
+            </button>
+          )}
 
-          <button
+          {!somenteLeitura && (
+            <button
             className={`menu-item ${
               paginaAtiva === "configuracoes" ? "active" : ""
             }`}
@@ -389,7 +394,8 @@ function Dashboard({ onLogout }) {
           >
             <Settings className="menu-item-icon" aria-hidden="true" />
             Configurações
-          </button>
+            </button>
+          )}
         </nav>
 
         <div className="sidebar-footer">
@@ -409,8 +415,20 @@ function Dashboard({ onLogout }) {
       </aside>
 
       <main className="dashboard-content">
+        {somenteLeitura && (
+          <div className="demo-mode-banner" role="status">
+            <MonitorPlay aria-hidden="true" />
+            <div>
+              <strong>Você está explorando a demonstração</strong>
+              <span>Os dados são reais da demonstração e estão protegidos contra alterações.</span>
+            </div>
+          </div>
+        )}
         {paginaAtiva === "clientes" ? (
-          <Clientes onSelectTicket={setChamadoSelecionado} />
+          <Clientes
+            onSelectTicket={setChamadoSelecionado}
+            somenteLeitura={somenteLeitura}
+          />
         ) : paginaAtiva === "usuarios" ? (
           <Usuarios administrador={usuario?.cargo === "Administrador"} />
         ) : paginaAtiva === "relatorios" ? (
@@ -438,7 +456,7 @@ function Dashboard({ onLogout }) {
             <AllTickets
               chamados={chamados}
               onSelectTicket={setChamadoSelecionado}
-              onNewTicket={() => setModalAberto(true)}
+              onNewTicket={somenteLeitura ? null : () => setModalAberto(true)}
               filtrosIniciais={filtroInicialChamados}
             />
           )
@@ -573,13 +591,15 @@ function Dashboard({ onLogout }) {
                 </div>
               </div>
 
-              <button
-                className="new-ticket-button"
-                type="button"
-                onClick={() => setModalAberto(true)}
-              >
-                + Novo chamado
-              </button>
+              {!somenteLeitura && (
+                <button
+                  className="new-ticket-button"
+                  type="button"
+                  onClick={() => setModalAberto(true)}
+                >
+                  + Novo chamado
+                </button>
+              )}
 
             </header>
 
@@ -909,7 +929,7 @@ function Dashboard({ onLogout }) {
         )}
       </main>
 
-      {modalAberto && (
+      {modalAberto && !somenteLeitura && (
         <NewTicketModal
           onClose={() => setModalAberto(false)}
           onSave={criarChamado}
@@ -923,6 +943,7 @@ function Dashboard({ onLogout }) {
           onUpdate={atualizarChamado}
           onDelete={excluirChamado}
           onPublicResponse={recarregarDashboardAtual}
+          somenteLeitura={somenteLeitura}
         />
       )}
 

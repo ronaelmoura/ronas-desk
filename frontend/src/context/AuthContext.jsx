@@ -4,6 +4,7 @@ import {
   atualizarPerfilApi,
   buscarUsuarioAtualApi,
   loginApi,
+  loginDemoApi,
 } from '../services/authApi'
 import {
   CHAVE_TOKEN,
@@ -78,6 +79,15 @@ export function AuthProvider({ children }) {
     return resultado.usuario
   }
 
+  async function loginDemo() {
+    const resultado = await loginDemoApi()
+
+    localStorage.setItem(CHAVE_TOKEN, resultado.token)
+    setUsuario(resultado.usuario)
+
+    return resultado.usuario
+  }
+
   function logout() {
     localStorage.removeItem(CHAVE_TOKEN)
     setUsuario(null)
@@ -101,6 +111,7 @@ export function AuthProvider({ children }) {
         usuario,
         carregando,
         login,
+        loginDemo,
         logout,
         atualizarPerfil,
         alterarSenha,

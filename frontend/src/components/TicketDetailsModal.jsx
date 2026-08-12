@@ -47,6 +47,7 @@ function TicketDetailsModal({
   onUpdate,
   onDelete,
   onPublicResponse,
+  somenteLeitura = false,
 }) {
   const [abaAtiva, setAbaAtiva] = useState("informacoes");
   const [titulo, setTitulo] = useState(chamado.titulo);
@@ -405,6 +406,7 @@ function TicketDetailsModal({
               <label htmlFor="edit-title">Título do chamado</label>
               <input
                 id="edit-title"
+                disabled={somenteLeitura}
                 type="text"
                 value={titulo}
                 onChange={(event) => setTitulo(event.target.value)}
@@ -416,6 +418,7 @@ function TicketDetailsModal({
                 <label htmlFor="edit-category">Categoria</label>
                 <select
                   id="edit-category"
+                  disabled={somenteLeitura}
                   value={categoria}
                   onChange={(event) => setCategoria(event.target.value)}
                 >
@@ -433,6 +436,7 @@ function TicketDetailsModal({
                 <label htmlFor="edit-priority">Prioridade</label>
                 <select
                   id="edit-priority"
+                  disabled={somenteLeitura}
                   value={prioridade}
                   onChange={(event) => setPrioridade(event.target.value)}
                 >
@@ -450,7 +454,7 @@ function TicketDetailsModal({
               <select
                 id="edit-responsavel"
                 value={responsavelId}
-                disabled={carregandoUsuarios}
+                disabled={carregandoUsuarios || somenteLeitura}
                 onChange={(event) => setResponsavelId(event.target.value)}
               >
                 <option value="">
@@ -470,6 +474,7 @@ function TicketDetailsModal({
               <label htmlFor="edit-description">Descrição</label>
               <textarea
                 id="edit-description"
+                disabled={somenteLeitura}
                 rows="6"
                 value={descricao}
                 onChange={(event) => setDescricao(event.target.value)}
@@ -480,6 +485,7 @@ function TicketDetailsModal({
               <label htmlFor="edit-status">Status</label>
               <select
                 id="edit-status"
+                disabled={somenteLeitura}
                 value={status}
                 onChange={(event) => setStatus(event.target.value)}
               >
@@ -491,7 +497,17 @@ function TicketDetailsModal({
               </select>
             </div>
 
-            {confirmandoExclusao ? (
+            {somenteLeitura ? (
+              <div className="ticket-details-actions">
+                <button
+                  className="details-cancel-button"
+                  type="button"
+                  onClick={onClose}
+                >
+                  Fechar
+                </button>
+              </div>
+            ) : confirmandoExclusao ? (
               <div className="delete-confirmation">
                 <div>
                   <strong>Excluir este chamado?</strong>
@@ -550,6 +566,7 @@ function TicketDetailsModal({
 
         {abaAtiva === "comentarios" && (
           <section className="ticket-interactions-content">
+            {!somenteLeitura && (
             <form className="comment-form" onSubmit={adicionarComentario}>
               <div className="comment-form-header">
                 <label htmlFor="new-comment">Adicionar comentário</label>
@@ -584,6 +601,7 @@ function TicketDetailsModal({
                 </button>
               </div>
             </form>
+            )}
 
             {carregandoInteracoes ? (
               <div className="interaction-loading">
@@ -634,6 +652,7 @@ function TicketDetailsModal({
 
         {abaAtiva === "anexos" && (
           <section className="ticket-interactions-content">
+            {!somenteLeitura && (
             <form className="attachment-form" onSubmit={adicionarAnexo}>
               <div>
                 <label htmlFor="ticket-attachment">Adicionar anexo</label>
@@ -657,6 +676,7 @@ function TicketDetailsModal({
                 {enviandoAnexo ? "Enviando..." : "Enviar arquivo"}
               </button>
             </form>
+            )}
 
             {carregandoAnexos ? (
               <div className="interaction-loading">Carregando anexos...</div>
@@ -682,7 +702,7 @@ function TicketDetailsModal({
                         </span>
                       </div>
                       <div className="attachment-actions">
-                        {confirmando ? (
+                        {confirmando && !somenteLeitura ? (
                           <>
                             <button
                               className="attachment-cancel-button"
@@ -716,14 +736,16 @@ function TicketDetailsModal({
                                 ? "Abrindo..."
                                 : "Abrir"}
                             </button>
-                            <button
-                              className="attachment-delete-button"
-                              type="button"
-                              onClick={() => setAnexoEmExclusao(anexo.id)}
-                              aria-label={`Excluir ${anexo.nome_original}`}
-                            >
-                              <Trash2 size={17} aria-hidden="true" />
-                            </button>
+                            {!somenteLeitura && (
+                              <button
+                                className="attachment-delete-button"
+                                type="button"
+                                onClick={() => setAnexoEmExclusao(anexo.id)}
+                                aria-label={`Excluir ${anexo.nome_original}`}
+                              >
+                                <Trash2 size={17} aria-hidden="true" />
+                              </button>
+                            )}
                           </>
                         )}
                       </div>

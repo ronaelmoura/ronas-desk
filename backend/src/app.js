@@ -9,6 +9,7 @@ import authRouter from './routes/auth.routes.js'
 import usuariosRouter from './routes/usuarios.routes.js'
 import relatoriosRouter from './routes/relatorios.routes.js'
 import authMiddleware from './middlewares/authMiddleware.js'
+import demoReadOnlyMiddleware from './middlewares/demoReadOnlyMiddleware.js'
 import { criarLimitadorLogin } from './middlewares/loginRateLimitMiddleware.js'
 import { criarHealthController } from './controllers/healthController.js'
 import { criarConfiguracaoSeguranca } from './config/security.js'
@@ -46,11 +47,32 @@ export function criarApp({ database = pool, variaveis = process.env } = {}) {
     '/api/auth/login',
     criarLimitadorLogin(configuracaoSeguranca.loginRateLimit),
   )
+  app.use(
+    '/api/auth/demo',
+    criarLimitadorLogin(configuracaoSeguranca.loginRateLimit, {
+      ignorarSucessos: false,
+    }),
+  )
   app.use('/api/auth', authRouter)
-  app.use('/api/chamados', authMiddleware, chamadosRouter)
-  app.use('/api/clientes', authMiddleware, clientesRouter)
+  app.use(
+    '/api/chamados',
+    authMiddleware,
+    demoReadOnlyMiddleware,
+    chamadosRouter,
+  )
+  app.use(
+    '/api/clientes',
+    authMiddleware,
+    demoReadOnlyMiddleware,
+    clientesRouter,
+  )
   app.use('/api/dashboard', authMiddleware, dashboardRouter)
-  app.use('/api/usuarios', authMiddleware, usuariosRouter)
+  app.use(
+    '/api/usuarios',
+    authMiddleware,
+    demoReadOnlyMiddleware,
+    usuariosRouter,
+  )
   app.use('/api/relatorios', authMiddleware, relatoriosRouter)
 
   app.use('/api', (request, response) => {

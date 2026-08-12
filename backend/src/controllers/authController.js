@@ -15,6 +15,7 @@ function dadosPublicosUsuario(usuario) {
     nome: usuario.nome,
     email: usuario.email,
     cargo: usuario.cargo,
+    is_demo: Boolean(usuario.is_demo),
   }
 }
 
@@ -164,6 +165,43 @@ export function criarAuthController({
     }
   }
 
+  async function loginDemo(request, response) {
+    try {
+      const usuario = await usuarios.buscarDemoAtivo()
+
+      if (!usuario) {
+        return response.status(503).json({
+          status: 'erro',
+          message: 'A demonstração está temporariamente indisponível.',
+        })
+      }
+
+      if (!variaveis.JWT_SECRET) {
+        console.error('JWT_SECRET não configurado.')
+
+        return response.status(500).json({
+          status: 'erro',
+          message: 'Não foi possível acessar a demonstração.',
+        })
+      }
+
+      const dadosUsuario = dadosPublicosUsuario(usuario)
+      const token = tokens.sign(dadosUsuario, variaveis.JWT_SECRET, {
+        algorithm: 'HS256',
+        expiresIn: variaveis.JWT_EXPIRES_IN || '8h',
+      })
+
+      return response.status(200).json({ token, usuario: dadosUsuario })
+    } catch (error) {
+      return responderErro(
+        error,
+        response,
+        'Erro ao acessar demonstração:',
+        'Não foi possível acessar a demonstração.',
+      )
+    }
+  }
+
   async function me(request, response) {
     try {
       const usuario = await usuarios.buscarPorId(request.usuario.id)
@@ -298,6 +336,7 @@ export function criarAuthController({
 
   return {
     login,
+    loginDemo,
     me,
     atualizarPerfil,
     alterarSenha,

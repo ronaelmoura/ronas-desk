@@ -9,6 +9,12 @@ export async function loginApi(email, senha) {
   return response.data
 }
 
+export async function loginDemoApi() {
+  const response = await apiClient.post('/auth/demo')
+
+  return response.data
+}
+
 export async function buscarUsuarioAtualApi() {
   const response = await apiClient.get('/auth/me')
 

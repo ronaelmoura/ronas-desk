@@ -58,12 +58,66 @@ test('login continua emitindo token com dados públicos do usuário', async () =
     nome: 'Ronael Moura',
     email: 'ronael@example.com',
     cargo: 'Administrador',
+    is_demo: false,
   })
   assert.deepEqual(chamadas[0], {
     senha: 'senha-atual',
     hash: 'hash-atual',
   })
   assert.equal(chamadas[1].payload.senha_hash, undefined)
+})
+
+test('login demo emite token sem exigir ou retornar senha', async () => {
+  const chamadas = []
+  const controller = criarAuthController({
+    usuarios: {
+      buscarDemoAtivo: async () => ({
+        id: 12,
+        nome: 'Visitante Demo',
+        email: 'demo@example.com',
+        cargo: 'Atendente',
+        ativo: true,
+        is_demo: true,
+      }),
+    },
+    tokens: {
+      sign: (payload) => {
+        chamadas.push(payload)
+        return 'token-demo'
+      },
+    },
+    variaveis: { JWT_SECRET: 'segredo-de-teste' },
+  })
+  const response = criarResposta()
+
+  await controller.loginDemo({ body: {} }, response)
+
+  assert.equal(response.statusCode, 200)
+  assert.equal(response.body.token, 'token-demo')
+  assert.deepEqual(response.body.usuario, {
+    id: 12,
+    nome: 'Visitante Demo',
+    email: 'demo@example.com',
+    cargo: 'Atendente',
+    is_demo: true,
+  })
+  assert.equal(chamadas[0].senha_hash, undefined)
+})
+
+test('login demo informa quando não há conta configurada', async () => {
+  const controller = criarAuthController({
+    usuarios: { buscarDemoAtivo: async () => null },
+    variaveis: { JWT_SECRET: 'segredo-de-teste' },
+  })
+  const response = criarResposta()
+
+  await controller.loginDemo({ body: {} }, response)
+
+  assert.equal(response.statusCode, 503)
+  assert.equal(
+    response.body.message,
+    'A demonstração está temporariamente indisponível.',
+  )
 })
 
 test('atualiza somente nome e email do próprio perfil', async () => {
