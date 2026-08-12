@@ -11,7 +11,7 @@ export default async function adminMiddleware(request, response, next) {
     ) {
       return response.status(403).json({
         status: 'erro',
-        message: 'Apenas administradores podem gerenciar usuários.',
+        message: 'Apenas administradores podem executar esta ação.',
       })
     }
 

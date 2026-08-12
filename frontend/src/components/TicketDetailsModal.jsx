@@ -48,6 +48,7 @@ function TicketDetailsModal({
   onDelete,
   onPublicResponse,
   somenteLeitura = false,
+  administrador = false,
 }) {
   const [abaAtiva, setAbaAtiva] = useState("informacoes");
   const [titulo, setTitulo] = useState(chamado.titulo);
@@ -146,7 +147,14 @@ function TicketDetailsModal({
             listarAnexosChamadoApi(chamado.id),
           ]);
 
-        setUsuarios(resultadoUsuarios.filter((usuario) => usuario.ativo));
+        setUsuarios(
+          resultadoUsuarios.filter(
+            (usuario) =>
+              (usuario.ativo === true || usuario.ativo === 1) &&
+              !usuario.is_demo &&
+              ["Administrador", "Atendente"].includes(usuario.cargo),
+          ),
+        );
         setComentarios(resultadoComentarios);
         setAnexos(resultadoAnexos);
       } catch (error) {
@@ -507,7 +515,7 @@ function TicketDetailsModal({
                   Fechar
                 </button>
               </div>
-            ) : confirmandoExclusao ? (
+            ) : confirmandoExclusao && administrador ? (
               <div className="delete-confirmation">
                 <div>
                   <strong>Excluir este chamado?</strong>
@@ -534,14 +542,16 @@ function TicketDetailsModal({
               </div>
             ) : (
               <div className="ticket-details-actions">
-                <button
-                  className="details-delete-button"
-                  type="button"
-                  disabled={salvando}
-                  onClick={() => setConfirmandoExclusao(true)}
-                >
-                  Excluir
-                </button>
+                {administrador && (
+                  <button
+                    className="details-delete-button"
+                    type="button"
+                    disabled={salvando}
+                    onClick={() => setConfirmandoExclusao(true)}
+                  >
+                    Excluir
+                  </button>
+                )}
                 <div className="details-main-actions">
                   <button
                     className="details-cancel-button"
@@ -702,7 +712,7 @@ function TicketDetailsModal({
                         </span>
                       </div>
                       <div className="attachment-actions">
-                        {confirmando && !somenteLeitura ? (
+                        {confirmando && !somenteLeitura && administrador ? (
                           <>
                             <button
                               className="attachment-cancel-button"
@@ -736,7 +746,7 @@ function TicketDetailsModal({
                                 ? "Abrindo..."
                                 : "Abrir"}
                             </button>
-                            {!somenteLeitura && (
+                            {!somenteLeitura && administrador && (
                               <button
                                 className="attachment-delete-button"
                                 type="button"

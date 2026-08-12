@@ -93,7 +93,7 @@ async function validarRelacionamentos(dados, response, executor = pool) {
     if (!responsavel) {
       response.status(400).json({
         status: 'erro',
-        message: 'Responsável não encontrado ou inativo.',
+        message: 'Responsável não encontrado, inativo ou sem permissão.',
       })
       return false
     }
