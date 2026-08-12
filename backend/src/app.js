@@ -9,6 +9,7 @@ import authRouter from './routes/auth.routes.js'
 import usuariosRouter from './routes/usuarios.routes.js'
 import relatoriosRouter from './routes/relatorios.routes.js'
 import visitasRouter from './routes/visitas.routes.js'
+import configuracaoEmpresaRouter from './routes/configuracaoEmpresa.routes.js'
 import authMiddleware from './middlewares/authMiddleware.js'
 import demoReadOnlyMiddleware from './middlewares/demoReadOnlyMiddleware.js'
 import { criarLimitadorLogin } from './middlewares/loginRateLimitMiddleware.js'
@@ -56,6 +57,7 @@ export function criarApp({ database = pool, variaveis = process.env } = {}) {
   )
   app.use('/api/auth', authRouter)
   app.use('/api/visitas', visitasRouter)
+  app.use('/api/configuracao-empresa', configuracaoEmpresaRouter)
   app.use(
     '/api/chamados',
     authMiddleware,

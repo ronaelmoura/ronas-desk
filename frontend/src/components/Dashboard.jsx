@@ -32,6 +32,7 @@ import Relatorios from "../pages/Relatorios/Relatorios";
 import Visitas from "../pages/Visitas/Visitas";
 import Toast from "./ui/Toast";
 import useAuth from "../hooks/useAuth";
+import useCompanyBrand from "../hooks/useCompanyBrand";
 import {
   criarChamadoApi,
   excluirChamadoApi,
@@ -41,6 +42,7 @@ import {
 import { buscarDashboardApi } from "../services/dashboardApi";
 import { registrarVisitaApi } from "../services/visitasApi";
 import { classeChamado } from "../utils/chamados";
+import { usarLogoPadrao } from "../utils/companyBrand";
 
 const dashboardInicial = {
   total_clientes: 0,
@@ -92,6 +94,7 @@ function formatarTempoMedio(minutos) {
 
 function Dashboard({ onLogout }) {
   const { usuario } = useAuth();
+  const { configuracao } = useCompanyBrand();
   const somenteLeitura = Boolean(usuario?.is_demo);
   const [chamados, setChamados] = useState([]);
   const [dashboard, setDashboard] = useState(dashboardInicial);
@@ -307,13 +310,14 @@ function Dashboard({ onLogout }) {
         <div className="sidebar-brand">
           <img
             className="sidebar-logo-image"
-            src="/brand-mark.svg"
-            alt="Logo Ronas Desk"
+            src={configuracao.logo_url || "/brand-mark.svg"}
+            alt={`Logo ${configuracao.nome_empresa}`}
+            onError={usarLogoPadrao}
           />
 
           <div>
-            <strong>Ronas Desk</strong>
-            <span>Central de suporte</span>
+            <strong>{configuracao.nome_empresa}</strong>
+            <span>{configuracao.nome_central}</span>
           </div>
         </div>
 

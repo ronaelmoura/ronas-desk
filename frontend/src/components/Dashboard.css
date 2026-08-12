@@ -17,7 +17,7 @@
   padding: 28px 20px;
   background:
     radial-gradient(circle at top, rgba(22, 130, 255, 0.2), transparent 30%),
-    #081525;
+    var(--brand-sidebar);
   color: #ffffff;
 }
 
@@ -35,7 +35,7 @@
   display: grid;
   place-items: center;
   border-radius: 14px;
-  background: linear-gradient(135deg, #1682ff, #00c6ff);
+  background: var(--brand-primary);
   font-weight: 900;
   box-shadow: 0 12px 30px rgba(22, 130, 255, 0.3);
 }
@@ -220,7 +220,7 @@
 
 .dashboard-period-selector select:focus,
 .periodo-personalizado-inputs input:focus {
-  border-color: #1682ff;
+  border-color: var(--brand-primary);
   box-shadow: 0 0 0 3px rgba(22, 130, 255, 0.1);
 }
 
@@ -286,7 +286,7 @@
 
 .dashboard-eyebrow {
   margin-bottom: 7px;
-  color: #1682ff;
+  color: var(--brand-primary);
   font-size: 0.76rem;
   font-weight: 900;
   letter-spacing: 0.14em;
@@ -310,7 +310,7 @@
   padding: 13px 18px;
   border: 0;
   border-radius: 11px;
-  background: linear-gradient(90deg, #147ee8, #00a9ee);
+  background: var(--brand-primary);
   color: #ffffff;
   font: inherit;
   font-weight: 800;
@@ -380,7 +380,7 @@
 
 .summary-icon.blue {
   background: #eaf4ff;
-  color: #147ee8;
+  color: var(--brand-primary);
 }
 
 .summary-icon.red {
@@ -453,7 +453,7 @@
 .text-button {
   border: 0;
   background: transparent;
-  color: #147ee8;
+  color: var(--brand-primary);
   font: inherit;
   font-weight: 800;
   cursor: pointer;
@@ -498,7 +498,7 @@
 
 .ticket-table tbody tr:hover {
   background: #f7fbff;
-  box-shadow: inset 3px 0 #1682ff;
+  box-shadow: inset 3px 0 var(--brand-primary);
 }
 
 .dashboard-skeleton {
@@ -574,7 +574,7 @@ button:focus-visible {
 }
 
 .ticket-id {
-  color: #147ee8 !important;
+  color: var(--brand-primary) !important;
   font-weight: 800;
 }
 
@@ -646,7 +646,7 @@ button:focus-visible {
 .details-button {
   border: 0;
   background: transparent;
-  color: #147ee8;
+  color: var(--brand-primary);
   font: inherit;
   font-size: 0.78rem;
   font-weight: 800;
@@ -695,7 +695,7 @@ button:focus-visible {
 
 .search-field input:focus,
 .filter-field select:focus {
-  border-color: #1682ff;
+  border-color: var(--brand-primary);
   box-shadow: 0 0 0 3px rgba(22, 130, 255, 0.1);
 }
 
@@ -713,8 +713,8 @@ button:focus-visible {
 }
 
 .clear-filters-button:hover {
-  border-color: #1682ff;
-  color: #147ee8;
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
 }
 
 .filter-result {
