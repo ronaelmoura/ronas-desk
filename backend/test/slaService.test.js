@@ -62,6 +62,16 @@ test('chamado aberto sem data de resolução usa o relógio informado', () => {
   assert.equal(calcularEm(2).elapsedMinutes, 120)
 })
 
+test('reabertura calcula o SLA a partir do novo ciclo', () => {
+  const sla = calcularEm(30, {
+    status: 'Em Atendimento',
+    sla_started_at: '2026-01-02T00:00:00.000Z',
+  })
+
+  assert.equal(sla.elapsedMinutes, 360)
+  assert.equal(sla.dueAt, '2026-01-02T08:00:00.000Z')
+})
+
 test('chamado resolvido sem data real não inventa duração', () => {
   assert.equal(calcularEm(20, { status: 'Resolvido' }), null)
 })

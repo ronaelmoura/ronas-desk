@@ -54,6 +54,7 @@ export async function buscarResumo(
           chamados.updated_at,
           chamados.resolved_at,
           chamados.first_response_at,
+          chamados.sla_started_at,
           usuarios.nome AS responsavel_nome
         FROM chamados
         LEFT JOIN usuarios

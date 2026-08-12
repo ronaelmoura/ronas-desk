@@ -19,7 +19,21 @@ function determinarResolvedAt(
   return agora
 }
 
+function determinarSlaStartedAt(
+  statusAnterior,
+  statusNovo,
+  slaStartedAtAtual,
+  agora = new Date(),
+) {
+  if (estaFinalizado(statusAnterior) && !estaFinalizado(statusNovo)) {
+    return agora
+  }
+
+  return slaStartedAtAtual || null
+}
+
 export default {
   estaFinalizado,
   determinarResolvedAt,
+  determinarSlaStartedAt,
 }

@@ -167,6 +167,7 @@ async function criar(request, response) {
     prioridade: request.body.prioridade,
     status: request.body.status || 'Novo',
     resolved_at: null,
+    sla_started_at: new Date(),
   }
 
   const erro = validarChamado(dados)
@@ -293,6 +294,11 @@ async function atualizar(request, response) {
           chamadoExistente.status,
           dadosAtualizados.status,
           chamadoExistente.resolved_at,
+        ),
+        sla_started_at: resolucaoChamadoService.determinarSlaStartedAt(
+          chamadoExistente.status,
+          dadosAtualizados.status,
+          chamadoExistente.sla_started_at,
         ),
       },
       conexao,
