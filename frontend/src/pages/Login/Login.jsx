@@ -50,7 +50,7 @@ function Login() {
         <div className="brand">
           <img
             className="brand-logo-image"
-            src="/logo-ronas-desk.png"
+            src="/brand-mark.svg"
             alt="Logo Ronas Desk"
           />
 
@@ -99,7 +99,7 @@ function Login() {
         <div className="login-card">
           <img
             className="mobile-logo-image"
-            src="/logo-ronas-desk.png"
+            src="/brand-mark.svg"
             alt="Logo Ronas Desk"
           />
 
