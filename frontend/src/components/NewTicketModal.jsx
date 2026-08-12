@@ -78,7 +78,10 @@ function NewTicketModal({ onClose, onSave }) {
         );
         setUsuarios(
           resultadoUsuarios.filter(
-            (usuario) => usuario.ativo === true || usuario.ativo === 1,
+            (usuario) =>
+              (usuario.ativo === true || usuario.ativo === 1) &&
+              !usuario.is_demo &&
+              ["Administrador", "Atendente"].includes(usuario.cargo),
           ),
         );
       } catch (error) {

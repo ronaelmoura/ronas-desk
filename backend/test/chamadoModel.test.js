@@ -55,3 +55,20 @@ test('busca do portal exige o id do chamado e o cliente vinculado', async () => 
   assert.match(chamadas[0].sql, /id = \? AND cliente_id = \?/)
   assert.deepEqual(chamadas[0].parametros, [9, 8])
 })
+
+test('aceita como responsável somente integrante ativo da equipe', async () => {
+  const chamadas = []
+  const executor = {
+    async execute(sql, parametros) {
+      chamadas.push({ sql, parametros })
+      return [[{ id: 4, nome: 'Atendente' }], []]
+    },
+  }
+
+  const responsavel = await chamadoModel.buscarResponsavelAtivo(4, executor)
+
+  assert.equal(responsavel.id, 4)
+  assert.match(chamadas[0].sql, /cargo IN \('Administrador', 'Atendente'\)/)
+  assert.match(chamadas[0].sql, /is_demo = FALSE/)
+  assert.deepEqual(chamadas[0].parametros, [4])
+})

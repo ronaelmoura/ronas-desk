@@ -21,7 +21,11 @@ import Toast from "../../components/ui/Toast";
 import NovoClienteModal from "./NovoClienteModal";
 import "./clientes.css";
 
-function Clientes({ onSelectTicket, somenteLeitura = false }) {
+function Clientes({
+  onSelectTicket,
+  somenteLeitura = false,
+  administrador = false,
+}) {
   const [clientes, setClientes] = useState([]);
   const [carregandoClientes, setCarregandoClientes] = useState(true);
   const [erroClientes, setErroClientes] = useState("");
@@ -35,6 +39,7 @@ function Clientes({ onSelectTicket, somenteLeitura = false }) {
   const [abrindoChamadoId, setAbrindoChamadoId] = useState(null);
   const [processandoClienteId, setProcessandoClienteId] = useState(null);
   const [toast, setToast] = useState(null);
+  const podeGerenciarClientes = administrador && !somenteLeitura;
 
   const fecharToast = useCallback(() => setToast(null), []);
 
@@ -270,7 +275,7 @@ function Clientes({ onSelectTicket, somenteLeitura = false }) {
               <span>Gerencie clientes e acompanhe seus chamados.</span>
             </div>
 
-            {!somenteLeitura && (
+            {podeGerenciarClientes && (
             <button
               className="btn-novo-cliente"
               type="button"
@@ -296,7 +301,7 @@ function Clientes({ onSelectTicket, somenteLeitura = false }) {
                 <UsersRound size={38} aria-hidden="true" />
                 <strong>Nenhum cliente cadastrado</strong>
                 <p>Cadastre o primeiro cliente para começar a abrir chamados.</p>
-                {!somenteLeitura && (
+                {podeGerenciarClientes && (
                 <button type="button" onClick={abrirCadastro}>
                   <UserPlus size={18} aria-hidden="true" />
                   Cadastrar cliente
@@ -320,12 +325,12 @@ function Clientes({ onSelectTicket, somenteLeitura = false }) {
                       <th>Telefone</th>
                       <th>Empresa</th>
                       <th>Status</th>
-                      {!somenteLeitura && <th>Ações</th>}
+                      {podeGerenciarClientes && <th>Ações</th>}
                     </tr>
                   </thead>
 
                   {carregandoClientes ? (
-                    <TabelaSkeleton colunas={somenteLeitura ? 6 : 7} linhas={5} />
+                    <TabelaSkeleton colunas={podeGerenciarClientes ? 7 : 6} linhas={5} />
                   ) : (
                     <tbody>
                       {clientes.map((cliente) => (
@@ -350,7 +355,7 @@ function Clientes({ onSelectTicket, somenteLeitura = false }) {
                               {cliente.ativo ? "Ativo" : "Inativo"}
                             </span>
                           </td>
-                          {!somenteLeitura && (
+                          {podeGerenciarClientes && (
                             <td>
                               <div className="clientes-acoes">
                                 <button
@@ -395,7 +400,7 @@ function Clientes({ onSelectTicket, somenteLeitura = false }) {
         </>
       )}
 
-      {modalAberto && !somenteLeitura && (
+      {modalAberto && podeGerenciarClientes && (
         <NovoClienteModal
           cliente={clienteSelecionado}
           fechar={fecharModalCliente}
@@ -404,7 +409,7 @@ function Clientes({ onSelectTicket, somenteLeitura = false }) {
       )}
 
       <ModalConfirmacao
-        aberto={!somenteLeitura && Boolean(clienteParaDesativar)}
+        aberto={podeGerenciarClientes && Boolean(clienteParaDesativar)}
         titulo="Desativar cliente?"
         mensagem={`${clienteParaDesativar?.nome ?? "Este cliente"} deixará de aparecer nas opções para novos chamados. O histórico será preservado.`}
         confirmando={processandoClienteId === clienteParaDesativar?.id}

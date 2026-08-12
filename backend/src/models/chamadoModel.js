@@ -119,6 +119,8 @@ async function buscarResponsavelAtivo(responsavelId, executor = pool) {
       FROM usuarios
       WHERE id = ?
         AND ativo = TRUE
+        AND is_demo = FALSE
+        AND cargo IN ('Administrador', 'Atendente')
     `,
     [responsavelId],
   )

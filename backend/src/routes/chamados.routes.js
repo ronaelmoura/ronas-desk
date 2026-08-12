@@ -3,6 +3,7 @@ import chamadosController from '../controllers/chamadosController.js'
 import chamadoInteracoesController from '../controllers/chamadoInteracoesController.js'
 import anexosController from '../controllers/anexosController.js'
 import anexoUploadMiddleware from '../middlewares/anexoUploadMiddleware.js'
+import adminMiddleware from '../middlewares/adminMiddleware.js'
 
 const chamadosRouter = Router()
 
@@ -37,7 +38,11 @@ chamadosRouter.get(
   anexosController.gerarDownload,
 )
 
-chamadosRouter.delete('/:id/anexos/:anexoId', anexosController.excluir)
+chamadosRouter.delete(
+  '/:id/anexos/:anexoId',
+  adminMiddleware,
+  anexosController.excluir,
+)
 
 chamadosRouter.get('/:id', chamadosController.buscarPorId)
 
@@ -45,6 +50,6 @@ chamadosRouter.post('/', chamadosController.criar)
 
 chamadosRouter.put('/:id', chamadosController.atualizar)
 
-chamadosRouter.delete('/:id', chamadosController.excluir)
+chamadosRouter.delete('/:id', adminMiddleware, chamadosController.excluir)
 
 export default chamadosRouter

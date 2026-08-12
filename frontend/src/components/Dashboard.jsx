@@ -100,6 +100,7 @@ function Dashboard({ onLogout }) {
   const { usuario } = useAuth();
   const { configuracao } = useCompanyBrand();
   const somenteLeitura = Boolean(usuario?.is_demo);
+  const administrador = usuario?.cargo === "Administrador";
   const [chamados, setChamados] = useState([]);
   const [dashboard, setDashboard] = useState(dashboardInicial);
   const [carregando, setCarregando] = useState(true);
@@ -485,6 +486,7 @@ function Dashboard({ onLogout }) {
           <Clientes
             onSelectTicket={setChamadoSelecionado}
             somenteLeitura={somenteLeitura}
+            administrador={administrador}
           />
         ) : paginaAtiva === "usuarios" ? (
           <Usuarios administrador={usuario?.cargo === "Administrador"} />
@@ -1011,6 +1013,7 @@ function Dashboard({ onLogout }) {
           onDelete={excluirChamado}
           onPublicResponse={recarregarDashboardAtual}
           somenteLeitura={somenteLeitura}
+          administrador={administrador}
         />
       )}
 
