@@ -203,6 +203,12 @@ function Login() {
             <LockKeyhole size={16} aria-hidden="true" />
             Acesso protegido para usuários cadastrados.
           </p>
+
+          <p className="login-privacy-note">
+            Utilizamos estatísticas anônimas e localização aproximada para
+            entender o uso da demonstração. A localização é consultada por um
+            serviço externo, sem armazenar o endereço IP no Ronas Desk.
+          </p>
         </div>
       </section>
     </main>

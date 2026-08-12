@@ -8,6 +8,7 @@ import {
   CirclePlus,
   Clock3,
   Gauge,
+  Globe2,
   House,
   MessageCircle,
   MonitorPlay,
@@ -28,6 +29,7 @@ import ProfileSettings from "./ProfileSettings";
 import Clientes from "../pages/Clientes/clientes";
 import Usuarios from "../pages/Usuarios/Usuarios";
 import Relatorios from "../pages/Relatorios/Relatorios";
+import Visitas from "../pages/Visitas/Visitas";
 import Toast from "./ui/Toast";
 import useAuth from "../hooks/useAuth";
 import {
@@ -37,6 +39,7 @@ import {
   atualizarChamadoApi,
 } from "../services/chamadosApi";
 import { buscarDashboardApi } from "../services/dashboardApi";
+import { registrarVisitaApi } from "../services/visitasApi";
 import { classeChamado } from "../utils/chamados";
 
 const dashboardInicial = {
@@ -102,6 +105,12 @@ function Dashboard({ onLogout }) {
   const [toast, setToast] = useState(null);
   const [periodoDashboard, setPeriodoDashboard] = useState({ tipo: "todo" });
   const [filtroInicialChamados, setFiltroInicialChamados] = useState(null);
+
+  useEffect(() => {
+    if (usuario?.is_demo) {
+      registrarVisitaApi(paginaAtiva).catch(() => {});
+    }
+  }, [paginaAtiva, usuario?.is_demo]);
 
   const fecharToast = useCallback(() => setToast(null), []);
 
@@ -372,6 +381,20 @@ function Dashboard({ onLogout }) {
             Relatórios
           </button>
 
+          {usuario?.cargo === "Administrador" && !somenteLeitura && (
+            <button
+              className={`menu-item ${
+                paginaAtiva === "visitas" ? "active" : ""
+              }`}
+              type="button"
+              onClick={() => setPaginaAtiva("visitas")}
+              aria-current={paginaAtiva === "visitas" ? "page" : undefined}
+            >
+              <Globe2 className="menu-item-icon" aria-hidden="true" />
+              Visitas
+            </button>
+          )}
+
           {!somenteLeitura && (
             <button
               className="menu-item"
@@ -433,6 +456,10 @@ function Dashboard({ onLogout }) {
           <Usuarios administrador={usuario?.cargo === "Administrador"} />
         ) : paginaAtiva === "relatorios" ? (
           <Relatorios />
+        ) : paginaAtiva === "visitas" &&
+          usuario?.cargo === "Administrador" &&
+          !somenteLeitura ? (
+          <Visitas />
         ) : paginaAtiva === "chamados" ? (
           carregando ? (
             <section className="dashboard-panel">
