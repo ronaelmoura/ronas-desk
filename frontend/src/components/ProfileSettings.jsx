@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
+import useCompanyBrand from "../hooks/useCompanyBrand";
+import CompanyBrandSettings from "./CompanyBrandSettings";
+import { usarLogoPadrao } from "../utils/companyBrand";
 import "./ProfileSettings.css";
 
 function obterIniciais(nome = "") {
@@ -16,6 +19,7 @@ function obterIniciais(nome = "") {
 
 function ProfileSettings() {
   const { usuario, atualizarPerfil, alterarSenha } = useAuth();
+  const { configuracao } = useCompanyBrand();
   const [nome, setNome] = useState(usuario?.nome ?? "");
   const [email, setEmail] = useState(usuario?.email ?? "");
   const [salvandoPerfil, setSalvandoPerfil] = useState(false);
@@ -180,6 +184,10 @@ function ProfileSettings() {
             </button>
           </form>
 
+          {usuario?.cargo === "Administrador" && !usuario?.is_demo && (
+            <CompanyBrandSettings />
+          )}
+
           <form className="settings-card" onSubmit={handleSenhaSubmit}>
             <div className="settings-card-header">
               <div className="settings-security-icon" aria-hidden="true">
@@ -269,10 +277,14 @@ function ProfileSettings() {
 
         <aside className="settings-info-card">
           <div className="settings-logo">
-            <img src="/brand-mark.svg" alt="Logo Ronas Desk" />
+            <img
+              src={configuracao.logo_url || "/brand-mark.svg"}
+              alt={`Logo ${configuracao.nome_empresa}`}
+              onError={usarLogoPadrao}
+            />
           </div>
 
-          <h2>Ronas Desk</h2>
+          <h2>{configuracao.nome_empresa}</h2>
           <p>Seus dados agora permanecem sincronizados com sua conta.</p>
 
           <div className="settings-info-item">

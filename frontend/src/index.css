@@ -5,6 +5,8 @@
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
   --font-weight-extrabold: 800;
+  --brand-primary: #147ee8;
+  --brand-sidebar: #081525;
   font-family: var(--font-sans);
   font-weight: var(--font-weight-regular);
   color: #142238;

@@ -1,10 +1,14 @@
 import { useState } from 'react'
 import { Eye, EyeOff, LockKeyhole, MonitorPlay } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
+import useCompanyBrand from '../../hooks/useCompanyBrand'
+import { usarLogoPadrao } from '../../utils/companyBrand'
 import './Login.css'
 
 function Login() {
   const { login, loginDemo } = useAuth()
+  const { configuracao } = useCompanyBrand()
+  const logo = configuracao.logo_url || '/brand-mark.svg'
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [mostrarSenha, setMostrarSenha] = useState(false)
@@ -50,22 +54,21 @@ function Login() {
         <div className="brand">
           <img
             className="brand-logo-image"
-            src="/brand-mark.svg"
-            alt="Logo Ronas Desk"
+            src={logo}
+            alt={`Logo ${configuracao.nome_empresa}`}
+            onError={usarLogoPadrao}
           />
 
           <div>
-            <strong>Ronas Desk</strong>
-            <span>Suporte técnico simplificado</span>
+            <strong>{configuracao.nome_empresa}</strong>
+            <span>{configuracao.nome_central}</span>
           </div>
         </div>
 
         <div className="presentation-content">
           <p className="eyebrow">Sistema de chamados</p>
 
-          <h1>
-            Centralize solicitações e resolva cada atendimento com clareza.
-          </h1>
+          <h1>{configuracao.mensagem_boas_vindas}</h1>
 
           <p className="description">
             Uma plataforma para registrar, acompanhar e gerenciar
@@ -99,15 +102,16 @@ function Login() {
         <div className="login-card">
           <img
             className="mobile-logo-image"
-            src="/brand-mark.svg"
-            alt="Logo Ronas Desk"
+            src={logo}
+            alt={`Logo ${configuracao.nome_empresa}`}
+            onError={usarLogoPadrao}
           />
 
           <p className="eyebrow">Bem-vindo</p>
           <h2>Entre na sua conta</h2>
 
           <p className="login-description">
-            Informe seus dados para acessar o painel do Ronas Desk.
+            Informe seus dados para acessar o painel do {configuracao.nome_empresa}.
           </p>
 
           <form onSubmit={handleSubmit} noValidate>

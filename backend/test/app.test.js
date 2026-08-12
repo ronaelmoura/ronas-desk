@@ -77,6 +77,10 @@ test('Helmet adiciona headers de segurança e remove identificação do Express'
     assert.equal(response.headers.get('x-content-type-options'), 'nosniff')
     assert.equal(response.headers.get('x-powered-by'), null)
     assert.match(response.headers.get('content-security-policy'), /default-src/)
+    assert.match(
+      response.headers.get('content-security-policy'),
+      /img-src 'self' data: https:/,
+    )
   })
 })
 

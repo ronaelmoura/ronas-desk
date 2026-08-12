@@ -50,7 +50,7 @@
 
 .eyebrow {
   margin-bottom: 12px;
-  color: #32b8ff;
+  color: color-mix(in srgb, var(--brand-primary) 72%, white);
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.15em;
@@ -90,7 +90,7 @@
 
 .feature span {
   min-width: 42px;
-  color: #32b8ff;
+  color: color-mix(in srgb, var(--brand-primary) 72%, white);
   font-weight: 900;
 }
 
@@ -130,7 +130,7 @@
   right: 0;
   left: 0;
   height: 5px;
-  background: linear-gradient(90deg, #147ee8, #00b7ee);
+  background: var(--brand-primary);
   content: "";
 }
 
@@ -179,7 +179,7 @@
   margin-bottom: 8px;
   border: 0;
   background: transparent;
-  color: #147ee8;
+  color: var(--brand-primary);
   font-size: 0.82rem;
   cursor: pointer;
 }
@@ -230,7 +230,7 @@
 
 .password-toggle:hover {
   background: #eef5fd;
-  color: #147ee8;
+  color: var(--brand-primary);
 }
 
 .password-toggle:focus-visible {
@@ -239,7 +239,7 @@
 }
 
 .field input:focus {
-  border-color: #1682ff;
+  border-color: var(--brand-primary);
   box-shadow: 0 0 0 4px rgba(22, 130, 255, 0.12);
 }
 
@@ -248,7 +248,7 @@
   height: 52px;
   border: 0;
   border-radius: 12px;
-  background: linear-gradient(90deg, #147ee8, #00a9ee);
+  background: var(--brand-primary);
   color: #ffffff;
   font: inherit;
   font-weight: 800;
@@ -340,7 +340,7 @@
 }
 
 .demo-button:hover {
-  border-color: #1682ff;
+  border-color: var(--brand-primary);
   background: #e7f2ff;
 }
 
@@ -385,7 +385,7 @@
   margin-left: 5px;
   border: 0;
   background: transparent;
-  color: #147ee8;
+  color: var(--brand-primary);
   font: inherit;
   font-weight: 800;
   cursor: pointer;

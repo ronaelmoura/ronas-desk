@@ -9,20 +9,18 @@ function inteiroPositivo(valor, valorPadrao) {
 
 export function criarConfiguracaoSeguranca(variaveis = process.env) {
   const producao = variaveis.NODE_ENV === 'production'
+  const contentSecurityPolicy = {
+    directives: {
+      imgSrc: ["'self'", 'data:', 'https:'],
+      ...(producao ? {} : { upgradeInsecureRequests: null }),
+    },
+  }
 
   return {
     trustProxy: producao
       ? inteiroPositivo(variaveis.TRUST_PROXY_HOPS, 1)
       : false,
-    helmet: producao
-      ? undefined
-      : {
-          contentSecurityPolicy: {
-            directives: {
-              upgradeInsecureRequests: null,
-            },
-          },
-        },
+    helmet: { contentSecurityPolicy },
     loginRateLimit: {
       windowMs: inteiroPositivo(
         variaveis.LOGIN_RATE_LIMIT_WINDOW_MS,
