@@ -360,6 +360,14 @@
   line-height: 1.45;
 }
 
+.login-privacy-note {
+  margin-top: 14px;
+  color: #8995a6;
+  font-size: 0.68rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
 .form-message.sucesso {
   border: 1px solid #b7ebc6;
   background: #edfdf2;
