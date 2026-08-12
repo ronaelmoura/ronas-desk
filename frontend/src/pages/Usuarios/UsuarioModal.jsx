@@ -167,7 +167,10 @@ function UsuarioModal({ usuario, onClose, onSave }) {
                   </option>
                 ))}
               </select>
-              <small>O e-mail da conta deve ser o mesmo do cadastro selecionado.</small>
+              <small>
+                Vincule esta conta ao cliente que poderÃ¡ acessar o portal. O
+                e-mail da conta deve ser o mesmo do cadastro selecionado.
+              </small>
             </label>
           )}
 
