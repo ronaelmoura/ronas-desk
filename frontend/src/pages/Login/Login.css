@@ -300,6 +300,66 @@
   text-align: center;
 }
 
+.demo-access {
+  display: grid;
+  gap: 11px;
+  margin-top: 24px;
+  text-align: center;
+}
+
+.demo-access > span {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #718096;
+  font-size: 0.78rem;
+}
+
+.demo-access > span::before,
+.demo-access > span::after {
+  height: 1px;
+  flex: 1;
+  background: #e1e7ef;
+  content: "";
+}
+
+.demo-button {
+  width: 100%;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid #b8d8fa;
+  border-radius: 12px;
+  background: #f1f7fe;
+  color: #0d66bd;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.demo-button:hover {
+  border-color: #1682ff;
+  background: #e7f2ff;
+}
+
+.demo-button:focus-visible {
+  outline: 3px solid rgba(22, 130, 255, 0.2);
+  outline-offset: 2px;
+}
+
+.demo-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.demo-access small {
+  color: #718096;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
 .form-message.sucesso {
   border: 1px solid #b7ebc6;
   background: #edfdf2;

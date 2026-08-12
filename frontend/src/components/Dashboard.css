@@ -226,6 +226,35 @@
   gap: 12px;
 }
 
+.demo-mode-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 13px 16px;
+  border: 1px solid #b8d8fa;
+  border-radius: 14px;
+  background: #eef6ff;
+  color: #0d5ca8;
+}
+
+.demo-mode-banner > svg {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+}
+
+.demo-mode-banner strong,
+.demo-mode-banner span {
+  display: block;
+}
+
+.demo-mode-banner span {
+  margin-top: 2px;
+  color: #54708f;
+  font-size: 0.82rem;
+}
+
 .dashboard-period-control {
   display: flex;
   align-items: center;

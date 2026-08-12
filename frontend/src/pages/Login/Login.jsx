@@ -1,15 +1,28 @@
 import { useState } from 'react'
-import { Eye, EyeOff, LockKeyhole } from 'lucide-react'
+import { Eye, EyeOff, LockKeyhole, MonitorPlay } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import './Login.css'
 
 function Login() {
-  const { login } = useAuth()
+  const { login, loginDemo } = useAuth()
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [mostrarSenha, setMostrarSenha] = useState(false)
   const [erro, setErro] = useState('')
   const [enviando, setEnviando] = useState(false)
+
+  async function acessarDemonstracao() {
+    setErro('')
+    setEnviando(true)
+
+    try {
+      await loginDemo()
+    } catch (error) {
+      setErro(error.message)
+    } finally {
+      setEnviando(false)
+    }
+  }
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -169,6 +182,22 @@ function Login() {
               </p>
             )}
           </form>
+
+          <div className="demo-access">
+            <span>ou conheça o sistema sem cadastro</span>
+
+            <button
+              className="demo-button"
+              type="button"
+              onClick={acessarDemonstracao}
+              disabled={enviando}
+            >
+              <MonitorPlay size={19} aria-hidden="true" />
+              {enviando ? 'Acessando...' : 'Acessar demonstração'}
+            </button>
+
+            <small>Modo seguro: os dados podem ser visualizados, mas não alterados.</small>
+          </div>
 
           <p className="login-security-note">
             <LockKeyhole size={16} aria-hidden="true" />

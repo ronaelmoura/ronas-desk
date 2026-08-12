@@ -21,7 +21,7 @@ import Toast from "../../components/ui/Toast";
 import NovoClienteModal from "./NovoClienteModal";
 import "./clientes.css";
 
-function Clientes({ onSelectTicket }) {
+function Clientes({ onSelectTicket, somenteLeitura = false }) {
   const [clientes, setClientes] = useState([]);
   const [carregandoClientes, setCarregandoClientes] = useState(true);
   const [erroClientes, setErroClientes] = useState("");
@@ -270,6 +270,7 @@ function Clientes({ onSelectTicket }) {
               <span>Gerencie clientes e acompanhe seus chamados.</span>
             </div>
 
+            {!somenteLeitura && (
             <button
               className="btn-novo-cliente"
               type="button"
@@ -278,6 +279,7 @@ function Clientes({ onSelectTicket }) {
               <UserPlus size={18} aria-hidden="true" />
               Novo cliente
             </button>
+            )}
           </header>
 
           <div className="clientes-card">
@@ -294,10 +296,12 @@ function Clientes({ onSelectTicket }) {
                 <UsersRound size={38} aria-hidden="true" />
                 <strong>Nenhum cliente cadastrado</strong>
                 <p>Cadastre o primeiro cliente para começar a abrir chamados.</p>
+                {!somenteLeitura && (
                 <button type="button" onClick={abrirCadastro}>
                   <UserPlus size={18} aria-hidden="true" />
                   Cadastrar cliente
                 </button>
+                )}
               </div>
             ) : (
               <div className="clientes-tabela-wrapper">
@@ -316,12 +320,12 @@ function Clientes({ onSelectTicket }) {
                       <th>Telefone</th>
                       <th>Empresa</th>
                       <th>Status</th>
-                      <th>Ações</th>
+                      {!somenteLeitura && <th>Ações</th>}
                     </tr>
                   </thead>
 
                   {carregandoClientes ? (
-                    <TabelaSkeleton colunas={7} linhas={5} />
+                    <TabelaSkeleton colunas={somenteLeitura ? 6 : 7} linhas={5} />
                   ) : (
                     <tbody>
                       {clientes.map((cliente) => (
@@ -346,36 +350,40 @@ function Clientes({ onSelectTicket }) {
                               {cliente.ativo ? "Ativo" : "Inativo"}
                             </span>
                           </td>
-                          <td>
-                            <div className="clientes-acoes">
-                              <button
-                                className="btn-editar"
-                                type="button"
-                                aria-label={`Editar ${cliente.nome}`}
-                                title="Editar"
-                                onClick={() => abrirEdicao(cliente)}
-                              >
-                                <Pencil size={16} aria-hidden="true" />
-                              </button>
-                              <button
-                                className="btn-desativar"
-                                type="button"
-                                aria-label={`Desativar ${cliente.nome}`}
-                                title={
-                                  cliente.ativo
-                                    ? "Desativar"
-                                    : "Cliente já inativo"
-                                }
-                                disabled={
-                                  !cliente.ativo ||
-                                  processandoClienteId === cliente.id
-                                }
-                                onClick={() => setClienteParaDesativar(cliente)}
-                              >
-                                <UserMinus size={16} aria-hidden="true" />
-                              </button>
-                            </div>
-                          </td>
+                          {!somenteLeitura && (
+                            <td>
+                              <div className="clientes-acoes">
+                                <button
+                                  className="btn-editar"
+                                  type="button"
+                                  aria-label={`Editar ${cliente.nome}`}
+                                  title="Editar"
+                                  onClick={() => abrirEdicao(cliente)}
+                                >
+                                  <Pencil size={16} aria-hidden="true" />
+                                </button>
+                                <button
+                                  className="btn-desativar"
+                                  type="button"
+                                  aria-label={`Desativar ${cliente.nome}`}
+                                  title={
+                                    cliente.ativo
+                                      ? "Desativar"
+                                      : "Cliente já inativo"
+                                  }
+                                  disabled={
+                                    !cliente.ativo ||
+                                    processandoClienteId === cliente.id
+                                  }
+                                  onClick={() =>
+                                    setClienteParaDesativar(cliente)
+                                  }
+                                >
+                                  <UserMinus size={16} aria-hidden="true" />
+                                </button>
+                              </div>
+                            </td>
+                          )}
                         </tr>
                       ))}
                     </tbody>
@@ -387,7 +395,7 @@ function Clientes({ onSelectTicket }) {
         </>
       )}
 
-      {modalAberto && (
+      {modalAberto && !somenteLeitura && (
         <NovoClienteModal
           cliente={clienteSelecionado}
           fechar={fecharModalCliente}
@@ -396,7 +404,7 @@ function Clientes({ onSelectTicket }) {
       )}
 
       <ModalConfirmacao
-        aberto={Boolean(clienteParaDesativar)}
+        aberto={!somenteLeitura && Boolean(clienteParaDesativar)}
         titulo="Desativar cliente?"
         mensagem={`${clienteParaDesativar?.nome ?? "Este cliente"} deixará de aparecer nas opções para novos chamados. O histórico será preservado.`}
         confirmando={processandoClienteId === clienteParaDesativar?.id}

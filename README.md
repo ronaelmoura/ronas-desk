@@ -356,6 +356,21 @@ O CI roda em Pull Requests e em pushes para `main`, sem acesso a credenciais de
 produção. O `format:check` será incluído depois que a dívida de formatação antiga
 for corrigida em uma mudança isolada.
 
+## 🖥️ Conta de demonstração segura
+
+A tela de login oferece acesso público à demonstração sem divulgar email ou
+senha. O usuário Demo é identificado no banco e recebe uma sessão autenticada
+somente para leitura.
+
+O backend bloqueia centralmente qualquer tentativa de criar, editar, comentar,
+enviar anexos, alterar senha ou excluir dados. A interface também identifica o
+modo de demonstração e oculta as principais ações de alteração.
+
+Depois de aplicar a migration `009_demo_read_only_user.sql`, a conta pode ser
+criada com `npm run create-demo`. O script exige `DEMO_EMAIL`, aceita
+`DEMO_NOME` e gera internamente uma senha aleatória que não é exibida nem
+compartilhada.
+
 ## 👤 Perfil e segurança da conta
 
 A área de configurações usa os dados reais do usuário autenticado. Nome e email

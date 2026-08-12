@@ -2,6 +2,13 @@
 
 Este arquivo orienta agentes que trabalham neste repositório. Ele se aplica a toda a árvore do projeto. Instruções mais específicas, se adicionadas no futuro em subdiretórios, prevalecem dentro de seu escopo.
 
+## Memória operacional
+
+- Leia `PROJECT_STATUS.md` no início de cada nova tarefa para recuperar o estado atual, as decisões recentes e o próximo passo do projeto.
+- Trate `AGENTS.md` como fonte das regras permanentes e `PROJECT_STATUS.md` como memória dinâmica do andamento.
+- Ao concluir um marco relevante, proponha a atualização de `PROJECT_STATUS.md`; não registre senhas, tokens, chaves, cookies ou outras credenciais.
+- Confirme o estado real com `git status -sb` e com o código antes de agir, pois a memória operacional pode ficar desatualizada.
+
 ## Contexto do projeto
 
 O Ronas Desk é uma aplicação de Help Desk full stack:

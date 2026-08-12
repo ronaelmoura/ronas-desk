@@ -9,6 +9,7 @@
     "start": "node src/server.js",
     "migrate": "node src/scripts/migrate.js",
     "create-admin": "node src/scripts/createAdmin.js",
+    "create-demo": "node src/scripts/createDemo.js",
     "reset-admin-password": "node src/scripts/resetAdminPassword.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

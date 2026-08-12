@@ -233,6 +233,7 @@ function AllTickets({
           <p>Consulte, filtre e acompanhe todas as solicitações.</p>
         </div>
 
+        {onNewTicket && (
         <button
           className="new-ticket-button"
           type="button"
@@ -240,6 +241,7 @@ function AllTickets({
         >
           + Novo chamado
         </button>
+        )}
       </header>
 
       <section className="all-tickets-panel">
