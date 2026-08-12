@@ -65,6 +65,18 @@ test('reabertura limpa resolved_at', () => {
   )
 })
 
+test('reabertura inicia um novo ciclo de SLA', () => {
+  assert.equal(
+    resolucaoChamadoService.determinarSlaStartedAt(
+      'Fechado',
+      'Em Atendimento',
+      primeiraResolucao,
+      segundaResolucao,
+    ),
+    segundaResolucao,
+  )
+})
+
 test('nova resolução após reabertura registra nova data', () => {
   const reaberto = resolucaoChamadoService.determinarResolvedAt(
     'Resolvido',

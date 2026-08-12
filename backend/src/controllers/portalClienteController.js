@@ -4,6 +4,7 @@ import comentarioModel from '../models/comentarioModel.js'
 import historyService from '../services/historyService.js'
 import slaService from '../services/slaService.js'
 import notificacaoService from '../services/notificacaoService.js'
+import reaberturaChamadoService from '../services/reaberturaChamadoService.js'
 
 const categoriasPermitidas = new Set([
   'Hardware',
@@ -115,6 +116,7 @@ async function criar(request, response) {
         ...validacao.dados,
         status: 'Novo',
         resolved_at: null,
+        sla_started_at: new Date(),
       },
       conexao,
     )
@@ -168,14 +170,26 @@ async function criarComentario(request, response) {
 
   let conexao
   try {
-    const chamado = await obterChamadoDoCliente(
-      Number(request.params.id),
-      request.usuario.cliente_id,
-      response,
-    )
-    if (!chamado) return
     conexao = await pool.getConnection()
     await conexao.beginTransaction()
+    const chamado = await chamadoModel.buscarPorIdParaAtualizacao(
+      Number(request.params.id),
+      conexao,
+    )
+    if (!chamado || chamado.cliente_id !== request.usuario.cliente_id) {
+      await conexao.rollback()
+      return response
+        .status(404)
+        .json({ status: 'erro', message: 'Chamado não encontrado.' })
+    }
+
+    const chamadoAtualizado =
+      await reaberturaChamadoService.aoReceberRespostaCliente(
+        chamado,
+        request.usuario.id,
+        conexao,
+      )
+
     const comentario = await comentarioModel.criar(
       {
         chamado_id: chamado.id,
@@ -192,12 +206,15 @@ async function criarComentario(request, response) {
       conexao,
     )
     await notificacaoService.comentarioDoCliente(
-      chamado,
+      chamadoAtualizado,
       request.usuario.id,
       conexao,
     )
     await conexao.commit()
-    return response.status(201).json(comentario)
+    return response.status(201).json({
+      ...comentario,
+      chamado: slaService.enriquecerChamado(chamadoAtualizado),
+    })
   } catch (error) {
     if (conexao) await conexao.rollback()
     console.error('Erro ao enviar comentário do portal:', error)

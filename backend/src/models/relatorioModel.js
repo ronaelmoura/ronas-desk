@@ -12,6 +12,7 @@ async function listarChamadosPorPeriodo(dataInicio, dataFim, executor = pool) {
         chamados.created_at,
         chamados.updated_at,
         chamados.resolved_at,
+        chamados.sla_started_at,
         clientes.nome AS cliente_nome,
         usuarios.nome AS responsavel_nome
       FROM chamados

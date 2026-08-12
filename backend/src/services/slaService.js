@@ -37,7 +37,7 @@ function obterReferenciaFinal(chamado, agora) {
 }
 
 function calcular(chamado, agora = new Date()) {
-  const inicio = converterData(chamado?.created_at)
+  const inicio = converterData(chamado?.sla_started_at || chamado?.created_at)
   const dataAtual = converterData(agora)
 
   if (!inicio || !dataAtual) return null

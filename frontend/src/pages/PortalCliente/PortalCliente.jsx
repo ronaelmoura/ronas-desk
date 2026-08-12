@@ -173,7 +173,7 @@ function AvaliacaoChamado({ chamadoId, avaliacao, onAvaliada }) {
   )
 }
 
-function DetalhesChamadoPortal({ chamado, onClose }) {
+function DetalhesChamadoPortal({ chamado, onChamadoAtualizado, onClose }) {
   const [mensagens, setMensagens] = useState([])
   const [avaliacao, setAvaliacao] = useState(undefined)
   const [carregando, setCarregando] = useState(true)
@@ -214,8 +214,10 @@ function DetalhesChamadoPortal({ chamado, onClose }) {
     setEnviando(true)
     setErro('')
     try {
-      const mensagem = await enviarMensagemChamadoApi(chamado.id, conteudo)
+      const resposta = await enviarMensagemChamadoApi(chamado.id, conteudo)
+      const { chamado: chamadoAtualizado, ...mensagem } = resposta
       setMensagens((atuais) => [...atuais, mensagem])
+      if (chamadoAtualizado) onChamadoAtualizado(chamadoAtualizado)
       setNovaMensagem('')
     } catch (error) {
       setErro(error.message)
@@ -302,6 +304,15 @@ function PortalCliente() {
     setModalAberto(false)
   }
 
+  function atualizarChamado(chamadoAtualizado) {
+    setChamados((atuais) =>
+      atuais.map((chamado) =>
+        chamado.id === chamadoAtualizado.id ? chamadoAtualizado : chamado,
+      ),
+    )
+    setSelecionado(chamadoAtualizado)
+  }
+
   return (
     <main className="portal-page">
       <header className="portal-header">
@@ -328,7 +339,7 @@ function PortalCliente() {
         </section>
       </section>
       {modalAberto ? <NovoChamadoPortal onClose={() => setModalAberto(false)} onCreated={criado} /> : null}
-      {selecionado ? <DetalhesChamadoPortal chamado={selecionado} onClose={() => setSelecionado(null)} /> : null}
+      {selecionado ? <DetalhesChamadoPortal chamado={selecionado} onChamadoAtualizado={atualizarChamado} onClose={() => setSelecionado(null)} /> : null}
     </main>
   )
 }
