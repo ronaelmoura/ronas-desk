@@ -92,3 +92,22 @@ test('preserva comentário interno ao enviar os parâmetros para o banco', async
     'INTERNO',
   ])
 })
+
+test('lista apenas comentários públicos no Portal do Cliente', async () => {
+  const chamadas = []
+  const executor = {
+    async execute(sql, parametros) {
+      chamadas.push({ sql, parametros })
+      return [[{ id: 2, tipo: 'PUBLICO' }], []]
+    },
+  }
+
+  const comentarios = await comentarioModel.listarPublicosPorChamado(
+    7,
+    executor,
+  )
+
+  assert.equal(comentarios[0].tipo, 'PUBLICO')
+  assert.match(chamadas[0].sql, /comentarios\.tipo = 'PUBLICO'/)
+  assert.deepEqual(chamadas[0].parametros, [7])
+})

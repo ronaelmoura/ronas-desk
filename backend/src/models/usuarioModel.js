@@ -5,6 +5,7 @@ const camposPublicos = `
   nome,
   email,
   cargo,
+  cliente_id,
   ativo,
   is_demo,
   created_at,
@@ -20,6 +21,7 @@ function normalizarUsuario(usuario) {
     ...usuario,
     ativo: Boolean(usuario.ativo),
     is_demo: Boolean(usuario.is_demo),
+    cliente_id: usuario.cliente_id ?? null,
   }
 }
 
@@ -42,6 +44,7 @@ async function buscarPorEmail(email) {
         email,
         senha_hash,
         cargo,
+        cliente_id,
         ativo,
         is_demo
       FROM usuarios
@@ -79,6 +82,19 @@ async function buscarPorId(id, executor = pool) {
   return normalizarUsuario(rows[0])
 }
 
+async function buscarPorClienteId(clienteId, executor = pool) {
+  const [rows] = await executor.execute(
+    `
+      SELECT ${camposPublicos}
+      FROM usuarios
+      WHERE cliente_id = ?
+    `,
+    [clienteId],
+  )
+
+  return normalizarUsuario(rows[0])
+}
+
 async function buscarPorIdComSenha(id, executor = pool) {
   const [rows] = await executor.execute(
     `
@@ -88,6 +104,7 @@ async function buscarPorIdComSenha(id, executor = pool) {
         email,
         senha_hash,
         cargo,
+        cliente_id,
         ativo
       FROM usuarios
       WHERE id = ?
@@ -98,7 +115,14 @@ async function buscarPorIdComSenha(id, executor = pool) {
   return normalizarUsuario(rows[0])
 }
 
-async function criar({ nome, email, senha_hash, cargo, is_demo = false }) {
+async function criar({
+  nome,
+  email,
+  senha_hash,
+  cargo,
+  cliente_id = null,
+  is_demo = false,
+}) {
   const [resultado] = await pool.execute(
     `
       INSERT INTO usuarios (
@@ -106,19 +130,23 @@ async function criar({ nome, email, senha_hash, cargo, is_demo = false }) {
         email,
         senha_hash,
         cargo,
+        cliente_id,
         is_demo
       )
-      VALUES (?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?)
     `,
-    [nome, email, senha_hash, cargo, is_demo],
+    [nome, email, senha_hash, cargo, cliente_id, is_demo],
   )
 
   return buscarPorId(resultado.insertId)
 }
 
-async function atualizar(id, { nome, email, senha_hash, cargo }) {
-  const campos = ['nome = ?', 'email = ?', 'cargo = ?']
-  const valores = [nome, email, cargo]
+async function atualizar(
+  id,
+  { nome, email, senha_hash, cargo, cliente_id = null },
+) {
+  const campos = ['nome = ?', 'email = ?', 'cargo = ?', 'cliente_id = ?']
+  const valores = [nome, email, cargo, cliente_id]
 
   if (senha_hash) {
     campos.push('senha_hash = ?')
@@ -219,6 +247,7 @@ export default {
   buscarPorEmail,
   buscarDemoAtivo,
   buscarPorId,
+  buscarPorClienteId,
   buscarPorIdComSenha,
   criar,
   atualizar,

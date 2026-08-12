@@ -29,6 +29,7 @@ export default function authMiddleware(request, response, next) {
       nome: dadosToken.nome,
       email: dadosToken.email,
       cargo: dadosToken.cargo,
+      cliente_id: dadosToken.cliente_id ?? null,
     }
 
     return next()

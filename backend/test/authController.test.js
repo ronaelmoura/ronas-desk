@@ -58,6 +58,7 @@ test('login continua emitindo token com dados públicos do usuário', async () =
     nome: 'Ronael Moura',
     email: 'ronael@example.com',
     cargo: 'Administrador',
+    cliente_id: null,
     is_demo: false,
   })
   assert.deepEqual(chamadas[0], {
@@ -99,6 +100,7 @@ test('login demo emite token sem exigir ou retornar senha', async () => {
     nome: 'Visitante Demo',
     email: 'demo@example.com',
     cargo: 'Atendente',
+    cliente_id: null,
     is_demo: true,
   })
   assert.equal(chamadas[0].senha_hash, undefined)
@@ -183,6 +185,36 @@ test('impede que o próprio perfil use email de outro usuário', async () => {
   )
 
   assert.equal(response.statusCode, 409)
+  assert.equal(atualizou, false)
+})
+
+test('impede que a conta de cliente altere o email de acesso', async () => {
+  let atualizou = false
+  const controller = criarAuthController({
+    usuarios: {
+      buscarPorId: async () => ({
+        id: 8,
+        ativo: true,
+        cargo: 'Cliente',
+        email: 'contato@empresa.com',
+      }),
+      buscarPorEmail: async () => null,
+      atualizarPerfil: async () => {
+        atualizou = true
+      },
+    },
+  })
+  const response = criarResposta()
+
+  await controller.atualizarPerfil(
+    {
+      usuario: { id: 8 },
+      body: { nome: 'Empresa', email: 'novo-email@empresa.com' },
+    },
+    response,
+  )
+
+  assert.equal(response.statusCode, 400)
   assert.equal(atualizou, false)
 })
 

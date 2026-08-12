@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import './App.css'
 import Dashboard from './components/Dashboard'
 import Login from './pages/Login/Login'
+import PortalCliente from './pages/PortalCliente/PortalCliente'
 import useAuth from './hooks/useAuth'
 import { registrarVisitaApi } from './services/visitasApi'
 
@@ -24,6 +25,10 @@ function App() {
 
   if (!usuario) {
     return <Login />
+  }
+
+  if (usuario.cargo === 'Cliente') {
+    return <PortalCliente />
   }
 
   return <Dashboard onLogout={logout} />
