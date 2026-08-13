@@ -1,4 +1,5 @@
 import pool from '../database/db.js'
+import { criarClausulaPaginacao } from '../services/paginacaoService.js'
 
 const camposCliente = `
   id,
@@ -38,6 +39,7 @@ async function listarPaginado({ busca = '' }, paginacao) {
     ? 'AND (nome LIKE ? OR email LIKE ? OR empresa LIKE ?)'
     : ''
   const parametrosBusca = busca ? [`%${busca}%`, `%${busca}%`, `%${busca}%`] : []
+  const clausulaPaginacao = criarClausulaPaginacao(paginacao)
 
   const [resultadoDados, resultadoTotal] = await Promise.all([
     pool.execute(
@@ -46,9 +48,9 @@ async function listarPaginado({ busca = '' }, paginacao) {
         FROM clientes
         WHERE ativo = TRUE ${clausulaBusca}
         ORDER BY id DESC
-        LIMIT ? OFFSET ?
+        ${clausulaPaginacao}
       `,
-      [...parametrosBusca, paginacao.limite, paginacao.offset],
+      parametrosBusca,
     ),
     pool.execute(
       `SELECT COUNT(*) AS total FROM clientes WHERE ativo = TRUE ${clausulaBusca}`,

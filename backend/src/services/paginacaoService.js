@@ -36,6 +36,21 @@ export function normalizarPaginacao(query = {}) {
   }
 }
 
+export function criarClausulaPaginacao(paginacao) {
+  const { limite, offset } = paginacao ?? {}
+
+  if (
+    !Number.isSafeInteger(limite) ||
+    limite < 1 ||
+    !Number.isSafeInteger(offset) ||
+    offset < 0
+  ) {
+    throw new PaginacaoInvalidaError('Paginacao invalida.')
+  }
+
+  return `LIMIT ${limite} OFFSET ${offset}`
+}
+
 export function criarRespostaPaginada(dados, total, paginacao) {
   const totalSeguro = Number(total ?? 0)
   const totalPaginas = Math.max(1, Math.ceil(totalSeguro / paginacao.limite))
