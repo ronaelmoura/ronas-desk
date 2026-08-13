@@ -85,6 +85,33 @@
   overflow: hidden;
 }
 
+.clientes-search {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 360px;
+  margin-bottom: 22px;
+  color: #385174;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.clientes-search input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid #d5e0ee;
+  border-radius: 12px;
+  background: #fff;
+  color: #132a4b;
+  font: inherit;
+}
+
+.clientes-search input:focus {
+  outline: 3px solid rgba(22, 135, 243, 0.18);
+  border-color: #1687f3;
+}
+
 .clientes-tabela-wrapper,
 .historico-tabela-wrapper {
   width: 100%;

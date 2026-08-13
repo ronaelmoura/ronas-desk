@@ -24,6 +24,29 @@ test('lista chamados com a data da primeira resposta', async () => {
   assert.match(chamadas[0], /chamados\.first_response_at/)
 })
 
+test('lista chamados paginados e lê o total em uma consulta separada', async () => {
+  const chamadas = []
+  const executor = {
+    async execute(sql, parametros) {
+      chamadas.push({ sql, parametros })
+      if (/COUNT\(\*\)/.test(sql)) return [[{ total: 21 }], []]
+      return [[{ id: 9, titulo: 'Chamado paginado' }], []]
+    },
+  }
+
+  const resultado = await chamadoModel.listarPaginado(
+    { busca: '' },
+    { limite: 10, offset: 10 },
+    executor,
+  )
+
+  assert.deepEqual(resultado, {
+    dados: [{ id: 9, titulo: 'Chamado paginado' }],
+    total: 21,
+  })
+  assert.equal(chamadas.length, 2)
+})
+
 test('consulta chamados do portal com o cliente parametrizado', async () => {
   const chamadas = []
   const executor = {
