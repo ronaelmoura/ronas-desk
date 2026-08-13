@@ -1,6 +1,11 @@
 import bcrypt from 'bcryptjs'
 import usuarioModel from '../models/usuarioModel.js'
 import clienteModel from '../models/clienteModel.js'
+import {
+  criarRespostaPaginada,
+  normalizarPaginacao,
+  PaginacaoInvalidaError,
+} from '../services/paginacaoService.js'
 
 const cargosPermitidos = new Set(['Administrador', 'Atendente', 'Cliente'])
 
@@ -117,8 +122,18 @@ function responderErro(error, response, contexto) {
 
 async function listar(request, response) {
   try {
-    return response.status(200).json(await usuarioModel.listar())
+    const paginacao = normalizarPaginacao(request.query)
+    const resultado = await usuarioModel.listarPaginado(
+      { busca: request.query.busca?.trim() || '' },
+      paginacao,
+    )
+    return response
+      .status(200)
+      .json(criarRespostaPaginada(resultado.dados, resultado.total, paginacao))
   } catch (error) {
+    if (error instanceof PaginacaoInvalidaError) {
+      return response.status(400).json({ status: 'erro', message: error.message })
+    }
     return responderErro(error, response, 'Erro ao listar usuários:')
   }
 }

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Pencil,
   Power,
@@ -23,7 +23,7 @@ import Toast from "../../components/ui/Toast";
 import UsuarioModal from "./UsuarioModal";
 import "./usuarios.css";
 
-const ITENS_POR_PAGINA = 6;
+const ITENS_POR_PAGINA = 10;
 
 function obterIniciais(nome = "") {
   return (
@@ -48,54 +48,37 @@ function Usuarios({ administrador }) {
   const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
   const [usuarioParaExcluir, setUsuarioParaExcluir] = useState(null);
   const [modalAberto, setModalAberto] = useState(false);
+  const [paginacao, setPaginacao] = useState({ total: 0, total_paginas: 1 });
 
   const fecharToast = useCallback(() => setToast(null), []);
-
-  useEffect(() => {
-    carregarUsuarios();
-  }, []);
-
-  const usuariosFiltrados = useMemo(() => {
-    const termo = pesquisa.trim().toLowerCase();
-    if (!termo) return usuarios;
-
-    return usuarios.filter(
-      (usuario) =>
-        usuario.nome.toLowerCase().includes(termo) ||
-        usuario.email.toLowerCase().includes(termo),
-    );
-  }, [pesquisa, usuarios]);
-
-  const totalPaginas = Math.max(
-    1,
-    Math.ceil(usuariosFiltrados.length / ITENS_POR_PAGINA),
-  );
-  const usuariosPaginados = usuariosFiltrados.slice(
-    (paginaAtual - 1) * ITENS_POR_PAGINA,
-    paginaAtual * ITENS_POR_PAGINA,
-  );
 
   useEffect(() => {
     setPaginaAtual(1);
   }, [pesquisa]);
 
-  useEffect(() => {
-    if (paginaAtual > totalPaginas) setPaginaAtual(totalPaginas);
-  }, [paginaAtual, totalPaginas]);
-
-  async function carregarUsuarios() {
+  const carregarUsuarios = useCallback(async () => {
     setCarregando(true);
     setErro("");
 
     try {
-      setUsuarios(await listarUsuariosApi());
+      const resultado = await listarUsuariosApi({
+        pagina: paginaAtual,
+        limite: ITENS_POR_PAGINA,
+        busca: pesquisa,
+      });
+      setUsuarios(resultado.dados);
+      setPaginacao(resultado.paginacao);
     } catch (error) {
       setErro(error.message);
       setToast({ tipo: "erro", mensagem: error.message });
     } finally {
       setCarregando(false);
     }
-  }
+  }, [paginaAtual, pesquisa]);
+
+  useEffect(() => {
+    carregarUsuarios();
+  }, [carregarUsuarios]);
 
   function abrirCadastro() {
     setUsuarioSelecionado(null);
@@ -109,20 +92,11 @@ function Usuarios({ administrador }) {
 
   async function salvarUsuario(dados) {
     try {
-      const usuarioSalvo = usuarioSelecionado
+      await (usuarioSelecionado
         ? await atualizarUsuarioApi(usuarioSelecionado.id, dados)
-        : await criarUsuarioApi(dados);
+        : criarUsuarioApi(dados));
 
-      setUsuarios((atuais) => {
-        const existe = atuais.some((usuario) => usuario.id === usuarioSalvo.id);
-        return existe
-          ? atuais.map((usuario) =>
-              usuario.id === usuarioSalvo.id ? usuarioSalvo : usuario,
-            )
-          : [...atuais, usuarioSalvo].sort((a, b) =>
-              a.nome.localeCompare(b.nome),
-            );
-      });
+      await carregarUsuarios();
       setModalAberto(false);
       setToast({
         tipo: "sucesso",
@@ -141,13 +115,11 @@ function Usuarios({ administrador }) {
     setErro("");
 
     try {
-      const atualizado = await alterarStatusUsuarioApi(
+      await alterarStatusUsuarioApi(
         usuario.id,
         !usuario.ativo,
       );
-      setUsuarios((atuais) =>
-        atuais.map((item) => (item.id === atualizado.id ? atualizado : item)),
-      );
+      await carregarUsuarios();
       setToast({
         tipo: "sucesso",
         mensagem: `Usuário ${atualizado.ativo ? "ativado" : "desativado"} com sucesso.`,
@@ -168,9 +140,7 @@ function Usuarios({ administrador }) {
 
     try {
       await excluirUsuarioApi(usuarioParaExcluir.id);
-      setUsuarios((atuais) =>
-        atuais.filter((item) => item.id !== usuarioParaExcluir.id),
-      );
+      await carregarUsuarios();
       setUsuarioParaExcluir(null);
       setToast({ tipo: "sucesso", mensagem: "Usuário excluído com sucesso." });
     } catch (error) {
@@ -225,7 +195,7 @@ function Usuarios({ administrador }) {
             )}
           </div>
         </label>
-        <strong>{usuariosFiltrados.length} usuário(s)</strong>
+        <strong>{paginacao.total} usuário(s)</strong>
       </div>
 
       {erro && (
@@ -252,7 +222,7 @@ function Usuarios({ administrador }) {
           </table>
           <span className="sr-only">Carregando usuários...</span>
         </div>
-      ) : usuariosFiltrados.length === 0 ? (
+      ) : usuarios.length === 0 ? (
         <div className="usuarios-empty-state">
           <div>
             {pesquisa ? <SearchX size={34} /> : <UsersRound size={34} />}
@@ -301,7 +271,7 @@ function Usuarios({ administrador }) {
                 </tr>
               </thead>
               <tbody>
-                {usuariosPaginados.map((usuario) => (
+                {usuarios.map((usuario) => (
                   <tr key={usuario.id}>
                     <td data-label="Usuário">
                       <div className="usuario-identidade">
@@ -375,7 +345,7 @@ function Usuarios({ administrador }) {
 
           <Paginacao
             paginaAtual={paginaAtual}
-            totalPaginas={totalPaginas}
+            totalPaginas={paginacao.total_paginas}
             onChange={setPaginaAtual}
             ariaLabel="Paginação da lista de usuários"
           />

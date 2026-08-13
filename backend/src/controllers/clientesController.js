@@ -1,5 +1,10 @@
 import clienteModel from '../models/clienteModel.js'
 import slaService from '../services/slaService.js'
+import {
+  criarRespostaPaginada,
+  normalizarPaginacao,
+  PaginacaoInvalidaError,
+} from '../services/paginacaoService.js'
 
 function validarId(id) {
   return Number.isInteger(id) && id > 0
@@ -96,10 +101,19 @@ function responderErroBanco(error, response, mensagem) {
 
 async function listar(request, response) {
   try {
-    const clientes = await clienteModel.listar()
+    const paginacao = normalizarPaginacao(request.query)
+    const resultado = await clienteModel.listarPaginado(
+      { busca: request.query.busca?.trim() || '' },
+      paginacao,
+    )
 
-    return response.status(200).json(clientes)
+    return response
+      .status(200)
+      .json(criarRespostaPaginada(resultado.dados, resultado.total, paginacao))
   } catch (error) {
+    if (error instanceof PaginacaoInvalidaError) {
+      return response.status(400).json({ status: 'erro', message: error.message })
+    }
     return responderErroBanco(error, response, 'Erro ao listar clientes:')
   }
 }

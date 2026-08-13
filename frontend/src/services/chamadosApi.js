@@ -6,8 +6,8 @@ async function tratarResposta(promise) {
   return response.data;
 }
 
-export function listarChamadosApi() {
-  return tratarResposta(apiClient.get("/chamados"));
+export function listarChamadosApi(params = {}) {
+  return tratarResposta(apiClient.get("/chamados", { params }));
 }
 
 export function criarChamadoApi(dados) {

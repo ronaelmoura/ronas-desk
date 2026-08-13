@@ -9,6 +9,7 @@ import {
   FolderOpen,
 } from "lucide-react";
 import { buscarRelatorioChamadosApi } from "../../services/relatoriosApi";
+import Paginacao from "../../components/ui/Paginacao";
 import "./relatorios.css";
 
 function formatarDataInput(data) {
@@ -45,7 +46,8 @@ const relatorioInicial = {
     categoria: [],
     responsavel: [],
   },
-  chamados: [],
+  dados: [],
+  paginacao: { pagina: 1, total: 0, total_paginas: 1 },
 };
 
 function formatarTempo(minutos) {
@@ -116,8 +118,9 @@ function Relatorios() {
   const [relatorio, setRelatorio] = useState(relatorioInicial);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
+  const [paginaAtual, setPaginaAtual] = useState(1);
 
-  async function carregarRelatorio(periodo = filtros) {
+  async function carregarRelatorio(periodo = filtros, pagina = paginaAtual) {
     setCarregando(true);
     setErro("");
 
@@ -125,6 +128,7 @@ function Relatorios() {
       const dados = await buscarRelatorioChamadosApi(
         periodo.dataInicio,
         periodo.dataFim,
+        pagina,
       );
       setRelatorio(dados);
     } catch (error) {
@@ -136,12 +140,18 @@ function Relatorios() {
 
   useEffect(() => {
     const periodoInicial = criarPeriodoInicial();
-    carregarRelatorio(periodoInicial);
+    carregarRelatorio(periodoInicial, 1);
   }, []);
 
   function aplicarFiltros(event) {
     event.preventDefault();
-    carregarRelatorio();
+    setPaginaAtual(1);
+    carregarRelatorio(filtros, 1);
+  }
+
+  function mudarPagina(pagina) {
+    setPaginaAtual(pagina);
+    carregarRelatorio(filtros, pagina);
   }
 
   function exportarCsv() {
@@ -157,7 +167,7 @@ function Relatorios() {
       "Criado em",
       "Resolvido em",
     ];
-    const linhas = relatorio.chamados.map((chamado) => [
+    const linhas = relatorio.dados.map((chamado) => [
       chamado.id,
       chamado.titulo,
       chamado.cliente_nome || "Cliente removido",
@@ -187,7 +197,7 @@ function Relatorios() {
   }
 
   const resumo = relatorio.resumo;
-  const chamadosVisiveis = relatorio.chamados.slice(0, 100);
+  const chamadosVisiveis = relatorio.dados;
 
   return (
     <section className="reports-page">
@@ -203,7 +213,7 @@ function Relatorios() {
         <button
           className="reports-export-button"
           type="button"
-          disabled={carregando || !relatorio.chamados.length}
+          disabled={carregando || !relatorio.dados.length}
           onClick={exportarCsv}
         >
           <Download size={18} aria-hidden="true" />
@@ -330,13 +340,10 @@ function Relatorios() {
               <div>
                 <h2>Detalhamento dos chamados</h2>
                 <p>
-                  {relatorio.chamados.length} registro
-                  {relatorio.chamados.length === 1 ? "" : "s"} no período.
+                  {relatorio.paginacao.total} registro
+                  {relatorio.paginacao.total === 1 ? "" : "s"} no período.
                 </p>
               </div>
-              {relatorio.chamados.length > 100 && (
-                <span>Exibindo os 100 mais recentes</span>
-              )}
             </div>
 
             <div className="reports-table-wrapper">
@@ -377,6 +384,12 @@ function Relatorios() {
               </table>
             </div>
           </section>
+          <Paginacao
+            paginaAtual={relatorio.paginacao.pagina}
+            totalPaginas={relatorio.paginacao.total_paginas}
+            onChange={mudarPagina}
+            ariaLabel="Paginação do detalhamento do relatório"
+          />
         </>
       )}
     </section>

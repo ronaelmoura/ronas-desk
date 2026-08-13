@@ -5,7 +5,7 @@ async function dados(promise) {
   return response.data
 }
 
-export const listarMeusChamadosApi = () => dados(apiClient.get('/portal/chamados'))
+export const listarMeusChamadosApi = (params = {}) => dados(apiClient.get('/portal/chamados', { params }))
 export const buscarMeuChamadoApi = (id) => dados(apiClient.get(`/portal/chamados/${id}`))
 export const criarMeuChamadoApi = (formulario) => dados(apiClient.post('/portal/chamados', formulario))
 export const listarMensagensChamadoApi = (id) => dados(apiClient.get(`/portal/chamados/${id}/comentarios`))

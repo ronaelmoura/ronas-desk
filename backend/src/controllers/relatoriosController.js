@@ -2,20 +2,28 @@ import relatorioModel from '../models/relatorioModel.js'
 import relatorioService, {
   PeriodoRelatorioInvalidoError,
 } from '../services/relatorioService.js'
+import {
+  criarRespostaPaginada,
+  normalizarPaginacao,
+  PaginacaoInvalidaError,
+} from '../services/paginacaoService.js'
 
 async function buscarChamados(request, response) {
   try {
     const periodo = relatorioService.normalizarPeriodo(request.query)
-    const chamados = await relatorioModel.listarChamadosPorPeriodo(
-      periodo.data_inicio,
-      periodo.data_fim,
-    )
+    const paginacao = normalizarPaginacao(request.query)
+    const relatorio = await relatorioModel.gerarRelatorioPaginado(periodo, paginacao)
 
     return response
       .status(200)
-      .json(relatorioService.gerarRelatorio(chamados, periodo))
+      .json({
+        periodo,
+        resumo: relatorio.resumo,
+        distribuicoes: relatorio.distribuicoes,
+        ...criarRespostaPaginada(relatorio.chamados, relatorio.total, paginacao),
+      })
   } catch (error) {
-    if (error instanceof PeriodoRelatorioInvalidoError) {
+    if (error instanceof PeriodoRelatorioInvalidoError || error instanceof PaginacaoInvalidaError) {
       return response.status(400).json({
         status: 'erro',
         message: error.message,

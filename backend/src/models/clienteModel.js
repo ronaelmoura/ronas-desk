@@ -33,6 +33,35 @@ async function listar() {
   return rows.map(normalizarCliente)
 }
 
+async function listarPaginado({ busca = '' }, paginacao) {
+  const clausulaBusca = busca
+    ? 'AND (nome LIKE ? OR email LIKE ? OR empresa LIKE ?)'
+    : ''
+  const parametrosBusca = busca ? [`%${busca}%`, `%${busca}%`, `%${busca}%`] : []
+
+  const [resultado] = await Promise.all([
+    pool.execute(
+      `
+        SELECT ${camposCliente}
+        FROM clientes
+        WHERE ativo = TRUE ${clausulaBusca}
+        ORDER BY id DESC
+        LIMIT ? OFFSET ?
+      `,
+      [...parametrosBusca, paginacao.limite, paginacao.offset],
+    ),
+    pool.execute(
+      `SELECT COUNT(*) AS total FROM clientes WHERE ativo = TRUE ${clausulaBusca}`,
+      parametrosBusca,
+    ),
+  ])
+
+  return {
+    dados: resultado[0].map(normalizarCliente),
+    total: resultado[1][0].total,
+  }
+}
+
 async function buscarPorIdInterno(id, somenteAtivos = true) {
   const filtroAtivo = somenteAtivos ? ' AND ativo = TRUE' : ''
 
@@ -129,6 +158,7 @@ async function desativar(id) {
 
 export default {
   listar,
+  listarPaginado,
   buscarPorId,
   buscarChamados,
   criar,

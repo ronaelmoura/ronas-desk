@@ -35,6 +35,32 @@ async function listar() {
   return rows.map(normalizarUsuario)
 }
 
+async function listarPaginado({ busca = '' }, paginacao) {
+  const clausulaBusca = busca ? 'WHERE nome LIKE ? OR email LIKE ?' : ''
+  const parametrosBusca = busca ? [`%${busca}%`, `%${busca}%`] : []
+  const [resultado] = await Promise.all([
+    pool.execute(
+      `
+        SELECT ${camposPublicos}
+        FROM usuarios
+        ${clausulaBusca}
+        ORDER BY nome ASC, id ASC
+        LIMIT ? OFFSET ?
+      `,
+      [...parametrosBusca, paginacao.limite, paginacao.offset],
+    ),
+    pool.execute(
+      `SELECT COUNT(*) AS total FROM usuarios ${clausulaBusca}`,
+      parametrosBusca,
+    ),
+  ])
+
+  return {
+    dados: resultado[0].map(normalizarUsuario),
+    total: resultado[1][0].total,
+  }
+}
+
 async function buscarPorEmail(email) {
   const [rows] = await pool.execute(
     `
@@ -257,6 +283,7 @@ async function excluir(id) {
 
 export default {
   listar,
+  listarPaginado,
   buscarPorEmail,
   buscarDemoAtivo,
   buscarPorId,
