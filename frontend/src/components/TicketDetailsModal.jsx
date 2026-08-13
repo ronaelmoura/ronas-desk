@@ -6,6 +6,7 @@ import {
   Info,
   MessageSquare,
   Paperclip,
+  Sparkles,
   Trash2,
   Upload,
   X,
@@ -15,6 +16,7 @@ import {
   criarComentarioChamadoApi,
   excluirAnexoChamadoApi,
   gerarDownloadAnexoChamadoApi,
+  gerarResumoChamadoIaApi,
   listarAnexosChamadoApi,
   listarComentariosChamadoApi,
 } from "../services/chamadosApi";
@@ -77,6 +79,8 @@ function TicketDetailsModal({
   const [confirmandoExclusao, setConfirmandoExclusao] = useState(false);
   const [salvando, setSalvando] = useState(false);
   const [excluindoChamado, setExcluindoChamado] = useState(false);
+  const [resumoIa, setResumoIa] = useState(null);
+  const [gerandoResumoIa, setGerandoResumoIa] = useState(false);
   const modalRef = useRef(null);
   const onCloseRef = useRef(onClose);
   const operacaoEmAndamentoRef = useRef(false);
@@ -314,6 +318,21 @@ function TicketDetailsModal({
     }
   }
 
+  async function gerarResumoIa() {
+    if (gerandoResumoIa) return;
+
+    setGerandoResumoIa(true);
+    setErro("");
+
+    try {
+      setResumoIa(await gerarResumoChamadoIaApi(chamado.id));
+    } catch (error) {
+      setErro(error.message);
+    } finally {
+      setGerandoResumoIa(false);
+    }
+  }
+
   return (
     <div
       className="details-backdrop"
@@ -395,6 +414,17 @@ function TicketDetailsModal({
             <History size={17} aria-hidden="true" />
             Histórico
           </button>
+          {!somenteLeitura && (
+            <button
+              type="button"
+              className={abaAtiva === "assistente-ia" ? "active" : ""}
+              aria-current={abaAtiva === "assistente-ia" ? "page" : undefined}
+              onClick={() => setAbaAtiva("assistente-ia")}
+            >
+              <Sparkles size={17} aria-hidden="true" />
+              Assistente IA
+            </button>
+          )}
         </nav>
 
         {erro && (
@@ -768,6 +798,72 @@ function TicketDetailsModal({
                 <Paperclip size={30} aria-hidden="true" />
                 <strong>Nenhum anexo ainda</strong>
                 <p>Envie uma imagem ou PDF relacionado ao atendimento.</p>
+              </div>
+            )}
+          </section>
+        )}
+
+        {abaAtiva === "assistente-ia" && !somenteLeitura && (
+          <section className="ticket-interactions-content ticket-ai-content">
+            <div className="ticket-ai-intro">
+              <div className="ticket-ai-icon" aria-hidden="true">
+                <Sparkles size={21} />
+              </div>
+              <div>
+                <h3>Assistente de chamado</h3>
+                <p>
+                  Gere um resumo para a equipe com base nas informações,
+                  comentários e histórico deste chamado.
+                </p>
+              </div>
+            </div>
+
+            <div className="ticket-ai-actions">
+              <p>
+                A sugestão não altera o chamado e não envia anexos ao
+                assistente.
+              </p>
+              <button
+                className="details-save-button"
+                type="button"
+                onClick={gerarResumoIa}
+                disabled={gerandoResumoIa}
+              >
+                <Sparkles size={17} aria-hidden="true" />
+                {gerandoResumoIa ? "Analisando chamado..." : "Gerar resumo com IA"}
+              </button>
+            </div>
+
+            {resumoIa && (
+              <div className="ticket-ai-result" aria-live="polite">
+                <section>
+                  <h4>Resumo</h4>
+                  <p>{resumoIa.resumo}</p>
+                </section>
+                <section>
+                  <h4>Ações registradas</h4>
+                  {resumoIa.acoes_realizadas.length ? (
+                    <ul>
+                      {resumoIa.acoes_realizadas.map((acao) => (
+                        <li key={acao}>{acao}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>Nenhuma ação registrada até o momento.</p>
+                  )}
+                </section>
+                <section>
+                  <h4>Próximos passos sugeridos</h4>
+                  {resumoIa.proximos_passos.length ? (
+                    <ul>
+                      {resumoIa.proximos_passos.map((passo) => (
+                        <li key={passo}>{passo}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>Nenhuma sugestão adicional no momento.</p>
+                  )}
+                </section>
               </div>
             )}
           </section>

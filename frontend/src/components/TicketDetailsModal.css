@@ -478,6 +478,96 @@
   padding: 26px 30px 30px;
 }
 
+.ticket-ai-content {
+  min-height: 340px;
+}
+
+.ticket-ai-intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.ticket-ai-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 12px;
+  background: #eef4ff;
+  color: #1475cf;
+}
+
+.ticket-ai-intro h3,
+.ticket-ai-result h4 {
+  margin: 0;
+  color: #263448;
+}
+
+.ticket-ai-intro p,
+.ticket-ai-actions p,
+.ticket-ai-result p,
+.ticket-ai-result li {
+  color: #66758a;
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+.ticket-ai-intro p {
+  margin: 5px 0 0;
+}
+
+.ticket-ai-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 24px;
+  padding: 16px;
+  border: 1px solid #dfe6ef;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.ticket-ai-actions p {
+  max-width: 360px;
+  margin: 0;
+}
+
+.ticket-ai-actions .details-save-button {
+  min-width: 184px;
+}
+
+.ticket-ai-result {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.ticket-ai-result section {
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 13px;
+  background: #fff;
+}
+
+.ticket-ai-result h4 {
+  font-size: 0.86rem;
+}
+
+.ticket-ai-result p {
+  margin: 7px 0 0;
+  white-space: pre-wrap;
+}
+
+.ticket-ai-result ul {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
 .comment-form {
   padding: 18px;
   border: 1px solid #dfe6ef;
@@ -889,6 +979,15 @@
   }
 
   .comment-form .details-save-button {
+    width: 100%;
+  }
+
+  .ticket-ai-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .ticket-ai-actions .details-save-button {
     width: 100%;
   }
 }

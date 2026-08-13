@@ -44,6 +44,10 @@ export function criarComentarioChamadoApi(id, conteudo, tipo) {
   );
 }
 
+export function gerarResumoChamadoIaApi(id) {
+  return tratarResposta(apiClient.post(`/chamados/${id}/assistente-ia`));
+}
+
 export function listarAnexosChamadoApi(id) {
   return tratarResposta(apiClient.get(`/chamados/${id}/anexos`));
 }
