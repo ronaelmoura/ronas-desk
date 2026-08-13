@@ -303,10 +303,30 @@ Cole o conteúdo no valor de `DB_SSL_CA_BASE64`. Em um Blueprint novo, o Render
 solicita essa variável durante a criação. Em um serviço já existente, adicione-a
 manualmente em **Environment**.
 
-O `JWT_SECRET` é gerado automaticamente pelo Render. O serviço executa as
-migrations pendentes antes de iniciar a aplicação. A execução automática é
-permitida somente em um banco vazio ou em um banco que já possua o histórico
-`schema_migrations`.
+O `JWT_SECRET` é gerado automaticamente pelo Render. O serviço inicia a
+aplicação sem executar migrations automaticamente. Assim, uma indisponibilidade
+temporária do Aiven não impede que uma nova versão sem alteração de banco entre
+no ar.
+
+### Migrations controladas em produção
+
+Execute migrations somente quando a versão a ser publicada incluir arquivos em
+`backend/sql/`. Antes de publicar essa versão, crie um **One-Off Job** no Render
+usando a mesma versão do código e as mesmas variáveis de ambiente do serviço,
+com o comando:
+
+```sh
+npm run migrate
+```
+
+Espere o job terminar com sucesso e confirme no log que o banco está atualizado.
+Depois, publique a versão da aplicação normalmente. Para mudanças sem migration,
+não é necessário executar esse job.
+
+As migrations são idempotentes e registradas em `schema_migrations`, mas o job
+não deve ser executado sem uma mudança planejada no banco. Nunca inclua valores
+de conexão, certificados ou outras credenciais nos logs, no Git ou em capturas
+de tela.
 
 ### 3. Crie o administrador da demonstração
 

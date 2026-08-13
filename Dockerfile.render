@@ -23,4 +23,4 @@ COPY --chown=node:node backend/sql ./sql
 COPY --from=frontend-build --chown=node:node /frontend/dist ./public
 USER node
 EXPOSE 10000
-CMD ["sh", "-c", "npm run migrate && exec npm start"]
+CMD ["npm", "start"]
