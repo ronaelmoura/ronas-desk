@@ -2,6 +2,7 @@ import { Router } from 'express'
 import chamadosController from '../controllers/chamadosController.js'
 import chamadoInteracoesController from '../controllers/chamadoInteracoesController.js'
 import anexosController from '../controllers/anexosController.js'
+import assistenteIaController from '../controllers/assistenteIaController.js'
 import anexoUploadMiddleware from '../middlewares/anexoUploadMiddleware.js'
 import adminMiddleware from '../middlewares/adminMiddleware.js'
 
@@ -24,6 +25,8 @@ chamadosRouter.post(
   '/:id/comentarios',
   chamadoInteracoesController.criarComentario,
 )
+
+chamadosRouter.post('/:id/assistente-ia', assistenteIaController.gerarResumo)
 
 chamadosRouter.get('/:id/anexos', anexosController.listar)
 

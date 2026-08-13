@@ -287,6 +287,18 @@ Informe diretamente no painel do Render:
 - `DB_SSL_CA_BASE64`, usando o certificado `ca.pem` convertido para Base64;
 - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` e
   `CLOUDINARY_API_SECRET`, caso os anexos sejam utilizados.
+- `GEMINI_API_KEY`, caso o Assistente IA de chamados seja utilizado.
+
+### Assistente IA de chamados (opcional)
+
+O Assistente IA é exclusivo da equipe e apenas gera um resumo temporário do
+chamado: ele não altera dados, não envia anexos e não fica salvo no banco.
+Para ativá-lo, crie uma chave no Google AI Studio e informe `GEMINI_API_KEY`
+diretamente no Render. Nunca publique ou compartilhe essa chave.
+
+No plano gratuito do Gemini, use apenas os dados fictícios da demonstração ou
+conteúdo autorizado para teste. Não inclua senhas, tokens, chaves de acesso ou
+outros dados confidenciais em chamados enviados ao assistente.
 
 No PowerShell, copie o certificado convertido diretamente para a área de
 transferência sem imprimi-lo no terminal:
