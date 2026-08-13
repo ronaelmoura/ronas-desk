@@ -38,6 +38,21 @@ const resumoInicial = {
   por_dispositivo: [],
 }
 
+function localizacaoIndisponivel({ pais, regiao }) {
+  return (
+    !pais ||
+    !regiao ||
+    pais === 'Não identificado' ||
+    regiao === 'Não identificada'
+  )
+}
+
+function formatarRegiao({ pais, regiao }) {
+  return localizacaoIndisponivel({ pais, regiao })
+    ? 'Região indisponível'
+    : `${regiao} — ${pais}`
+}
+
 function Distribuicao({ titulo, icone: Icone, itens, obterRotulo }) {
   const maiorTotal = Math.max(...itens.map((item) => item.total), 0)
 
@@ -197,8 +212,8 @@ function Visitas() {
                   {
                     new Set(
                       resumo.por_regiao
+                        .filter((item) => !localizacaoIndisponivel(item))
                         .map((item) => item.pais)
-                        .filter((pais) => pais !== 'Não identificado'),
                     ).size
                   }
                 </strong>
@@ -220,7 +235,7 @@ function Visitas() {
               titulo="Regiões"
               icone={MapPinned}
               itens={resumo.por_regiao}
-              obterRotulo={(item) => `${item.regiao} — ${item.pais}`}
+              obterRotulo={formatarRegiao}
             />
             <Distribuicao
               titulo="Páginas mais acessadas"
