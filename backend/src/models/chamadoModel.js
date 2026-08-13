@@ -109,7 +109,7 @@ function obterOrdenacao(ordenacao) {
 
 async function listarPaginado(filtros, paginacao, executor = pool) {
   const filtro = criarFiltrosListagem(filtros)
-  const [resultado] = await Promise.all([
+  const [resultadoDados, resultadoTotal] = await Promise.all([
     executor.execute(
       `
         SELECT
@@ -139,12 +139,12 @@ async function listarPaginado(filtros, paginacao, executor = pool) {
     ),
   ])
 
-  return { dados: resultado[0], total: resultado[1][0].total }
+  return { dados: resultadoDados[0], total: resultadoTotal[0][0].total }
 }
 
 async function listarPaginadoPorCliente(clienteId, filtros, paginacao, executor = pool) {
   const filtro = criarFiltrosListagem({ ...filtros, cliente_id: clienteId }, true)
-  const [resultado] = await Promise.all([
+  const [resultadoDados, resultadoTotal] = await Promise.all([
     executor.execute(
       `
         SELECT id, cliente_id, responsavel_id, titulo, descricao, categoria,
@@ -163,7 +163,7 @@ async function listarPaginadoPorCliente(clienteId, filtros, paginacao, executor 
     ),
   ])
 
-  return { dados: resultado[0], total: resultado[1][0].total }
+  return { dados: resultadoDados[0], total: resultadoTotal[0][0].total }
 }
 
 async function buscarPorId(id, executor = pool) {

@@ -39,7 +39,7 @@ async function listarPaginado({ busca = '' }, paginacao) {
     : ''
   const parametrosBusca = busca ? [`%${busca}%`, `%${busca}%`, `%${busca}%`] : []
 
-  const [resultado] = await Promise.all([
+  const [resultadoDados, resultadoTotal] = await Promise.all([
     pool.execute(
       `
         SELECT ${camposCliente}
@@ -57,8 +57,8 @@ async function listarPaginado({ busca = '' }, paginacao) {
   ])
 
   return {
-    dados: resultado[0].map(normalizarCliente),
-    total: resultado[1][0].total,
+    dados: resultadoDados[0].map(normalizarCliente),
+    total: resultadoTotal[0][0].total,
   }
 }
 

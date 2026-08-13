@@ -38,7 +38,7 @@ async function listar() {
 async function listarPaginado({ busca = '' }, paginacao) {
   const clausulaBusca = busca ? 'WHERE nome LIKE ? OR email LIKE ?' : ''
   const parametrosBusca = busca ? [`%${busca}%`, `%${busca}%`] : []
-  const [resultado] = await Promise.all([
+  const [resultadoDados, resultadoTotal] = await Promise.all([
     pool.execute(
       `
         SELECT ${camposPublicos}
@@ -56,8 +56,8 @@ async function listarPaginado({ busca = '' }, paginacao) {
   ])
 
   return {
-    dados: resultado[0].map(normalizarUsuario),
-    total: resultado[1][0].total,
+    dados: resultadoDados[0].map(normalizarUsuario),
+    total: resultadoTotal[0][0].total,
   }
 }
 
