@@ -1,4 +1,5 @@
 import pool from '../database/db.js'
+import { criarClausulaPaginacao } from '../services/paginacaoService.js'
 
 async function listar(executor = pool) {
   const [rows] = await executor.query(`
@@ -109,6 +110,7 @@ function obterOrdenacao(ordenacao) {
 
 async function listarPaginado(filtros, paginacao, executor = pool) {
   const filtro = criarFiltrosListagem(filtros)
+  const clausulaPaginacao = criarClausulaPaginacao(paginacao)
   const [resultadoDados, resultadoTotal] = await Promise.all([
     executor.execute(
       `
@@ -124,9 +126,9 @@ async function listarPaginado(filtros, paginacao, executor = pool) {
         LEFT JOIN usuarios ON usuarios.id = chamados.responsavel_id
         ${filtro.clausula}
         ORDER BY ${obterOrdenacao(filtros.ordenacao)}
-        LIMIT ? OFFSET ?
+        ${clausulaPaginacao}
       `,
-      [...filtro.parametros, paginacao.limite, paginacao.offset],
+      filtro.parametros,
     ),
     executor.execute(
       `
@@ -144,6 +146,7 @@ async function listarPaginado(filtros, paginacao, executor = pool) {
 
 async function listarPaginadoPorCliente(clienteId, filtros, paginacao, executor = pool) {
   const filtro = criarFiltrosListagem({ ...filtros, cliente_id: clienteId }, true)
+  const clausulaPaginacao = criarClausulaPaginacao(paginacao)
   const [resultadoDados, resultadoTotal] = await Promise.all([
     executor.execute(
       `
@@ -153,9 +156,9 @@ async function listarPaginadoPorCliente(clienteId, filtros, paginacao, executor 
         FROM chamados
         ${filtro.clausula.replaceAll('usuarios.nome LIKE ?', 'chamados.titulo LIKE ?')}
         ORDER BY ${obterOrdenacao(filtros.ordenacao).replaceAll('chamados.', '')}
-        LIMIT ? OFFSET ?
+        ${clausulaPaginacao}
       `,
-      [...filtro.parametros, paginacao.limite, paginacao.offset],
+      filtro.parametros,
     ),
     executor.execute(
       `SELECT COUNT(*) AS total FROM chamados ${filtro.clausula.replaceAll('usuarios.nome LIKE ?', 'chamados.titulo LIKE ?')}`,

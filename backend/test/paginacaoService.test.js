@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
+  criarClausulaPaginacao,
   criarRespostaPaginada,
   normalizarPaginacao,
   PaginacaoInvalidaError,
@@ -23,6 +24,17 @@ test('rejeita limites fora da faixa segura', () => {
   )
   assert.throws(
     () => normalizarPaginacao({ limite: '101' }),
+    PaginacaoInvalidaError,
+  )
+})
+
+test('cria uma clausula de paginação somente com inteiros validados', () => {
+  assert.equal(
+    criarClausulaPaginacao({ limite: 20, offset: 40 }),
+    'LIMIT 20 OFFSET 40',
+  )
+  assert.throws(
+    () => criarClausulaPaginacao({ limite: '20', offset: 0 }),
     PaginacaoInvalidaError,
   )
 })

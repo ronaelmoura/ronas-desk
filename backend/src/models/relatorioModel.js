@@ -1,4 +1,5 @@
 import pool from '../database/db.js'
+import { criarClausulaPaginacao } from '../services/paginacaoService.js'
 
 async function listarChamadosPorPeriodo(dataInicio, dataFim, executor = pool) {
   const [rows] = await executor.execute(
@@ -45,6 +46,7 @@ export async function gerarRelatorioPaginado(periodo, paginacao, executor = pool
       WHEN (${minutosSla}) >= ((${limiteSla}) * 0.8) THEN 'Próximo do vencimento'
       ELSE 'Dentro do prazo' END
     ELSE NULL END`
+  const clausulaPaginacao = criarClausulaPaginacao(paginacao)
   const distribuicao = (campo) => executor.execute(
     `SELECT COALESCE(${campo}, 'Não atribuído') AS rotulo, COUNT(*) AS total
      FROM chamados LEFT JOIN usuarios ON usuarios.id = chamados.responsavel_id
@@ -75,8 +77,8 @@ export async function gerarRelatorioPaginado(periodo, paginacao, executor = pool
        LEFT JOIN clientes ON clientes.id = chamados.cliente_id
        LEFT JOIN usuarios ON usuarios.id = chamados.responsavel_id
        ${where}
-       ORDER BY chamados.created_at DESC, chamados.id DESC LIMIT ? OFFSET ?`,
-      [...parametros, paginacao.limite, paginacao.offset],
+       ORDER BY chamados.created_at DESC, chamados.id DESC ${clausulaPaginacao}`,
+      parametros,
     ),
     executor.execute(`SELECT COUNT(*) AS total FROM chamados ${where}`, parametros),
   ])
