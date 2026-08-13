@@ -11,6 +11,7 @@ import {
   listarMeusChamadosApi,
 } from '../../services/portalClienteApi'
 import { classeChamado } from '../../utils/chamados'
+import Paginacao from '../../components/ui/Paginacao'
 import './PortalCliente.css'
 import './AvaliacaoPortal.css'
 
@@ -272,18 +273,22 @@ function PortalCliente() {
   const [erro, setErro] = useState('')
   const [modalAberto, setModalAberto] = useState(false)
   const [selecionado, setSelecionado] = useState(null)
+  const [paginaAtual, setPaginaAtual] = useState(1)
+  const [paginacao, setPaginacao] = useState({ total: 0, total_paginas: 1 })
 
   const carregar = useCallback(async () => {
     setCarregando(true)
     setErro('')
     try {
-      setChamados(await listarMeusChamadosApi())
+      const resultado = await listarMeusChamadosApi({ pagina: paginaAtual, limite: 10 })
+      setChamados(resultado.dados)
+      setPaginacao(resultado.paginacao)
     } catch (error) {
       setErro(error.message)
     } finally {
       setCarregando(false)
     }
-  }, [])
+  }, [paginaAtual])
 
   useEffect(() => {
     carregar()
@@ -300,7 +305,9 @@ function PortalCliente() {
   }, [chamados])
 
   async function criado(chamado) {
-    setChamados((atuais) => [chamado, ...atuais])
+    setPaginaAtual(1)
+    setChamados((atuais) => [chamado, ...atuais].slice(0, 10))
+    setPaginacao((atual) => ({ ...atual, total: atual.total + 1 }))
     setModalAberto(false)
   }
 
@@ -328,14 +335,15 @@ function PortalCliente() {
           <button className="portal-primary-button" onClick={() => setModalAberto(true)} type="button"><CirclePlus size={18} /> Novo chamado</button>
         </header>
         <div aria-label="Resumo dos chamados" className="portal-summary">
-          <article><TicketCheck size={20} /><div><span>Total de chamados</span><strong>{chamados.length}</strong></div></article>
+          <article><TicketCheck size={20} /><div><span>Total de chamados</span><strong>{paginacao.total}</strong></div></article>
           <article><RefreshCw size={20} /><div><span>Em acompanhamento</span><strong>{resumo.abertos}</strong></div></article>
           <article><MessageSquare size={20} /><div><span>Resolvidos</span><strong>{resumo.resolvidos}</strong></div></article>
         </div>
         {erro ? <div className="portal-alert" role="alert"><span>{erro}</span><button onClick={carregar} type="button">Tentar novamente</button></div> : null}
         <section aria-busy={carregando} className="portal-ticket-list">
-          <header><div><h2>Chamados recentes</h2><span>{carregando ? 'Carregando...' : `${chamados.length} registro(s)`}</span></div><button disabled={carregando} onClick={carregar} type="button"><RefreshCw size={17} /> Atualizar</button></header>
+          <header><div><h2>Chamados recentes</h2><span>{carregando ? 'Carregando...' : `${paginacao.total} registro(s)`}</span></div><button disabled={carregando} onClick={carregar} type="button"><RefreshCw size={17} /> Atualizar</button></header>
           {carregando ? <p className="portal-empty">Carregando seus chamados...</p> : chamados.length ? <div className="portal-ticket-table">{chamados.map((chamado) => <button className="portal-ticket-row" key={chamado.id} onClick={() => setSelecionado(chamado)} type="button"><span className="portal-ticket-id">#{String(chamado.id).padStart(3, '0')}</span><span><strong>{chamado.titulo}</strong><small>{chamado.categoria} · {formatarData(chamado.created_at)}</small></span><span className={`portal-status ${classeChamado('status', chamado.status)}`}>{chamado.status}</span><span className={`portal-priority ${classeChamado('priority', chamado.prioridade)}`}>{chamado.prioridade}</span></button>)}</div> : <div className="portal-empty"><TicketCheck size={32} /><strong>Nenhum chamado ainda</strong><p>Quando precisar de ajuda, abra sua primeira solicitação.</p><button className="portal-primary-button" onClick={() => setModalAberto(true)} type="button">Abrir chamado</button></div>}
+          <Paginacao paginaAtual={paginaAtual} totalPaginas={paginacao.total_paginas} onChange={setPaginaAtual} ariaLabel="Paginação dos seus chamados" />
         </section>
       </section>
       {modalAberto ? <NovoChamadoPortal onClose={() => setModalAberto(false)} onCreated={criado} /> : null}

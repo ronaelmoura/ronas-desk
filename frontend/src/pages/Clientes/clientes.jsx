@@ -18,6 +18,7 @@ import { buscarChamadoApi } from "../../services/chamadosApi";
 import ModalConfirmacao from "../../components/ui/ModalConfirmacao";
 import TabelaSkeleton from "../../components/ui/TabelaSkeleton";
 import Toast from "../../components/ui/Toast";
+import Paginacao from "../../components/ui/Paginacao";
 import NovoClienteModal from "./NovoClienteModal";
 import "./clientes.css";
 
@@ -39,6 +40,9 @@ function Clientes({
   const [abrindoChamadoId, setAbrindoChamadoId] = useState(null);
   const [processandoClienteId, setProcessandoClienteId] = useState(null);
   const [toast, setToast] = useState(null);
+  const [busca, setBusca] = useState("");
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [paginacao, setPaginacao] = useState({ total: 0, total_paginas: 1 });
   const podeGerenciarClientes = administrador && !somenteLeitura;
 
   const fecharToast = useCallback(() => setToast(null), []);
@@ -48,17 +52,27 @@ function Clientes({
     setErroClientes("");
 
     try {
-      setClientes(await listarClientesApi());
+      const resultado = await listarClientesApi({
+        pagina: paginaAtual,
+        limite: 10,
+        busca,
+      });
+      setClientes(resultado.dados);
+      setPaginacao(resultado.paginacao);
     } catch (error) {
       setErroClientes(error.message);
     } finally {
       setCarregandoClientes(false);
     }
-  }, []);
+  }, [busca, paginaAtual]);
 
   useEffect(() => {
     carregarClientes();
   }, [carregarClientes]);
+
+  useEffect(() => {
+    setPaginaAtual(1);
+  }, [busca]);
 
   async function abrirDetalhesCliente(cliente) {
     setClienteEmDetalhes(cliente);
@@ -111,25 +125,14 @@ function Clientes({
   async function salvarCliente(dados) {
     const editando = Boolean(clienteSelecionado);
 
-    const clienteSalvo = editando
+    await (editando
       ? await atualizarClienteApi(clienteSelecionado.id, {
           ...dados,
           ativo: true,
         })
-      : await criarClienteApi({ ...dados, ativo: true });
+      : criarClienteApi({ ...dados, ativo: true }));
 
-    setClientes((atuais) => {
-      const existe = atuais.some((cliente) => cliente.id === clienteSalvo.id);
-      const atualizados = existe
-        ? atuais.map((cliente) =>
-            cliente.id === clienteSalvo.id ? clienteSalvo : cliente,
-          )
-        : [...atuais, clienteSalvo];
-
-      return atualizados.sort((clienteA, clienteB) =>
-        clienteA.nome.localeCompare(clienteB.nome, "pt-BR"),
-      );
-    });
+    await carregarClientes();
 
     fecharModalCliente();
     setToast({
@@ -147,13 +150,7 @@ function Clientes({
 
     try {
       await excluirClienteApi(clienteParaDesativar.id);
-      setClientes((atuais) =>
-        atuais.map((cliente) =>
-          cliente.id === clienteParaDesativar.id
-            ? { ...cliente, ativo: false }
-            : cliente,
-        ),
-      );
+      await carregarClientes();
       setClienteParaDesativar(null);
       setToast({
         tipo: "sucesso",
@@ -288,6 +285,15 @@ function Clientes({
           </header>
 
           <div className="clientes-card">
+            <label className="clientes-search">
+              Buscar cliente
+              <input
+                type="search"
+                value={busca}
+                onChange={(event) => setBusca(event.target.value)}
+                placeholder="Nome, e-mail ou empresa"
+              />
+            </label>
             {erroClientes ? (
               <div className="clientes-feedback" role="alert">
                 <strong>Não foi possível carregar os clientes</strong>
@@ -395,6 +401,14 @@ function Clientes({
                   )}
                 </table>
               </div>
+            )}
+            {!carregandoClientes && !erroClientes && (
+              <Paginacao
+                paginaAtual={paginaAtual}
+                totalPaginas={paginacao.total_paginas}
+                onChange={setPaginaAtual}
+                ariaLabel="Paginação da lista de clientes"
+              />
             )}
           </div>
         </>

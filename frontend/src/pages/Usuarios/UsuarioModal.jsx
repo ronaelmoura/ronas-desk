@@ -34,9 +34,9 @@ function UsuarioModal({ usuario, onClose, onSave }) {
 
     let ativo = true;
     setCarregandoClientes(true);
-    listarClientesApi()
+    listarClientesApi({ limite: 100 })
       .then((resultado) => {
-        if (ativo) setClientes(resultado.filter((cliente) => cliente.ativo));
+        if (ativo) setClientes(resultado.dados.filter((cliente) => cliente.ativo));
       })
       .catch((error) => {
         if (ativo) setErro(error.message);

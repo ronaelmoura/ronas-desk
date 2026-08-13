@@ -1,7 +1,7 @@
 import apiClient from "./apiClient";
 
-export async function listarUsuariosApi() {
-  const response = await apiClient.get("/usuarios");
+export async function listarUsuariosApi(params = {}) {
+  const response = await apiClient.get("/usuarios", { params });
   return response.data;
 }
 

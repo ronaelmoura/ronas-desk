@@ -67,17 +67,17 @@ function NewTicketModal({ onClose, onSave }) {
     async function carregarRelacionamentos() {
       try {
         const [resultadoClientes, resultadoUsuarios] = await Promise.all([
-          listarClientesApi(),
-          listarUsuariosApi(),
+          listarClientesApi({ limite: 100 }),
+          listarUsuariosApi({ limite: 100 }),
         ]);
 
         setClientes(
-          resultadoClientes.filter(
+          resultadoClientes.dados.filter(
             (cliente) => cliente.ativo === true || cliente.ativo === 1,
           ),
         );
         setUsuarios(
-          resultadoUsuarios.filter(
+          resultadoUsuarios.dados.filter(
             (usuario) =>
               (usuario.ativo === true || usuario.ativo === 1) &&
               !usuario.is_demo &&

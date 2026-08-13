@@ -142,13 +142,13 @@ function TicketDetailsModal({
       try {
         const [resultadoUsuarios, resultadoComentarios, resultadoAnexos] =
           await Promise.all([
-            listarUsuariosApi(),
+            listarUsuariosApi({ limite: 100 }),
             listarComentariosChamadoApi(chamado.id),
             listarAnexosChamadoApi(chamado.id),
           ]);
 
         setUsuarios(
-          resultadoUsuarios.filter(
+          resultadoUsuarios.dados.filter(
             (usuario) =>
               (usuario.ativo === true || usuario.ativo === 1) &&
               !usuario.is_demo &&

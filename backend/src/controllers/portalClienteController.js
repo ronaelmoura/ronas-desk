@@ -5,6 +5,11 @@ import historyService from '../services/historyService.js'
 import slaService from '../services/slaService.js'
 import notificacaoService from '../services/notificacaoService.js'
 import reaberturaChamadoService from '../services/reaberturaChamadoService.js'
+import {
+  criarRespostaPaginada,
+  normalizarPaginacao,
+  PaginacaoInvalidaError,
+} from '../services/paginacaoService.js'
 
 const categoriasPermitidas = new Set([
   'Hardware',
@@ -66,11 +71,31 @@ async function obterChamadoDoCliente(id, clienteId, response) {
 
 async function listar(request, response) {
   try {
-    const chamados = await chamadoModel.listarPorCliente(
+    const paginacao = normalizarPaginacao(request.query)
+    const resultado = await chamadoModel.listarPaginadoPorCliente(
       request.usuario.cliente_id,
+      {
+        busca: request.query.busca?.trim() || '',
+        status: request.query.status || '',
+        prioridade: request.query.prioridade || '',
+        categoria: request.query.categoria || '',
+        data_inicio: request.query.data_inicio || '',
+        data_fim: request.query.data_fim || '',
+        ordenacao: request.query.ordenacao || 'recentes',
+      },
+      paginacao,
     )
-    return response.status(200).json(slaService.enriquecerChamados(chamados))
+    return response.status(200).json(
+      criarRespostaPaginada(
+        slaService.enriquecerChamados(resultado.dados),
+        resultado.total,
+        paginacao,
+      ),
+    )
   } catch (error) {
+    if (error instanceof PaginacaoInvalidaError) {
+      return response.status(400).json({ status: 'erro', message: error.message })
+    }
     console.error('Erro ao listar chamados do portal:', error)
     return response.status(500).json({
       status: 'erro',

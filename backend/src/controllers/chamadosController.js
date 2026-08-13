@@ -6,6 +6,11 @@ import historyService from '../services/historyService.js'
 import slaService from '../services/slaService.js'
 import resolucaoChamadoService from '../services/resolucaoChamadoService.js'
 import notificacaoService from '../services/notificacaoService.js'
+import {
+  criarRespostaPaginada,
+  normalizarPaginacao,
+  PaginacaoInvalidaError,
+} from '../services/paginacaoService.js'
 
 const categoriasPermitidas = ['Hardware', 'Software', 'Rede', 'Acesso', 'Outro']
 
@@ -18,6 +23,11 @@ const statusPermitidos = [
   'Resolvido',
   'Fechado',
   'Cancelado',
+]
+const statusSlaPermitidos = [
+  'Dentro do prazo',
+  'Próximo do vencimento',
+  'Vencido',
 ]
 
 function validarId(id) {
@@ -104,13 +114,45 @@ async function validarRelacionamentos(dados, response, executor = pool) {
 
 async function listar(request, response) {
   try {
-    const chamados = await chamadoModel.listar()
+    const paginacao = normalizarPaginacao(request.query)
+    const filtros = {
+      busca: request.query.busca?.trim() || '',
+      status: request.query.status || '',
+      prioridade: request.query.prioridade || '',
+      categoria: request.query.categoria || '',
+      sla_status: request.query.sla_status || '',
+      data_inicio: request.query.data_inicio || '',
+      data_fim: request.query.data_fim || '',
+      ordenacao: request.query.ordenacao || 'recentes',
+    }
+
+    if (filtros.status && !statusPermitidos.includes(filtros.status)) {
+      throw new PaginacaoInvalidaError('Status inválido.')
+    }
+    if (filtros.prioridade && !prioridadesPermitidas.includes(filtros.prioridade)) {
+      throw new PaginacaoInvalidaError('Prioridade inválida.')
+    }
+    if (filtros.categoria && !categoriasPermitidas.includes(filtros.categoria)) {
+      throw new PaginacaoInvalidaError('Categoria inválida.')
+    }
+    if (filtros.sla_status && !statusSlaPermitidos.includes(filtros.sla_status)) {
+      throw new PaginacaoInvalidaError('Status de SLA inválido.')
+    }
+    if (filtros.ordenacao === 'sla') {
+      throw new PaginacaoInvalidaError('Ordenação por SLA não está disponível.')
+    }
+
+    const resultado = await chamadoModel.listarPaginado(filtros, paginacao)
+    const chamados = slaService.enriquecerChamados(resultado.dados)
 
     return response
       .status(200)
-      .json(slaService.filtrarPorStatus(chamados, request.query.sla_status))
+      .json(criarRespostaPaginada(chamados, resultado.total, paginacao))
   } catch (error) {
-    if (error.name === 'StatusSlaInvalidoError') {
+    if (
+      error.name === 'StatusSlaInvalidoError' ||
+      error instanceof PaginacaoInvalidaError
+    ) {
       return response.status(400).json({
         status: 'erro',
         message: error.message,

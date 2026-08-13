@@ -11,10 +11,10 @@ return response.data
 
 
 
-export function listarClientesApi(){
+export function listarClientesApi(params = {}){
 
 return tratarResposta(
-apiClient.get('/clientes')
+apiClient.get('/clientes', { params })
 )
 
 }

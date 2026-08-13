@@ -88,6 +88,69 @@ export async function buscarResumo(
   }
 }
 
+export async function buscarIndicadoresSla(
+  dataInicio = null,
+  dataFim = null,
+  executor = pool,
+) {
+  const filtroPeriodo = criarFiltroPeriodo(dataInicio, dataFim)
+  const inicioSla = 'COALESCE(chamados.sla_started_at, chamados.created_at)'
+  const fimSla = `CASE
+    WHEN chamados.status IN ('Resolvido', 'Fechado') THEN chamados.resolved_at
+    ELSE NOW()
+  END`
+  const limiteSla = `CASE chamados.prioridade
+    WHEN 'Crítica' THEN 120
+    WHEN 'Alta' THEN 480
+    WHEN 'Média' THEN 1440
+    WHEN 'Baixa' THEN 4320
+  END`
+  const minutosSla = `TIMESTAMPDIFF(MINUTE, ${inicioSla}, ${fimSla})`
+
+  const [rows] = await executor.execute(
+    `
+      SELECT
+        COALESCE(SUM(
+          chamados.status NOT IN ('Resolvido', 'Fechado')
+          AND (${minutosSla}) >= (${limiteSla})
+        ), 0) AS sla_vencidos,
+        COALESCE(SUM(
+          chamados.status NOT IN ('Resolvido', 'Fechado')
+          AND (${minutosSla}) >= ((${limiteSla}) * 0.8)
+          AND (${minutosSla}) < (${limiteSla})
+        ), 0) AS sla_proximos_vencimento,
+        AVG(CASE
+          WHEN chamados.status IN ('Resolvido', 'Fechado')
+            AND chamados.resolved_at IS NOT NULL
+          THEN TIMESTAMPDIFF(MINUTE, ${inicioSla}, chamados.resolved_at)
+        END) AS tempo_medio_resolucao_minutos,
+        AVG(CASE
+          WHEN chamados.first_response_at IS NOT NULL
+            AND chamados.first_response_at >= chamados.created_at
+          THEN TIMESTAMPDIFF(MINUTE, chamados.created_at, chamados.first_response_at)
+        END) AS tempo_medio_primeira_resposta_minutos
+      FROM chamados
+      ${filtroPeriodo.clausula}
+    `,
+    filtroPeriodo.parametros,
+  )
+
+  const resultado = rows[0]
+  return {
+    sla_vencidos: Number(resultado.sla_vencidos ?? 0),
+    sla_proximos_vencimento: Number(resultado.sla_proximos_vencimento ?? 0),
+    tempo_medio_resolucao_minutos:
+      resultado.tempo_medio_resolucao_minutos === null
+        ? null
+        : Number(Number(resultado.tempo_medio_resolucao_minutos).toFixed(2)),
+    tempo_medio_primeira_resposta_minutos:
+      resultado.tempo_medio_primeira_resposta_minutos === null
+        ? null
+        : Number(Number(resultado.tempo_medio_primeira_resposta_minutos).toFixed(2)),
+  }
+}
+
 export default {
   buscarResumo,
+  buscarIndicadoresSla,
 }

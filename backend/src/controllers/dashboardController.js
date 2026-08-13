@@ -1,9 +1,7 @@
 import dashboardModel from '../models/dashboardModel.js'
-import chamadoModel from '../models/chamadoModel.js'
 import relatorioService, {
   PeriodoRelatorioInvalidoError,
 } from '../services/relatorioService.js'
-import slaService from '../services/slaService.js'
 
 export function obterPeriodo(query = {}) {
   const dataInicio = query.data_inicio
@@ -47,24 +45,21 @@ async function buscarResumo(request, response) {
   try {
     const periodo = obterPeriodo(request.query)
 
-    const [resumo, todosChamados] = await Promise.all([
+    const [resumo, indicadoresSla] = await Promise.all([
       dashboardModel.buscarResumo(
         periodo?.data_inicio ?? null,
         periodo?.data_fim ?? null,
       ),
-      chamadoModel.listar(),
+      dashboardModel.buscarIndicadoresSla(
+        periodo?.data_inicio ?? null,
+        periodo?.data_fim ?? null,
+      ),
     ])
-
-    const chamadosDoPeriodo = filtrarChamadosPorPeriodo(todosChamados, periodo)
-    const indicadoresSla =
-      slaService.calcularIndicadoresDashboard(chamadosDoPeriodo)
 
     return response.status(200).json({
       ...resumo,
       periodo,
-      chamados_recentes: slaService.enriquecerChamados(
-        resumo.chamados_recentes,
-      ),
+      chamados_recentes: resumo.chamados_recentes,
       ...indicadoresSla,
     })
   } catch (error) {

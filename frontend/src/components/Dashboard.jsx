@@ -40,7 +40,6 @@ import useCompanyBrand from "../hooks/useCompanyBrand";
 import {
   criarChamadoApi,
   excluirChamadoApi,
-  listarChamadosApi,
   atualizarChamadoApi,
 } from "../services/chamadosApi";
 import { buscarDashboardApi } from "../services/dashboardApi";
@@ -101,7 +100,6 @@ function Dashboard({ onLogout }) {
   const { configuracao } = useCompanyBrand();
   const somenteLeitura = Boolean(usuario?.is_demo);
   const administrador = usuario?.cargo === "Administrador";
-  const [chamados, setChamados] = useState([]);
   const [dashboard, setDashboard] = useState(dashboardInicial);
   const [carregando, setCarregando] = useState(true);
   const [erroApi, setErroApi] = useState("");
@@ -113,6 +111,7 @@ function Dashboard({ onLogout }) {
   const [toast, setToast] = useState(null);
   const [periodoDashboard, setPeriodoDashboard] = useState({ tipo: "todo" });
   const [filtroInicialChamados, setFiltroInicialChamados] = useState(null);
+  const [atualizacaoChamados, setAtualizacaoChamados] = useState(0);
 
   useEffect(() => {
     if (usuario?.is_demo) {
@@ -211,15 +210,7 @@ function Dashboard({ onLogout }) {
   async function carregarChamadosDaApi() {
     setCarregando(true);
     setErroApi("");
-
-    try {
-      const dados = await listarChamadosApi();
-      setChamados(dados);
-    } catch (error) {
-      setErroApi(error.message);
-    } finally {
-      setCarregando(false);
-    }
+    setCarregando(false);
   }
 
   async function carregarDashboardDaApi(periodo = null) {
@@ -264,9 +255,9 @@ function Dashboard({ onLogout }) {
   }
 
   async function criarChamado(dados) {
-    const novoChamado = await criarChamadoApi(dados);
+    await criarChamadoApi(dados);
 
-    setChamados((chamadosAtuais) => [novoChamado, ...chamadosAtuais]);
+    setAtualizacaoChamados((atual) => atual + 1);
 
     setModalAberto(false);
     recarregarDashboardAtual();
@@ -274,18 +265,14 @@ function Dashboard({ onLogout }) {
   }
 
   async function atualizarChamado(chamadoAtualizado) {
-    const chamadoSalvo = await atualizarChamadoApi(
+    await atualizarChamadoApi(
       chamadoAtualizado.id,
       chamadoAtualizado,
     );
 
-    setChamados((chamadosAtuais) =>
-      chamadosAtuais.map((chamado) =>
-        chamado.id === chamadoSalvo.id ? chamadoSalvo : chamado,
-      ),
-    );
 
     setChamadoSelecionado(null);
+    setAtualizacaoChamados((atual) => atual + 1);
     recarregarDashboardAtual();
     setToast({
       tipo: "sucesso",
@@ -296,11 +283,9 @@ function Dashboard({ onLogout }) {
   async function excluirChamado(id) {
     await excluirChamadoApi(id);
 
-    setChamados((chamadosAtuais) =>
-      chamadosAtuais.filter((chamado) => chamado.id !== id),
-    );
 
     setChamadoSelecionado(null);
+    setAtualizacaoChamados((atual) => atual + 1);
     recarregarDashboardAtual();
     setToast({ tipo: "sucesso", mensagem: "Chamado excluído com sucesso." });
   }
@@ -523,10 +508,10 @@ function Dashboard({ onLogout }) {
             </section>
           ) : (
             <AllTickets
-              chamados={chamados}
               onSelectTicket={setChamadoSelecionado}
               onNewTicket={somenteLeitura ? null : () => setModalAberto(true)}
               filtrosIniciais={filtroInicialChamados}
+              atualizacao={atualizacaoChamados}
             />
           )
         ) : paginaAtiva === "configuracoes" ? (
