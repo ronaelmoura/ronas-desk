@@ -76,8 +76,30 @@ test('falha do provedor não expõe detalhes internos', async () => {
   await assert.rejects(
     gerarResumoChamado(dados, {
       apiKey: 'chave-de-teste',
-      requisicao: async () => ({ ok: false }),
+      requisicao: async () => ({ ok: false, status: 403 }),
     }),
-    AssistenteIaErroError,
+    (error) => {
+      assert.ok(error instanceof AssistenteIaErroError)
+      assert.equal(error.codigoHttp, 403)
+      assert.equal(error.tipo, 'HTTP')
+      return true
+    },
+  )
+})
+
+test('falha de rede não registra detalhes da requisição', async () => {
+  await assert.rejects(
+    gerarResumoChamado(dados, {
+      apiKey: 'chave-de-teste',
+      requisicao: async () => {
+        throw new Error('Falha de rede com chave-de-teste')
+      },
+    }),
+    (error) => {
+      assert.ok(error instanceof AssistenteIaErroError)
+      assert.equal(error.codigoHttp, null)
+      assert.equal(error.tipo, 'REDE_OU_TEMPO')
+      return true
+    },
   )
 })
