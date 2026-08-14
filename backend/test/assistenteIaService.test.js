@@ -93,6 +93,9 @@ test('envia contexto limitado, oculta credenciais reconhecíveis e exige JSON es
   })
   assert.equal(corpo.generationConfig.responseJsonSchema, undefined)
   assert.equal(corpo.generationConfig.responseFormat, undefined)
+  assert.deepEqual(corpo.generationConfig.thinkingConfig, {
+    thinkingLevel: 'low',
+  })
 })
 
 test('ignora partes de raciocínio antes de interpretar o JSON final', async () => {

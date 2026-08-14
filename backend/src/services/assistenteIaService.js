@@ -3,6 +3,7 @@ const LIMITE_COMENTARIOS = 20
 const LIMITE_CARACTERES_COMENTARIO = 1200
 const LIMITE_EVENTOS_HISTORICO = 20
 const TEMPO_LIMITE_IA_MS = 30000
+const NIVEL_RACIOCINIO_IA = 'low'
 const ESQUEMA_RESPOSTA = {
   type: 'object',
   properties: {
@@ -174,6 +175,9 @@ export async function gerarResumoChamado(
           generationConfig: {
             responseMimeType: 'application/json',
             responseSchema: ESQUEMA_RESPOSTA,
+            thinkingConfig: {
+              thinkingLevel: NIVEL_RACIOCINIO_IA,
+            },
             temperature: 0.2,
             maxOutputTokens: 700,
           },
