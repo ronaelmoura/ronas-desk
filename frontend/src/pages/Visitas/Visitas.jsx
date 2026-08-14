@@ -53,6 +53,26 @@ function formatarRegiao({ pais, regiao }) {
     : `${regiao} — ${pais}`
 }
 
+function formatarDataVisita(data) {
+  if (typeof data !== 'string') return 'Data indisponível'
+
+  const correspondencia = /^(\d{4})-(\d{2})-(\d{2})/.exec(data)
+  if (!correspondencia) return 'Data indisponível'
+
+  const [, ano, mes, dia] = correspondencia
+  const dataLocal = new Date(Number(ano), Number(mes) - 1, Number(dia))
+
+  if (
+    dataLocal.getFullYear() !== Number(ano) ||
+    dataLocal.getMonth() !== Number(mes) - 1 ||
+    dataLocal.getDate() !== Number(dia)
+  ) {
+    return 'Data indisponível'
+  }
+
+  return dataLocal.toLocaleDateString('pt-BR')
+}
+
 function Distribuicao({ titulo, icone: Icone, itens, obterRotulo }) {
   const maiorTotal = Math.max(...itens.map((item) => item.total), 0)
 
@@ -227,9 +247,7 @@ function Visitas() {
               titulo="Visitas por dia"
               icone={CalendarDays}
               itens={resumo.por_dia}
-              obterRotulo={(item) =>
-                new Date(`${item.data}T12:00:00`).toLocaleDateString('pt-BR')
-              }
+              obterRotulo={(item) => formatarDataVisita(item.data)}
             />
             <Distribuicao
               titulo="Regiões"
