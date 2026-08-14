@@ -34,7 +34,7 @@ test('não consulta o Gemini sem uma chave configurada', async () => {
   assert.equal(chamadas, 0)
 })
 
-test('envia contexto limitado e oculta credenciais reconhecíveis', async () => {
+test('envia contexto limitado, oculta credenciais reconhecíveis e exige JSON estruturado', async () => {
   let corpo
 
   const resultado = await gerarResumoChamado(dados, {
@@ -69,7 +69,34 @@ test('envia contexto limitado e oculta credenciais reconhecíveis', async () => 
   assert.equal(resultado.resumo, 'Equipamento em análise.')
   assert.match(corpo.contents[0].parts[0].text, /Senha: \[oculto\]/)
   assert.doesNotMatch(corpo.contents[0].parts[0].text, /exemplo-secreto/)
-  assert.equal(corpo.generationConfig.responseMimeType, 'application/json')
+  assert.deepEqual(corpo.generationConfig.responseFormat, {
+    text: {
+      mimeType: 'application/json',
+      schema: {
+        type: 'object',
+        properties: {
+          resumo: {
+            type: 'string',
+            description:
+              'Resumo objetivo do cenário atual do chamado, baseado somente nos dados recebidos.',
+          },
+          acoes_realizadas: {
+            type: 'array',
+            description: 'Ações já registradas no chamado.',
+            items: { type: 'string' },
+          },
+          proximos_passos: {
+            type: 'array',
+            description: 'Próximos passos práticos para a equipe.',
+            items: { type: 'string' },
+          },
+        },
+        required: ['resumo', 'acoes_realizadas', 'proximos_passos'],
+      },
+    },
+  })
+  assert.equal(corpo.generationConfig.responseMimeType, undefined)
+  assert.equal(corpo.generationConfig.responseJsonSchema, undefined)
 })
 
 test('ignora partes de raciocínio antes de interpretar o JSON final', async () => {
@@ -102,6 +129,37 @@ test('ignora partes de raciocínio antes de interpretar o JSON final', async () 
 
   assert.equal(resultado.resumo, 'ERP em análise.')
   assert.deepEqual(resultado.acoes_realizadas, ['Equipe acionada.'])
+})
+
+test('aceita JSON protegido por bloco de código como contingência segura', async () => {
+  const resultado = await gerarResumoChamado(dados, {
+    apiKey: 'chave-de-teste',
+    requisicao: async () => ({
+      ok: true,
+      async json() {
+        return {
+          candidates: [
+            {
+              content: {
+                parts: [
+                  {
+                    text: `\`\`\`json\n${JSON.stringify({
+                      resumo: 'Impressora em análise.',
+                      acoes_realizadas: [],
+                      proximos_passos: ['Testar o driver.'],
+                    })}\n\`\`\``,
+                  },
+                ],
+              },
+            },
+          ],
+        }
+      },
+    }),
+  })
+
+  assert.equal(resultado.resumo, 'Impressora em análise.')
+  assert.deepEqual(resultado.proximos_passos, ['Testar o driver.'])
 })
 
 test('falha do provedor não expõe detalhes internos', async () => {
