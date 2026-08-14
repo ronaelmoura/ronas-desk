@@ -18,6 +18,7 @@ import demoReadOnlyMiddleware from './middlewares/demoReadOnlyMiddleware.js'
 import equipeMiddleware from './middlewares/equipeMiddleware.js'
 import portalClienteMiddleware from './middlewares/portalClienteMiddleware.js'
 import { criarLimitadorLogin } from './middlewares/loginRateLimitMiddleware.js'
+import { criarLimitadorAssistenteIa } from './middlewares/assistenteIaRateLimitMiddleware.js'
 import { criarHealthController } from './controllers/healthController.js'
 import { criarConfiguracaoSeguranca } from './config/security.js'
 import pool from './database/db.js'
@@ -25,6 +26,9 @@ import pool from './database/db.js'
 export function criarApp({ database = pool, variaveis = process.env } = {}) {
   const app = express()
   const configuracaoSeguranca = criarConfiguracaoSeguranca(variaveis)
+  const limitadorAssistenteIa = criarLimitadorAssistenteIa(
+    configuracaoSeguranca.assistenteIaRateLimit,
+  )
   const corsOrigin =
     variaveis.CORS_ORIGIN ||
     (variaveis.NODE_ENV === 'production' ? null : 'http://localhost:5173')
@@ -68,8 +72,9 @@ export function criarApp({ database = pool, variaveis = process.env } = {}) {
     authMiddleware,
     demoReadOnlyMiddleware,
     equipeMiddleware,
-    chamadosRouter,
   )
+  app.use('/api/chamados/:id/assistente-ia', limitadorAssistenteIa)
+  app.use('/api/chamados', chamadosRouter)
   app.use(
     '/api/clientes',
     authMiddleware,
