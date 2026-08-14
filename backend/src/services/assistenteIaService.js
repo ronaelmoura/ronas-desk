@@ -172,7 +172,8 @@ export async function gerarResumoChamado(
   }
 
   const texto = dadosResposta.candidates?.[0]?.content?.parts
-    ?.map((parte) => parte.text || '')
+    ?.filter((parte) => !parte.thought)
+    .map((parte) => parte.text || '')
     .join('')
 
   return normalizarResposta(texto)

@@ -72,6 +72,38 @@ test('envia contexto limitado e oculta credenciais reconhecíveis', async () => 
   assert.equal(corpo.generationConfig.responseMimeType, 'application/json')
 })
 
+test('ignora partes de raciocínio antes de interpretar o JSON final', async () => {
+  const resultado = await gerarResumoChamado(dados, {
+    apiKey: 'chave-de-teste',
+    requisicao: async () => ({
+      ok: true,
+      async json() {
+        return {
+          candidates: [
+            {
+              content: {
+                parts: [
+                  { thought: true, text: 'Raciocínio interno do modelo.' },
+                  {
+                    text: JSON.stringify({
+                      resumo: 'ERP em análise.',
+                      acoes_realizadas: ['Equipe acionada.'],
+                      proximos_passos: ['Validar conectividade.'],
+                    }),
+                  },
+                ],
+              },
+            },
+          ],
+        }
+      },
+    }),
+  })
+
+  assert.equal(resultado.resumo, 'ERP em análise.')
+  assert.deepEqual(resultado.acoes_realizadas, ['Equipe acionada.'])
+})
+
 test('falha do provedor não expõe detalhes internos', async () => {
   await assert.rejects(
     gerarResumoChamado(dados, {
