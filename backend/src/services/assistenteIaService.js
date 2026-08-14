@@ -3,31 +3,26 @@ const LIMITE_COMENTARIOS = 20
 const LIMITE_CARACTERES_COMENTARIO = 1200
 const LIMITE_EVENTOS_HISTORICO = 20
 const TEMPO_LIMITE_IA_MS = 30000
-const FORMATO_RESPOSTA = {
-  text: {
-    mimeType: 'application/json',
-    schema: {
-      type: 'object',
-      properties: {
-        resumo: {
-          type: 'string',
-          description:
-            'Resumo objetivo do cenário atual do chamado, baseado somente nos dados recebidos.',
-        },
-        acoes_realizadas: {
-          type: 'array',
-          description: 'Ações já registradas no chamado.',
-          items: { type: 'string' },
-        },
-        proximos_passos: {
-          type: 'array',
-          description: 'Próximos passos práticos para a equipe.',
-          items: { type: 'string' },
-        },
-      },
-      required: ['resumo', 'acoes_realizadas', 'proximos_passos'],
+const ESQUEMA_RESPOSTA = {
+  type: 'object',
+  properties: {
+    resumo: {
+      type: 'string',
+      description:
+        'Resumo objetivo do cenário atual do chamado, baseado somente nos dados recebidos.',
+    },
+    acoes_realizadas: {
+      type: 'array',
+      description: 'Ações já registradas no chamado.',
+      items: { type: 'string' },
+    },
+    proximos_passos: {
+      type: 'array',
+      description: 'Próximos passos práticos para a equipe.',
+      items: { type: 'string' },
     },
   },
+  required: ['resumo', 'acoes_realizadas', 'proximos_passos'],
 }
 
 export class AssistenteIaIndisponivelError extends Error {}
@@ -177,7 +172,8 @@ export async function gerarResumoChamado(
             },
           ],
           generationConfig: {
-            responseFormat: FORMATO_RESPOSTA,
+            responseMimeType: 'application/json',
+            responseSchema: ESQUEMA_RESPOSTA,
             temperature: 0.2,
             maxOutputTokens: 700,
           },

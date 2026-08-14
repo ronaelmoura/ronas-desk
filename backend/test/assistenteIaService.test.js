@@ -69,34 +69,30 @@ test('envia contexto limitado, oculta credenciais reconhecíveis e exige JSON es
   assert.equal(resultado.resumo, 'Equipamento em análise.')
   assert.match(corpo.contents[0].parts[0].text, /Senha: \[oculto\]/)
   assert.doesNotMatch(corpo.contents[0].parts[0].text, /exemplo-secreto/)
-  assert.deepEqual(corpo.generationConfig.responseFormat, {
-    text: {
-      mimeType: 'application/json',
-      schema: {
-        type: 'object',
-        properties: {
-          resumo: {
-            type: 'string',
-            description:
-              'Resumo objetivo do cenário atual do chamado, baseado somente nos dados recebidos.',
-          },
-          acoes_realizadas: {
-            type: 'array',
-            description: 'Ações já registradas no chamado.',
-            items: { type: 'string' },
-          },
-          proximos_passos: {
-            type: 'array',
-            description: 'Próximos passos práticos para a equipe.',
-            items: { type: 'string' },
-          },
-        },
-        required: ['resumo', 'acoes_realizadas', 'proximos_passos'],
+  assert.equal(corpo.generationConfig.responseMimeType, 'application/json')
+  assert.deepEqual(corpo.generationConfig.responseSchema, {
+    type: 'object',
+    properties: {
+      resumo: {
+        type: 'string',
+        description:
+          'Resumo objetivo do cenário atual do chamado, baseado somente nos dados recebidos.',
+      },
+      acoes_realizadas: {
+        type: 'array',
+        description: 'Ações já registradas no chamado.',
+        items: { type: 'string' },
+      },
+      proximos_passos: {
+        type: 'array',
+        description: 'Próximos passos práticos para a equipe.',
+        items: { type: 'string' },
       },
     },
+    required: ['resumo', 'acoes_realizadas', 'proximos_passos'],
   })
-  assert.equal(corpo.generationConfig.responseMimeType, undefined)
   assert.equal(corpo.generationConfig.responseJsonSchema, undefined)
+  assert.equal(corpo.generationConfig.responseFormat, undefined)
 })
 
 test('ignora partes de raciocínio antes de interpretar o JSON final', async () => {
