@@ -35,5 +35,9 @@ test('padroniza o dia das visitas como texto AAAA-MM-DD', async () => {
     executor.consultas[1].sql,
     /DATE_FORMAT\(created_at, '%Y-%m-%d'\)/,
   )
+  assert.match(
+    executor.consultas[1].sql,
+    /GROUP BY DATE_FORMAT\(created_at, '%Y-%m-%d'\)/,
+  )
   assert.deepEqual(resumo.por_dia, [{ data: '2026-08-14', total: 3 }])
 })

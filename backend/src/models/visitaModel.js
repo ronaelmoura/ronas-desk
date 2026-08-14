@@ -61,7 +61,7 @@ async function buscarResumo(dataInicio, dataFim, executor = pool) {
     executor.execute(
       `SELECT DATE_FORMAT(created_at, '%Y-%m-%d') AS data, COUNT(*) AS total
        FROM visitas WHERE ${filtro}
-       GROUP BY DATE(created_at) ORDER BY data ASC`,
+       GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d') ORDER BY data ASC`,
       parametros,
     ),
     executor.execute(
