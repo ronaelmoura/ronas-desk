@@ -98,7 +98,27 @@ test('falha de rede não registra detalhes da requisição', async () => {
     (error) => {
       assert.ok(error instanceof AssistenteIaErroError)
       assert.equal(error.codigoHttp, null)
-      assert.equal(error.tipo, 'REDE_OU_TEMPO')
+      assert.equal(error.tipo, 'REDE')
+      return true
+    },
+  )
+})
+
+test('identifica tempo limite sem expor detalhes da requisição', async () => {
+  const erroTempoLimite = new Error('A chamada excedeu o limite')
+  erroTempoLimite.name = 'TimeoutError'
+
+  await assert.rejects(
+    gerarResumoChamado(dados, {
+      apiKey: 'chave-de-teste',
+      requisicao: async () => {
+        throw erroTempoLimite
+      },
+    }),
+    (error) => {
+      assert.ok(error instanceof AssistenteIaErroError)
+      assert.equal(error.codigoHttp, null)
+      assert.equal(error.tipo, 'TEMPO_LIMITE')
       return true
     },
   )

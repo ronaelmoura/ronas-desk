@@ -2,6 +2,7 @@ const MODELO_GEMINI = 'gemini-3.5-flash'
 const LIMITE_COMENTARIOS = 20
 const LIMITE_CARACTERES_COMENTARIO = 1200
 const LIMITE_EVENTOS_HISTORICO = 20
+const TEMPO_LIMITE_IA_MS = 30000
 
 export class AssistenteIaIndisponivelError extends Error {}
 export class AssistenteIaErroError extends Error {
@@ -76,12 +77,20 @@ function normalizarResposta(texto) {
   }
 }
 
+function identificarFalhaDeRequisicao(error) {
+  if (error?.name === 'TimeoutError' || error?.name === 'AbortError') {
+    return 'TEMPO_LIMITE'
+  }
+
+  return 'REDE'
+}
+
 export async function gerarResumoChamado(
   dados,
   {
     apiKey = process.env.GEMINI_API_KEY,
     requisicao = fetch,
-    tempoLimiteMs = 12000,
+    tempoLimiteMs = TEMPO_LIMITE_IA_MS,
   } = {},
 ) {
   if (!apiKey) {
@@ -141,8 +150,10 @@ export async function gerarResumoChamado(
         }),
       },
     )
-  } catch {
-    throw new AssistenteIaErroError({ tipo: 'REDE_OU_TEMPO' })
+  } catch (error) {
+    throw new AssistenteIaErroError({
+      tipo: identificarFalhaDeRequisicao(error),
+    })
   }
 
   if (!response.ok) {
