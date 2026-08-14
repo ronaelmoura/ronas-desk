@@ -112,6 +112,40 @@ function Dashboard({ onLogout }) {
   const [periodoDashboard, setPeriodoDashboard] = useState({ tipo: "todo" });
   const [filtroInicialChamados, setFiltroInicialChamados] = useState(null);
   const [atualizacaoChamados, setAtualizacaoChamados] = useState(0);
+  const chamadosEmFluxo =
+    dashboard.chamados_novos +
+    dashboard.chamados_em_atendimento +
+    dashboard.chamados_aguardando_cliente;
+  const distribuicaoStatus = [
+    {
+      rotulo: "Novos",
+      total: dashboard.chamados_novos,
+      status: "Novo",
+      classe: "novo",
+    },
+    {
+      rotulo: "Em atendimento",
+      total: dashboard.chamados_em_atendimento,
+      status: "Em Atendimento",
+      classe: "atendimento",
+    },
+    {
+      rotulo: "Aguardando cliente",
+      total: dashboard.chamados_aguardando_cliente,
+      status: "Aguardando Cliente",
+      classe: "aguardando",
+    },
+    {
+      rotulo: "Resolvidos",
+      total: dashboard.chamados_resolvidos,
+      status: "Resolvido",
+      classe: "resolvido",
+    },
+  ];
+  const maiorStatus = Math.max(
+    ...distribuicaoStatus.map((indicador) => indicador.total),
+    1,
+  );
 
   useEffect(() => {
     if (usuario?.is_demo) {
@@ -657,7 +691,149 @@ function Dashboard({ onLogout }) {
 
             </header>
 
-            <section className="summary-grid">
+            <section
+              className="dashboard-primary-metrics"
+              aria-label="Resumo operacional"
+            >
+              <button
+                className="primary-metric primary-metric--total"
+                type="button"
+                onClick={abrirChamados}
+              >
+                <span>Total no período</span>
+                <strong>{dashboard.total_chamados}</strong>
+                <small>Visualizar todos os chamados</small>
+                <Tickets aria-hidden="true" />
+              </button>
+
+              <button
+                className="primary-metric"
+                type="button"
+                onClick={() => abrirChamadosComFiltro({ status: "Novo" })}
+              >
+                <span>Novas solicitações</span>
+                <strong>{dashboard.chamados_novos}</strong>
+                <small>Precisam de primeira análise</small>
+                <CircleAlert aria-hidden="true" />
+              </button>
+
+              <button
+                className="primary-metric"
+                type="button"
+                onClick={() =>
+                  abrirChamadosComFiltro({ status: "Em Atendimento" })
+                }
+              >
+                <span>Em atendimento</span>
+                <strong>{dashboard.chamados_em_atendimento}</strong>
+                <small>Em acompanhamento pela equipe</small>
+                <Clock3 aria-hidden="true" />
+              </button>
+
+              <button
+                className="primary-metric primary-metric--attention"
+                type="button"
+                onClick={() => abrirChamadosComFiltro({ sla: "Vencido" })}
+              >
+                <span>Prioridade de agora</span>
+                <strong>{dashboard.sla_vencidos}</strong>
+                <small>Chamados com SLA vencido</small>
+                <TimerOff aria-hidden="true" />
+              </button>
+            </section>
+
+            <section className="dashboard-operational-grid">
+              <article className="operational-card">
+                <div className="operational-card-header">
+                  <div>
+                    <p className="dashboard-eyebrow">Fluxo da equipe</p>
+                    <h2>Como estão os atendimentos</h2>
+                  </div>
+                  <span className="operational-total">
+                    {chamadosEmFluxo} em andamento
+                  </span>
+                </div>
+
+                <div className="status-distribution">
+                  {distribuicaoStatus.map((indicador) => (
+                    <button
+                      className="status-distribution-item"
+                      key={indicador.status}
+                      type="button"
+                      onClick={() =>
+                        abrirChamadosComFiltro({ status: indicador.status })
+                      }
+                    >
+                      <span>{indicador.rotulo}</span>
+                      <strong>{indicador.total}</strong>
+                      <span className="status-progress" aria-hidden="true">
+                        <span
+                          className={`status-progress-value ${indicador.classe}`}
+                          style={{
+                            width: `${Math.max(
+                              indicador.total ? 8 : 0,
+                              (indicador.total / maiorStatus) * 100,
+                            )}%`,
+                          }}
+                        />
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </article>
+
+              <article className="operational-card operational-card--attention">
+                <div className="operational-card-header">
+                  <div>
+                    <p className="dashboard-eyebrow">Atenção da equipe</p>
+                    <h2>O que precisa de ação</h2>
+                  </div>
+                  <ShieldAlert aria-hidden="true" />
+                </div>
+
+                <div className="attention-list">
+                  <button
+                    type="button"
+                    onClick={() => abrirChamadosComFiltro({ sla: "Vencido" })}
+                  >
+                    <TimerOff aria-hidden="true" />
+                    <span>
+                      <strong>{dashboard.sla_vencidos}</strong>
+                      SLA vencido
+                    </span>
+                    <small>Ver chamados</small>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      abrirChamadosComFiltro({ sla: "Próximo do vencimento" })
+                    }
+                  >
+                    <Timer aria-hidden="true" />
+                    <span>
+                      <strong>{dashboard.sla_proximos_vencimento}</strong>
+                      SLA próximo do limite
+                    </span>
+                    <small>Ver chamados</small>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      abrirChamadosComFiltro({ prioridade: "Crítica" })
+                    }
+                  >
+                    <ShieldAlert aria-hidden="true" />
+                    <span>
+                      <strong>{dashboard.chamados_criticos}</strong>
+                      Prioridade crítica
+                    </span>
+                    <small>Ver chamados</small>
+                  </button>
+                </div>
+              </article>
+            </section>
+
+            <section className="summary-grid" aria-label="Indicadores detalhados">
               <button
                 className="summary-card"
                 type="button"
