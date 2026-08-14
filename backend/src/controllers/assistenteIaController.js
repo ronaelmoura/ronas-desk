@@ -48,6 +48,12 @@ async function gerarResumo(request, response) {
     }
 
     if (error instanceof AssistenteIaErroError) {
+      const diagnostico = error.codigoHttp
+        ? `HTTP ${error.codigoHttp}`
+        : error.tipo
+
+      console.error(`Falha segura do assistente de IA: ${diagnostico}`)
+
       return response.status(502).json({
         status: 'erro',
         message: 'Não foi possível gerar o resumo com IA. Tente novamente.',

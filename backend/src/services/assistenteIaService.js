@@ -4,7 +4,13 @@ const LIMITE_CARACTERES_COMENTARIO = 1200
 const LIMITE_EVENTOS_HISTORICO = 20
 
 export class AssistenteIaIndisponivelError extends Error {}
-export class AssistenteIaErroError extends Error {}
+export class AssistenteIaErroError extends Error {
+  constructor({ codigoHttp = null, tipo = 'RESPOSTA_INVALIDA' } = {}) {
+    super('Não foi possível consultar o assistente.')
+    this.codigoHttp = Number.isInteger(codigoHttp) ? codigoHttp : null
+    this.tipo = tipo
+  }
+}
 
 function textoSeguro(valor, limite = LIMITE_CARACTERES_COMENTARIO) {
   return String(valor || '')
@@ -66,7 +72,7 @@ function normalizarResposta(texto) {
       proximos_passos: normalizarLista(resposta.proximos_passos),
     }
   } catch {
-    throw new AssistenteIaErroError('Resposta inválida do assistente.')
+    throw new AssistenteIaErroError()
   }
 }
 
@@ -136,11 +142,14 @@ export async function gerarResumoChamado(
       },
     )
   } catch {
-    throw new AssistenteIaErroError('Não foi possível consultar o assistente.')
+    throw new AssistenteIaErroError({ tipo: 'REDE_OU_TEMPO' })
   }
 
   if (!response.ok) {
-    throw new AssistenteIaErroError('Não foi possível consultar o assistente.')
+    throw new AssistenteIaErroError({
+      codigoHttp: response.status,
+      tipo: 'HTTP',
+    })
   }
 
   let dadosResposta
@@ -148,7 +157,7 @@ export async function gerarResumoChamado(
   try {
     dadosResposta = await response.json()
   } catch {
-    throw new AssistenteIaErroError('Resposta inválida do assistente.')
+    throw new AssistenteIaErroError()
   }
 
   const texto = dadosResposta.candidates?.[0]?.content?.parts
