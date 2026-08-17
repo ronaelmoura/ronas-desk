@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "node --test",
+    "test:coverage": "node --experimental-test-coverage --test --test-coverage-include='src/**/*.js' --test-coverage-lines=60 --test-coverage-functions=65 --test-coverage-branches=75",
+    "test:coverage:ci": "node --experimental-test-coverage --test --test-reporter=spec --test-coverage-include='src/**/*.js' --test-coverage-lines=60 --test-coverage-functions=65 --test-coverage-branches=75",
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "migrate": "node src/scripts/migrate.js",
