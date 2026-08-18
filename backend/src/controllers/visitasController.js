@@ -60,6 +60,16 @@ export function criarVisitasController({
         .digest('hex')
       const localizacaoExistente =
         await visitas.buscarLocalizacaoDaSessao(sessaoHash)
+
+      if (!localizacaoExistente) {
+        // Diagnóstico temporário: nenhum dado do visitante aqui, só a
+        // configuração do servidor, para confirmar se `trust proxy` está
+        // extraindo o IP real por trás do proxy de produção.
+        console.warn(
+          `[diag-visitas] node_env=${process.env.NODE_ENV ?? '(vazio)'} trust_proxy=${request.app.get('trust proxy')} xff_presente=${Boolean(request.headers['x-forwarded-for'])}`,
+        )
+      }
+
       const localizacao =
         localizacaoExistente ?? (await geolocalizacao.localizarIp(request.ip))
 

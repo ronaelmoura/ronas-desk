@@ -65,6 +65,8 @@ test('registra visita sem persistir o identificador ou IP recebidos', async () =
         origem: 'https://www.linkedin.com/feed/',
       },
       ip: '203.0.113.10',
+      headers: {},
+      app: { get: () => false },
       get(nome) {
         return nome === 'user-agent'
           ? 'Mozilla/5.0 (Linux; Android 14; Mobile)'

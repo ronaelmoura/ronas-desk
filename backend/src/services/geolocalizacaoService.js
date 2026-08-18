@@ -5,18 +5,23 @@ function normalizarIp(ip = '') {
   return valor.startsWith('::ffff:') ? valor.slice(7) : valor
 }
 
-function ipPrivado(ip) {
-  if (!net.isIP(ip)) return true
-  if (ip === '::1' || ip === '127.0.0.1') return true
+function motivoIpNaoPublico(ip) {
+  if (!ip) return 'ausente'
+  if (!net.isIP(ip)) return 'formato inválido'
+  if (ip === '::1' || ip === '127.0.0.1') return 'loopback'
 
-  return (
+  if (
     ip.startsWith('10.') ||
     ip.startsWith('192.168.') ||
     /^172\.(1[6-9]|2\d|3[01])\./.test(ip) ||
     ip.startsWith('fc') ||
     ip.startsWith('fd') ||
     ip.startsWith('fe80:')
-  )
+  ) {
+    return 'faixa privada'
+  }
+
+  return null
 }
 
 export async function localizarIp(
@@ -24,14 +29,13 @@ export async function localizarIp(
   { requisicao = fetch, tempoLimiteMs = 1500 } = {},
 ) {
   const ip = normalizarIp(ipRecebido)
+  const motivo = motivoIpNaoPublico(ip)
 
-  if (ipPrivado(ip)) {
-    // Nunca logar o IP em si (a demonstração promete não armazená-lo);
-    // só o motivo ajuda a diagnosticar se `trust proxy` está mal configurado
-    // atrás do proxy de produção sem expor dado nenhum do visitante.
-    console.warn(
-      'Geolocalização ignorada: endereço IP privado, inválido ou ausente.',
-    )
+  if (motivo) {
+    // Nunca logar o IP em si (a demonstração promete não armazená-lo); só o
+    // motivo ajuda a diagnosticar se `trust proxy` está mal configurado atrás
+    // do proxy de produção sem expor dado nenhum do visitante.
+    console.warn(`Geolocalização ignorada: IP ${motivo}.`)
     return { pais: 'Não identificado', regiao: 'Não identificada' }
   }
 
