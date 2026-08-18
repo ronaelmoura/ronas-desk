@@ -3,7 +3,7 @@
   width: min(100%, 180px);
   height: 18px;
   border-radius: 7px;
-  background: linear-gradient(90deg, #edf1f5 25%, #f8fafc 50%, #edf1f5 75%);
+  background: linear-gradient(90deg, #edf1f5 25%, var(--color-bg-subtle) 50%, #edf1f5 75%);
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.25s infinite linear;
 }

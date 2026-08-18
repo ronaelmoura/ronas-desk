@@ -122,3 +122,85 @@ test('reutiliza localização da sessão sem consultar novamente o IP', async ()
   assert.equal(visitaRegistrada.regiao, 'São Paulo')
   assert.equal(visitaRegistrada.dispositivo, 'Computador')
 })
+
+test('buscarResumo retorna estatísticas com sucesso', async () => {
+  const controller = criarVisitasController({
+    visitas: {
+      async buscarResumo() {
+        return {
+          total_visitas: 150,
+          paginas_mais_visitadas: [
+            { pagina: 'visao-geral', visitas: 50 },
+            { pagina: 'chamados', visitas: 40 },
+          ],
+          dispositivos: [
+            { dispositivo: 'Computador', visitas: 100 },
+            { dispositivo: 'Celular', visitas: 50 },
+          ],
+        }
+      },
+    },
+  })
+  const response = criarResponse()
+
+  await controller.buscarResumo(
+    {
+      query: {
+        data_inicio: '2025-01-01',
+        data_fim: '2025-01-31',
+      },
+    },
+    response,
+  )
+
+  assert.equal(response.statusCode, 200)
+  assert.equal(response.body.total_visitas, 150)
+})
+
+test('buscarResumo responde 400 com período inválido', async () => {
+  const controller = criarVisitasController()
+  const response = criarResponse()
+
+  await controller.buscarResumo(
+    {
+      query: {
+        data_inicio: '2025-13-01',
+        data_fim: '2025-01-01',
+      },
+    },
+    response,
+  )
+
+  assert.equal(response.statusCode, 400)
+  assert.equal(response.body.status, 'erro')
+})
+
+test('buscarResumo responde 500 quando banco falha', async () => {
+  const controller = criarVisitasController({
+    visitas: {
+      async buscarResumo() {
+        throw new Error('falha do banco')
+      },
+    },
+  })
+  const response = criarResponse()
+  const originalConsoleError = console.error
+  console.error = () => {}
+
+  try {
+    await controller.buscarResumo(
+      {
+        query: {
+          data_inicio: '2025-01-01',
+          data_fim: '2025-01-31',
+        },
+      },
+      response,
+    )
+
+    assert.equal(response.statusCode, 500)
+    assert.equal(response.body.status, 'erro')
+  } finally {
+    console.error = originalConsoleError
+  }
+})

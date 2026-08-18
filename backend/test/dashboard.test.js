@@ -6,6 +6,7 @@ import {
 } from '../src/controllers/dashboardController.js'
 import {
   buscarResumo,
+  buscarIndicadoresSla,
   criarFiltroPeriodo,
 } from '../src/models/dashboardModel.js'
 import { PeriodoRelatorioInvalidoError } from '../src/services/relatorioService.js'
@@ -97,4 +98,98 @@ test('resumo aplica o mesmo período nas duas consultas', async () => {
   }
   assert.equal(resumo.total_chamados, 0)
   assert.deepEqual(resumo.chamados_recentes, [])
+})
+
+test('resumo sem período informado não aplica cláusula de data', async () => {
+  const chamadas = []
+  const executor = {
+    async execute(sql, parametros) {
+      chamadas.push({ sql, parametros })
+      if (chamadas.length === 1) {
+        return [
+          [
+            {
+              total_clientes: 1,
+              total_usuarios: 1,
+              total_chamados: 5,
+              chamados_novos: 1,
+              chamados_em_atendimento: 1,
+              chamados_aguardando_cliente: 1,
+              chamados_resolvidos: 1,
+              chamados_fechados: 1,
+              chamados_cancelados: 0,
+              chamados_criticos: 2,
+            },
+          ],
+        ]
+      }
+      return [[{ id: 1, titulo: 'Chamado recente' }]]
+    },
+  }
+
+  const resumo = await buscarResumo(null, null, executor)
+
+  assert.deepEqual(chamadas[0].parametros, [])
+  assert.doesNotMatch(chamadas[0].sql, /created_at >= \?/)
+  assert.equal(resumo.total_chamados, 5)
+  assert.equal(resumo.chamados_criticos, 2)
+  assert.deepEqual(resumo.chamados_recentes, [
+    { id: 1, titulo: 'Chamado recente' },
+  ])
+})
+
+test('indicadores de SLA convertem médias nulas e aplicam o período', async () => {
+  const chamadas = []
+  const executor = {
+    async execute(sql, parametros) {
+      chamadas.push({ sql, parametros })
+      return [
+        [
+          {
+            sla_vencidos: '3',
+            sla_proximos_vencimento: '2',
+            tempo_medio_resolucao_minutos: null,
+            tempo_medio_primeira_resposta_minutos: null,
+          },
+        ],
+      ]
+    },
+  }
+
+  const indicadores = await buscarIndicadoresSla(
+    '2026-08-01',
+    '2026-08-09',
+    executor,
+  )
+
+  assert.deepEqual(chamadas[0].parametros, ['2026-08-01', '2026-08-09'])
+  assert.match(chamadas[0].sql, /created_at >= \?/)
+  assert.deepEqual(indicadores, {
+    sla_vencidos: 3,
+    sla_proximos_vencimento: 2,
+    tempo_medio_resolucao_minutos: null,
+    tempo_medio_primeira_resposta_minutos: null,
+  })
+})
+
+test('indicadores de SLA arredondam as médias calculadas para duas casas', async () => {
+  const executor = {
+    async execute() {
+      return [
+        [
+          {
+            sla_vencidos: 0,
+            sla_proximos_vencimento: 0,
+            tempo_medio_resolucao_minutos: '123.456',
+            tempo_medio_primeira_resposta_minutos: '10.005',
+          },
+        ],
+      ]
+    },
+  }
+
+  const indicadores = await buscarIndicadoresSla(null, null, executor)
+
+  assert.equal(indicadores.tempo_medio_resolucao_minutos, 123.46)
+  assert.equal(indicadores.tempo_medio_primeira_resposta_minutos, 10.01)
 })

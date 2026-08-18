@@ -11,7 +11,7 @@
 
 .all-tickets-header h1 {
   margin: 0;
-  color: #101b2d;
+  color: var(--color-text-strong);
   font-size: 2rem;
   letter-spacing: -0.035em;
 }
@@ -24,9 +24,9 @@
 .all-tickets-panel {
   margin-top: 32px;
   padding: 26px;
-  border: 1px solid #e1e7ef;
-  border-radius: 18px;
-  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-3xl);
+  background: var(--color-white);
   box-shadow: 0 14px 40px rgba(20, 40, 70, 0.05);
 }
 
@@ -40,8 +40,8 @@
   gap: 14px;
   padding: 18px;
   border: 1px solid #e5eaf1;
-  border-radius: 14px;
-  background: #f8fafc;
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-subtle);
 }
 
 .all-search-field,
@@ -53,7 +53,7 @@
 .all-filter-field label {
   display: block;
   margin-bottom: 7px;
-  color: #536176;
+  color: var(--color-text-secondary);
   font-size: 0.75rem;
   font-weight: 800;
 }
@@ -65,11 +65,11 @@
   width: 100%;
   height: 44px;
   padding: 0 12px;
-  border: 1px solid #d8e0e9;
-  border-radius: 10px;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
   outline: none;
-  background: #ffffff;
-  color: #17263a;
+  background: var(--color-white);
+  color: var(--color-surface-dark);
   font: inherit;
   font-size: 0.84rem;
 }
@@ -77,17 +77,17 @@
 .all-search-field input:focus,
 .all-filter-field select:focus,
 .all-filter-field input:focus {
-  border-color: #1682ff;
+  border-color: var(--brand-primary-light);
   box-shadow: 0 0 0 3px rgba(22, 130, 255, 0.1);
 }
 
 .all-clear-button {
   height: 44px;
   padding: 0 18px;
-  border: 1px solid #d8e0e9;
-  border-radius: 10px;
-  background: #ffffff;
-  color: #536176;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  color: var(--color-text-secondary);
   font: inherit;
   font-size: 0.8rem;
   font-weight: 800;
@@ -95,8 +95,8 @@
 }
 
 .all-clear-button:hover {
-  border-color: #1682ff;
-  color: #147ee8;
+  border-color: var(--brand-primary-light);
+  color: var(--brand-primary);
 }
 
 .all-tickets-result {
@@ -106,7 +106,7 @@
 }
 
 .all-tickets-result strong {
-  color: #147ee8;
+  color: var(--brand-primary);
 }
 
 .all-tickets-caption {

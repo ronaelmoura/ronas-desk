@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict'
+import jwt from 'jsonwebtoken'
 import test from 'node:test'
 import { criarApp } from '../src/app.js'
+import usuarioModel from '../src/models/usuarioModel.js'
 
 async function comServidor(app, callback) {
   const server = await new Promise((resolve, reject) => {
@@ -112,6 +114,104 @@ test('login bloqueia novas tentativas após atingir o limite configurado', async
     assert.deepEqual(await responseBloqueada.json(), {
       status: 'erro',
       message: 'Muitas tentativas de acesso. Tente novamente mais tarde.',
+    })
+  })
+})
+
+test('requisição sem autenticação em rota protegida retorna 401', async () => {
+  const app = criarApp({
+    database: { query: async () => {} },
+    variaveis: { NODE_ENV: 'test', JWT_SECRET: 'segredo-teste' },
+  })
+
+  await comServidor(app, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/chamados`)
+
+    assert.equal(response.status, 401)
+    assert.deepEqual(await response.json(), {
+      status: 'erro',
+      message: 'Token ausente, inválido ou expirado.',
+    })
+  })
+})
+
+test('usuário autenticado sem autorização para equipe recebe 403', async () => {
+  const originalBuscarPorId = usuarioModel.buscarPorId
+  const originalJwtSecret = process.env.JWT_SECRET
+
+  usuarioModel.buscarPorId = async () => ({
+    id: 3,
+    nome: 'Cliente',
+    email: 'cliente@example.com',
+    cargo: 'Cliente',
+    ativo: true,
+    is_demo: false,
+  })
+  process.env.JWT_SECRET = 'segredo-teste'
+
+  const app = criarApp({
+    database: { query: async () => {} },
+    variaveis: { NODE_ENV: 'test', JWT_SECRET: 'segredo-teste' },
+  })
+  const token = jwt.sign({ id: 3, cargo: 'Cliente' }, 'segredo-teste', {
+    algorithm: 'HS256',
+  })
+
+  try {
+    await comServidor(app, async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/api/chamados`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      assert.equal(response.status, 403)
+      assert.deepEqual(await response.json(), {
+        status: 'erro',
+        message: 'Esta área é exclusiva para a equipe de atendimento.',
+      })
+    })
+  } finally {
+    usuarioModel.buscarPorId = originalBuscarPorId
+    if (originalJwtSecret === undefined) {
+      delete process.env.JWT_SECRET
+    } else {
+      process.env.JWT_SECRET = originalJwtSecret
+    }
+  }
+})
+
+test('payload inválido em rota de login retorna 400', async () => {
+  const app = criarApp({
+    database: { query: async () => {} },
+    variaveis: { NODE_ENV: 'test', JWT_SECRET: 'segredo-teste' },
+  })
+
+  await comServidor(app, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email: 'teste@example.com' }),
+    })
+
+    assert.equal(response.status, 400)
+    assert.match(JSON.stringify(await response.json()), /senha/i)
+  })
+})
+
+test('rota inexistente retorna 404', async () => {
+  const app = criarApp({
+    database: { query: async () => {} },
+    variaveis: { NODE_ENV: 'test', JWT_SECRET: 'segredo-teste' },
+  })
+
+  await comServidor(app, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/rota-que-nao-existe`)
+
+    assert.equal(response.status, 404)
+    assert.deepEqual(await response.json(), {
+      status: 'erro',
+      message: 'Rota não encontrada.',
     })
   })
 })

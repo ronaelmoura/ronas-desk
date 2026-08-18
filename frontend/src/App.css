@@ -3,7 +3,7 @@
   display: grid;
   place-items: center;
   padding: 24px;
-  background: #f4f7fb;
+  background: var(--color-bg-page);
   color: #68768a;
   font-weight: 700;
 }

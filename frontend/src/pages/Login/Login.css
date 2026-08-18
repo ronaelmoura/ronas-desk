@@ -13,7 +13,7 @@
     radial-gradient(circle at 20% 20%, rgba(22, 130, 255, 0.3), transparent 35%),
     radial-gradient(circle at 80% 80%, rgba(0, 212, 255, 0.12), transparent 35%),
     linear-gradient(145deg, #07101f, #0c1f3c);
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .brand {
@@ -25,7 +25,7 @@
 .brand-logo-image {
   width: 58px;
   height: 58px;
-  border-radius: 16px;
+  border-radius: var(--radius-2xl);
   box-shadow: 0 12px 32px rgba(0, 19, 40, 0.3);
 }
 
@@ -85,7 +85,7 @@
   gap: 14px;
   width: fit-content;
   padding: 8px 12px 8px 0;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
 }
 
 .feature span {
@@ -118,9 +118,9 @@
   width: min(470px, 100%);
   padding: 48px;
   overflow: hidden;
-  border: 1px solid #e1e7ef;
+  border: 1px solid var(--color-border);
   border-radius: 24px;
-  background: #ffffff;
+  background: var(--color-white);
   box-shadow: 0 24px 80px rgba(22, 45, 77, 0.12);
 }
 
@@ -145,7 +145,7 @@
 
 .login-card h2 {
   margin: 0;
-  color: #101b2d;
+  color: var(--color-text-strong);
   font-size: 2rem;
   letter-spacing: -0.03em;
 }
@@ -189,10 +189,10 @@
   height: 52px;
   padding: 0 16px;
   border: 1px solid #d6dee9;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   outline: none;
-  background: #ffffff;
-  color: #142238;
+  background: var(--color-white);
+  color: var(--color-text);
   font: inherit;
   transition:
     border-color 0.2s ease,
@@ -247,9 +247,9 @@
   width: 100%;
   height: 52px;
   border: 0;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   background: var(--brand-primary);
-  color: #ffffff;
+  color: var(--color-white);
   font: inherit;
   font-weight: 800;
   cursor: pointer;
@@ -278,14 +278,14 @@
 .form-message {
   margin-top: 16px;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   font-size: 0.88rem;
   text-align: center;
 }
 
 .form-message.erro {
   border: 1px solid #ffd1d1;
-  background: #fff0f0;
+  background: var(--color-danger-bg);
   color: #b42318;
 }
 
@@ -319,7 +319,7 @@
 .demo-access > span::after {
   height: 1px;
   flex: 1;
-  background: #e1e7ef;
+  background: var(--color-border);
   content: "";
 }
 
@@ -331,7 +331,7 @@
   justify-content: center;
   gap: 9px;
   border: 1px solid #b8d8fa;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   background: #f1f7fe;
   color: #0d66bd;
   font: inherit;
@@ -413,7 +413,7 @@
 @media (max-width: 480px) {
   .login-card {
     padding: 34px 24px;
-    border-radius: 18px;
+    border-radius: var(--radius-3xl);
   }
 
   .login-card h2 {

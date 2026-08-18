@@ -13,9 +13,9 @@
   width: min(760px, 100%);
   max-height: 92vh;
   overflow-y: auto;
-  border: 1px solid #dfe6ef;
+  border: 1px solid var(--color-border-light);
   border-radius: 22px;
-  background: #ffffff;
+  background: var(--color-white);
   box-shadow: 0 30px 100px rgba(3, 17, 35, 0.4);
 }
 
@@ -30,7 +30,7 @@
 
 .ticket-details-eyebrow {
   margin-bottom: 6px;
-  color: #1682ff;
+  color: var(--brand-primary-light);
   font-size: 0.76rem;
   font-weight: 900;
   letter-spacing: 0.12em;
@@ -39,7 +39,7 @@
 
 .ticket-details-header h2 {
   margin: 0;
-  color: #101b2d;
+  color: var(--color-text-strong);
   font-size: 1.65rem;
 }
 
@@ -57,7 +57,7 @@
   border: 1px solid #e0e6ee;
   border-radius: 11px;
   background: #f7f9fc;
-  color: #536176;
+  color: var(--color-text-secondary);
   font-size: 1.5rem;
   cursor: pointer;
 }
@@ -75,7 +75,7 @@
 .ticket-description span {
   display: block;
   margin-bottom: 7px;
-  color: #8793a5;
+  color: var(--color-text-faint);
   font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 0.06em;
@@ -84,7 +84,7 @@
 
 .ticket-main-info h3 {
   margin: 0;
-  color: #17263a;
+  color: var(--color-surface-dark);
   font-size: 1.3rem;
 }
 
@@ -99,7 +99,7 @@
   padding: 18px;
   border: 1px solid #e3e8ef;
   border-radius: 13px;
-  background: #f8fafc;
+  background: var(--color-bg-subtle);
 }
 
 .ticket-information strong {
@@ -109,12 +109,12 @@
 .details-priority {
   display: inline-flex;
   padding: 5px 10px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 0.78rem;
 }
 
 .details-priority-alta {
-  background: #fff0f0;
+  background: var(--color-danger-bg);
   color: #b82f2f !important;
 }
 
@@ -133,11 +133,11 @@
   padding: 20px;
   border: 1px solid #e3e8ef;
   border-radius: 13px;
-  background: #f8fafc;
+  background: var(--color-bg-subtle);
 }
 
 .ticket-description p {
-  color: #536176;
+  color: var(--color-text-secondary);
   line-height: 1.7;
 }
 
@@ -148,7 +148,7 @@
 .ticket-status-field label {
   display: block;
   margin-bottom: 8px;
-  color: #2a384c;
+  color: var(--color-surface-deep);
   font-size: 0.88rem;
   font-weight: 800;
 }
@@ -157,16 +157,16 @@
   width: 100%;
   height: 50px;
   padding: 0 14px;
-  border: 1px solid #d7dfe9;
+  border: 1px solid var(--color-border-faint-2);
   border-radius: 11px;
   outline: none;
-  background: #ffffff;
-  color: #17263a;
+  background: var(--color-white);
+  color: var(--color-surface-dark);
   font: inherit;
 }
 
 .ticket-status-field select:focus {
-  border-color: #1682ff;
+  border-color: var(--brand-primary-light);
   box-shadow: 0 0 0 4px rgba(22, 130, 255, 0.12);
 }
 
@@ -199,14 +199,14 @@
 
 .details-cancel-button {
   border: 1px solid #d8e0ea;
-  background: #ffffff;
-  color: #536176;
+  background: var(--color-white);
+  color: var(--color-text-secondary);
 }
 
 .details-save-button {
   border: 0;
-  background: linear-gradient(90deg, #147ee8, #00a9ee);
-  color: #ffffff;
+  background: linear-gradient(90deg, var(--brand-primary), #00a9ee);
+  color: var(--color-white);
   box-shadow: 0 12px 28px rgba(20, 126, 232, 0.22);
 }
 
@@ -247,7 +247,7 @@
 .ticket-edit-field label {
   display: block;
   margin-bottom: 8px;
-  color: #2a384c;
+  color: var(--color-surface-deep);
   font-size: 0.88rem;
   font-weight: 800;
 }
@@ -256,11 +256,11 @@
 .ticket-edit-field select,
 .ticket-edit-field textarea {
   width: 100%;
-  border: 1px solid #d7dfe9;
+  border: 1px solid var(--color-border-faint-2);
   border-radius: 11px;
   outline: none;
-  background: #ffffff;
-  color: #17263a;
+  background: var(--color-white);
+  color: var(--color-surface-dark);
   font: inherit;
   transition:
     border-color 0.2s ease,
@@ -282,7 +282,7 @@
 .ticket-edit-field input:focus,
 .ticket-edit-field select:focus,
 .ticket-edit-field textarea:focus {
-  border-color: #1682ff;
+  border-color: var(--brand-primary-light);
   box-shadow: 0 0 0 4px rgba(22, 130, 255, 0.12);
 }
 
@@ -290,8 +290,8 @@
   margin-bottom: 20px;
   padding: 12px 14px;
   border: 1px solid #ffd0d0;
-  border-radius: 10px;
-  background: #fff1f1;
+  border-radius: var(--radius-md);
+  background: var(--color-danger-bg-alt);
   color: #ad2929;
   font-size: 0.86rem;
 }
@@ -357,7 +357,7 @@
 .delete-confirm-button {
   min-width: 115px;
   height: 42px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   font: inherit;
   font-size: 0.8rem;
   font-weight: 800;
@@ -366,14 +366,14 @@
 
 .delete-cancel-button {
   border: 1px solid #d8e0ea;
-  background: #ffffff;
-  color: #536176;
+  background: var(--color-white);
+  color: var(--color-text-secondary);
 }
 
 .delete-confirm-button {
   border: 0;
   background: #c9362c;
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 @media (max-width: 600px) {
@@ -441,8 +441,8 @@
   bottom: -1px;
   left: 10px;
   height: 2px;
-  border-radius: 999px;
-  background: #1682ff;
+  border-radius: var(--radius-pill);
+  background: var(--brand-primary-light);
   content: "";
   opacity: 0;
   transform: scaleX(0.5);
@@ -451,7 +451,7 @@
 
 .ticket-details-tabs button:hover,
 .ticket-details-tabs button.active {
-  color: #1475cf;
+  color: var(--brand-primary-deep);
 }
 
 .ticket-details-tabs button.active::after {
@@ -462,9 +462,9 @@
 .ticket-details-tabs button > span {
   min-width: 20px;
   padding: 2px 6px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: #e8eef5;
-  color: #536176;
+  color: var(--color-text-secondary);
   font-size: 0.66rem;
   text-align: center;
 }
@@ -494,15 +494,15 @@
   height: 42px;
   flex: 0 0 auto;
   place-items: center;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   background: #eef4ff;
-  color: #1475cf;
+  color: var(--brand-primary-deep);
 }
 
 .ticket-ai-intro h3,
 .ticket-ai-result h4 {
   margin: 0;
-  color: #263448;
+  color: var(--color-surface-darker);
 }
 
 .ticket-ai-intro p,
@@ -525,9 +525,9 @@
   gap: 18px;
   margin-top: 24px;
   padding: 16px;
-  border: 1px solid #dfe6ef;
-  border-radius: 14px;
-  background: #f8fafc;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-subtle);
 }
 
 .ticket-ai-actions p {
@@ -549,7 +549,7 @@
   padding: 16px;
   border: 1px solid #e2e8f0;
   border-radius: 13px;
-  background: #fff;
+  background: var(--color-white);
 }
 
 .ticket-ai-result h4 {
@@ -570,15 +570,15 @@
 
 .comment-form {
   padding: 18px;
-  border: 1px solid #dfe6ef;
-  border-radius: 14px;
-  background: #f8fafc;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-subtle);
 }
 
 .comment-form label {
   display: block;
   margin-bottom: 8px;
-  color: #2a384c;
+  color: var(--color-surface-deep);
   font-size: 0.82rem;
   font-weight: 800;
 }
@@ -611,9 +611,9 @@
   height: 34px;
   padding: 0 10px;
   border: 1px solid #d4dee9;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   outline: none;
-  background: #fff;
+  background: var(--color-white);
   color: #34445a;
   font: inherit;
   font-size: 0.74rem;
@@ -621,7 +621,7 @@
 }
 
 .comment-type-field select:focus {
-  border-color: #1682ff;
+  border-color: var(--brand-primary-light);
   box-shadow: 0 0 0 3px rgba(22, 130, 255, 0.12);
 }
 
@@ -630,17 +630,17 @@
   min-height: 100px;
   padding: 12px;
   border: 1px solid #d4dee9;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   outline: none;
-  background: #fff;
-  color: #17263a;
+  background: var(--color-white);
+  color: var(--color-surface-dark);
   font: inherit;
   resize: vertical;
   box-sizing: border-box;
 }
 
 .comment-form textarea:focus {
-  border-color: #1682ff;
+  border-color: var(--brand-primary-light);
   box-shadow: 0 0 0 4px rgba(22, 130, 255, 0.12);
 }
 
@@ -653,7 +653,7 @@
 }
 
 .comment-form small {
-  color: #8793a5;
+  color: var(--color-text-faint);
 }
 
 .comment-form .details-save-button {
@@ -674,7 +674,7 @@
   padding: 16px;
   border: 1px solid #e2e8f0;
   border-radius: 13px;
-  background: #fff;
+  background: var(--color-white);
 }
 
 .comment-avatar {
@@ -682,7 +682,7 @@
   height: 42px;
   display: grid;
   place-items: center;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   background: #e8f3ff;
   color: #126fc8;
   font-size: 0.72rem;
@@ -702,14 +702,14 @@
 }
 
 .comment-card header span {
-  color: #8793a5;
+  color: var(--color-text-faint);
   font-size: 0.7rem;
 }
 
 .comment-card header .comment-type-badge {
   margin-left: auto;
   padding: 4px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 0.64rem;
   font-weight: 900;
   letter-spacing: 0.03em;
@@ -723,12 +723,12 @@
 
 .comment-type-badge.publico {
   background: #e7f7ed;
-  color: #176d3a;
+  color: var(--color-success-text);
 }
 
 .comment-card p {
   margin: 8px 0 0;
-  color: #536176;
+  color: var(--color-text-secondary);
   font-size: 0.85rem;
   line-height: 1.6;
   white-space: pre-wrap;
@@ -766,10 +766,10 @@
   height: 42px;
   display: grid;
   place-items: center;
-  border: 4px solid #fff;
+  border: 4px solid var(--color-white);
   border-radius: 50%;
   background: #e8f3ff;
-  color: #1475cf;
+  color: var(--brand-primary-deep);
   box-shadow: 0 0 0 1px #dce5ef;
 }
 
@@ -780,7 +780,7 @@
 
 .timeline-icon.alteracao_prioridade,
 .timeline-icon.exclusao {
-  background: #fff0f0;
+  background: var(--color-danger-bg);
   color: #b52f2f;
 }
 
@@ -797,7 +797,7 @@
   padding: 13px 16px;
   border: 1px solid #e2e8f0;
   border-radius: 13px;
-  background: #fff;
+  background: var(--color-white);
 }
 
 .timeline-event > header span,
@@ -806,20 +806,20 @@
 }
 
 .timeline-event > header span {
-  color: #263448;
+  color: var(--color-surface-darker);
   font-size: 0.86rem;
   font-weight: 900;
 }
 
 .timeline-event > header small {
   margin-top: 3px;
-  color: #8793a5;
+  color: var(--color-text-faint);
   font-size: 0.68rem;
 }
 
 .timeline-event strong {
   display: block;
-  color: #263448;
+  color: var(--color-surface-darker);
   font-size: 0.86rem;
 }
 
@@ -878,7 +878,7 @@
 
 .interaction-empty button {
   border: 1px solid currentColor;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: inherit;
   cursor: pointer;
@@ -901,7 +901,7 @@
 }
 
 .timeline-change b {
-  color: #8793a5;
+  color: var(--color-text-faint);
 }
 
 .timeline-event blockquote {
@@ -926,11 +926,11 @@
 
 .interaction-empty svg {
   margin-bottom: 12px;
-  color: #1682ff;
+  color: var(--brand-primary-light);
 }
 
 .interaction-empty strong {
-  color: #2a384c;
+  color: var(--color-surface-deep);
 }
 
 .interaction-empty p {
@@ -997,9 +997,9 @@
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 14px 18px;
   padding: 18px;
-  border: 1px solid #dfe6ef;
-  border-radius: 14px;
-  background: #f8fafc;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-subtle);
 }
 
 .attachment-form > div {
@@ -1007,7 +1007,7 @@
 }
 
 .attachment-form label {
-  color: #2a384c;
+  color: var(--color-surface-deep);
   font-size: 0.82rem;
   font-weight: 800;
 }
@@ -1022,9 +1022,9 @@
   min-width: 0;
   padding: 8px;
   border: 1px solid #d4dee9;
-  border-radius: 10px;
-  background: #fff;
-  color: #536176;
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  color: var(--color-text-secondary);
   font: inherit;
   font-size: 0.78rem;
 }
@@ -1070,7 +1070,7 @@
   padding: 15px;
   border: 1px solid #e2e8f0;
   border-radius: 13px;
-  background: #fff;
+  background: var(--color-white);
 }
 
 .attachment-icon {
@@ -1120,8 +1120,8 @@
   gap: 6px;
   padding: 0 10px;
   border: 1px solid #d4dee9;
-  border-radius: 8px;
-  background: #fff;
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
   color: #40526a;
   font: inherit;
   font-size: 0.72rem;
@@ -1139,20 +1139,20 @@
 .attachment-actions .attachment-confirm-button {
   border-color: #c9362c;
   background: #c9362c;
-  color: #fff;
+  color: var(--color-white);
 }
 
 .attachment-actions .attachment-cancel-button {
-  color: #536176;
+  color: var(--color-text-secondary);
 }
 
 .timeline-icon.anexo_adicionado {
   background: #e7f7ed;
-  color: #176d3a;
+  color: var(--color-success-text);
 }
 
 .timeline-icon.anexo_removido {
-  background: #fff0f0;
+  background: var(--color-danger-bg);
   color: #b52f2f;
 }
 

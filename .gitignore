@@ -13,6 +13,7 @@ frontend/node_modules/
 dist/
 build/
 coverage/
+backend/coverage_report.txt
 .vite/
 .vite-temp/
 

@@ -4,7 +4,7 @@
 
 .settings-header h1 {
   margin: 0;
-  color: #101b2d;
+  color: var(--color-text-strong);
   font-size: 2rem;
   letter-spacing: -0.035em;
 }
@@ -29,9 +29,9 @@
 .settings-card,
 .settings-info-card {
   padding: 28px;
-  border: 1px solid #e1e7ef;
-  border-radius: 18px;
-  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-3xl);
+  background: var(--color-white);
   box-shadow: 0 14px 40px rgba(20, 40, 70, 0.05);
 }
 
@@ -49,7 +49,7 @@
   place-items: center;
   border-radius: 50%;
   background: var(--brand-primary);
-  color: #ffffff;
+  color: var(--color-white);
   font-weight: 900;
 }
 
@@ -70,7 +70,7 @@
   display: grid;
   flex: 0 0 auto;
   place-items: center;
-  border-radius: 16px;
+  border-radius: var(--radius-2xl);
   background: color-mix(in srgb, var(--brand-primary) 12%, white);
   color: var(--brand-primary);
 }
@@ -83,7 +83,7 @@
 .settings-card-header h2,
 .settings-info-card h2 {
   margin: 0;
-  color: #17263a;
+  color: var(--color-surface-dark);
 }
 
 .settings-card-header p,
@@ -100,7 +100,7 @@
 .settings-field label {
   display: block;
   margin-bottom: 8px;
-  color: #2a384c;
+  color: var(--color-surface-deep);
   font-size: 0.88rem;
   font-weight: 800;
 }
@@ -110,11 +110,11 @@
   width: 100%;
   height: 50px;
   padding: 0 14px;
-  border: 1px solid #d7dfe9;
+  border: 1px solid var(--color-border-faint-2);
   border-radius: 11px;
   outline: none;
-  background: #ffffff;
-  color: #17263a;
+  background: var(--color-white);
+  color: var(--color-surface-dark);
   font: inherit;
 }
 
@@ -146,13 +146,13 @@
 .settings-message {
   margin-bottom: 18px;
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   font-size: 0.86rem;
 }
 
 .settings-message.error {
   border: 1px solid #ffd0d0;
-  background: #fff1f1;
+  background: var(--color-danger-bg-alt);
   color: #ad2929;
 }
 
@@ -168,7 +168,7 @@
   border: 0;
   border-radius: 11px;
   background: var(--brand-primary);
-  color: #ffffff;
+  color: var(--color-white);
   font: inherit;
   font-weight: 800;
   cursor: pointer;
@@ -189,7 +189,7 @@
   padding: 16px;
   overflow: hidden;
   border-radius: 15px;
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .company-brand-preview img {
@@ -243,9 +243,9 @@
   justify-content: center;
   gap: 8px;
   padding: 0 16px;
-  border: 1px solid #d7dfe9;
+  border: 1px solid var(--color-border-faint-2);
   border-radius: 11px;
-  background: #ffffff;
+  background: var(--color-white);
   color: #526177;
   font: inherit;
   font-weight: 700;
@@ -280,7 +280,7 @@
   gap: 18px;
   margin-top: 15px;
   padding-top: 15px;
-  border-top: 1px solid #e8edf3;
+  border-top: 1px solid var(--color-border-faint);
   text-align: left;
 }
 

@@ -1,0 +1,9 @@
+{
+  "all": true,
+  "src": ["src"],
+  "include": ["src/**/*.js"],
+  "reporter": ["text", "json-summary"],
+  "clean": true,
+  "cache": false,
+  "exclude": []
+}
