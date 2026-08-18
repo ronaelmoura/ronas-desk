@@ -13,9 +13,9 @@
   width: min(650px, 100%);
   max-height: 92vh;
   overflow-y: auto;
-  border: 1px solid #dfe6ef;
+  border: 1px solid var(--color-border-light);
   border-radius: 22px;
-  background: #ffffff;
+  background: var(--color-white);
   box-shadow: 0 30px 100px rgba(3, 17, 35, 0.35);
 }
 
@@ -30,7 +30,7 @@
 
 .ticket-modal-eyebrow {
   margin-bottom: 6px;
-  color: #1682ff;
+  color: var(--brand-primary-light);
   font-size: 0.74rem;
   font-weight: 900;
   letter-spacing: 0.12em;
@@ -39,7 +39,7 @@
 
 .ticket-modal-header h2 {
   margin: 0;
-  color: #101b2d;
+  color: var(--color-text-strong);
   font-size: 1.65rem;
 }
 
@@ -57,7 +57,7 @@
   border: 1px solid #e0e6ee;
   border-radius: 11px;
   background: #f7f9fc;
-  color: #536176;
+  color: var(--color-text-secondary);
   font-size: 1.5rem;
   cursor: pointer;
 }
@@ -84,7 +84,7 @@
 .ticket-field label {
   display: block;
   margin-bottom: 8px;
-  color: #2a384c;
+  color: var(--color-surface-deep);
   font-size: 0.88rem;
   font-weight: 800;
 }
@@ -93,11 +93,11 @@
 .ticket-field select,
 .ticket-field textarea {
   width: 100%;
-  border: 1px solid #d7dfe9;
+  border: 1px solid var(--color-border-faint-2);
   border-radius: 11px;
   outline: none;
-  background: #ffffff;
-  color: #17263a;
+  background: var(--color-white);
+  color: var(--color-surface-dark);
   font: inherit;
   transition:
     border-color 0.2s ease,
@@ -119,7 +119,7 @@
 .ticket-field input:focus,
 .ticket-field select:focus,
 .ticket-field textarea:focus {
-  border-color: #1682ff;
+  border-color: var(--brand-primary-light);
   box-shadow: 0 0 0 4px rgba(22, 130, 255, 0.12);
 }
 
@@ -127,8 +127,8 @@
   margin-bottom: 20px;
   padding: 12px 14px;
   border: 1px solid #ffd0d0;
-  border-radius: 10px;
-  background: #fff1f1;
+  border-radius: var(--radius-md);
+  background: var(--color-danger-bg-alt);
   color: #ad2929;
   font-size: 0.86rem;
 }
@@ -151,14 +151,14 @@
 
 .cancel-ticket-button {
   border: 1px solid #d8e0ea;
-  background: #ffffff;
-  color: #536176;
+  background: var(--color-white);
+  color: var(--color-text-secondary);
 }
 
 .save-ticket-button {
   border: 0;
-  background: linear-gradient(90deg, #147ee8, #00a9ee);
-  color: #ffffff;
+  background: linear-gradient(90deg, var(--brand-primary), #00a9ee);
+  color: var(--color-white);
   box-shadow: 0 12px 28px rgba(20, 126, 232, 0.22);
 }
 

@@ -6,11 +6,53 @@
   --font-weight-bold: 700;
   --font-weight-extrabold: 800;
   --brand-primary: #147ee8;
+  --brand-primary-light: #1682ff;
+  --brand-primary-deep: #1475cf;
   --brand-sidebar: #081525;
+
+  --color-white: #fff;
+  --color-text: #142238;
+  --color-text-strong: #101b2d;
+  --color-text-secondary: #536176;
+  --color-text-muted: #71819c;
+  --color-text-muted-2: #65748a;
+  --color-text-faint: #8793a5;
+
+  --color-surface-dark: #17263a;
+  --color-surface-darker: #263448;
+  --color-surface-deep: #2a384c;
+
+  --color-bg-page: #f4f7fb;
+  --color-bg-subtle: #f8fafc;
+  --color-bg-tint: #f7fbff;
+  --color-brand-tint: #eaf4ff;
+
+  --color-border: #e1e7ef;
+  --color-border-light: #dfe6ef;
+  --color-border-alt: #dce5f0;
+  --color-border-soft: #d8e0e9;
+  --color-border-faint: #e8edf3;
+  --color-border-faint-2: #d7dfe9;
+
+  --color-danger-bg: #fff0f0;
+  --color-danger-bg-alt: #fff1f1;
+  --color-success-text: #176d3a;
+
+  /* Escala oficial de raio. Valores fora dessa escala (7/9/11/13/15/17/22px)
+     ainda existem em telas legadas e devem migrar para o valor mais próximo
+     numa passada de QA visual dedicada, não por substituição automática. */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  --radius-2xl: 16px;
+  --radius-3xl: 18px;
+  --radius-pill: 999px;
+
   font-family: var(--font-sans);
   font-weight: var(--font-weight-regular);
-  color: #142238;
-  background: #f4f7fb;
+  color: var(--color-text);
+  background: var(--color-bg-page);
   font-synthesis: none;
   font-variant-numeric: tabular-nums;
   text-rendering: optimizeLegibility;
@@ -24,7 +66,7 @@
 
 html {
   min-width: 320px;
-  background: #f4f7fb;
+  background: var(--color-bg-page);
 }
 
 body {

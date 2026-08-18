@@ -21,8 +21,8 @@
   place-items: center;
   border: 1px solid #d5dfe9;
   border-radius: 9px;
-  background: #fff;
-  color: #536176;
+  background: var(--color-white);
+  color: var(--color-text-secondary);
   font: inherit;
   font-size: 0.8rem;
   font-weight: 800;
@@ -36,9 +36,9 @@
 
 .paginacao button:hover:not(:disabled),
 .paginacao button.ativa {
-  border-color: #147ee8;
-  background: #147ee8;
-  color: #fff;
+  border-color: var(--brand-primary);
+  background: var(--brand-primary);
+  color: var(--color-white);
   transform: translateY(-1px);
 }
 
