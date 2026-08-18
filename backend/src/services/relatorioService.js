@@ -22,6 +22,9 @@ function converterData(valor) {
   }
 
   const data = new Date(`${valor}T00:00:00.000Z`)
+  if (Number.isNaN(data.getTime())) {
+    return null
+  }
   return formatarData(data) === valor ? data : null
 }
 
