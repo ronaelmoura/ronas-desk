@@ -26,6 +26,12 @@ export async function localizarIp(
   const ip = normalizarIp(ipRecebido)
 
   if (ipPrivado(ip)) {
+    // Nunca logar o IP em si (a demonstração promete não armazená-lo);
+    // só o motivo ajuda a diagnosticar se `trust proxy` está mal configurado
+    // atrás do proxy de produção sem expor dado nenhum do visitante.
+    console.warn(
+      'Geolocalização ignorada: endereço IP privado, inválido ou ausente.',
+    )
     return { pais: 'Não identificado', regiao: 'Não identificada' }
   }
 
@@ -44,7 +50,8 @@ export async function localizarIp(
       pais: dados.country?.trim() || 'Não identificado',
       regiao: dados.region?.trim() || 'Não identificada',
     }
-  } catch {
+  } catch (error) {
+    console.warn('Falha ao consultar serviço de geolocalização:', error.message)
     return { pais: 'Não identificado', regiao: 'Não identificada' }
   }
 }
