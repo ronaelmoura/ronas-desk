@@ -19,6 +19,7 @@ import equipeMiddleware from './middlewares/equipeMiddleware.js'
 import portalClienteMiddleware from './middlewares/portalClienteMiddleware.js'
 import { criarLimitadorLogin } from './middlewares/loginRateLimitMiddleware.js'
 import { criarLimitadorAssistenteIa } from './middlewares/assistenteIaRateLimitMiddleware.js'
+import { criarLimitadorApi } from './middlewares/apiRateLimitMiddleware.js'
 import { criarHealthController } from './controllers/healthController.js'
 import { criarConfiguracaoSeguranca } from './config/security.js'
 import pool from './database/db.js'
@@ -29,6 +30,7 @@ export function criarApp({ database = pool, variaveis = process.env } = {}) {
   const limitadorAssistenteIa = criarLimitadorAssistenteIa(
     configuracaoSeguranca.assistenteIaRateLimit,
   )
+  const limitadorApi = criarLimitadorApi(configuracaoSeguranca.apiRateLimit)
   const corsOrigin =
     variaveis.CORS_ORIGIN ||
     (variaveis.NODE_ENV === 'production' ? null : 'http://localhost:5173')
@@ -54,6 +56,7 @@ export function criarApp({ database = pool, variaveis = process.env } = {}) {
   app.use(express.json({ limit: '100kb' }))
 
   app.get('/api/health', criarHealthController(database))
+  app.use('/api', limitadorApi)
   app.use(
     '/api/auth/login',
     criarLimitadorLogin(configuracaoSeguranca.loginRateLimit),

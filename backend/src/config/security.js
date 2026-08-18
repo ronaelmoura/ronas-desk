@@ -2,6 +2,8 @@ const LOGIN_WINDOW_MS_PADRAO = 15 * 60 * 1000
 const LOGIN_MAX_TENTATIVAS_PADRAO = 5
 const IA_WINDOW_MS_PADRAO = 15 * 60 * 1000
 const IA_MAX_RESUMOS_PADRAO = 5
+const API_WINDOW_MS_PADRAO = 15 * 60 * 1000
+const API_MAX_REQUISICOES_PADRAO = 300
 
 function inteiroPositivo(valor, valorPadrao) {
   const numero = Number.parseInt(valor, 10)
@@ -41,6 +43,16 @@ export function criarConfiguracaoSeguranca(variaveis = process.env) {
       limit: inteiroPositivo(
         variaveis.IA_RATE_LIMIT_MAX,
         IA_MAX_RESUMOS_PADRAO,
+      ),
+    },
+    apiRateLimit: {
+      windowMs: inteiroPositivo(
+        variaveis.API_RATE_LIMIT_WINDOW_MS,
+        API_WINDOW_MS_PADRAO,
+      ),
+      limit: inteiroPositivo(
+        variaveis.API_RATE_LIMIT_MAX,
+        API_MAX_REQUISICOES_PADRAO,
       ),
     },
   }
