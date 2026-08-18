@@ -44,13 +44,20 @@ export const CLIENTES_DEMO = [
   ],
 ]
 
+// Chamados ativos (Novo / Em Atendimento / Aguardando Cliente) só usam
+// prioridade Média ou Baixa (janelas de SLA de 24h/72h) e um `dias` pequeno,
+// para que a demonstração continue mostrando uma operação saudável por mais
+// tempo sem precisar reprocessar o seed. Chamados de prioridade Crítica ou
+// Alta aparecem sempre já finalizados (Resolvido/Fechado) — contam a história
+// de que a equipe resolve o que é urgente com rapidez, e ficam fora do
+// cálculo de SLA vencido independentemente da idade do registro.
 export const CHAMADOS_DEMO = [
   [
     'ERP indisponível no setor financeiro',
     'O sistema apresenta erro ao iniciar em três computadores.',
     'Software',
     'Crítica',
-    'Em Atendimento',
+    'Resolvido',
     0,
     0,
     1,
@@ -59,11 +66,11 @@ export const CHAMADOS_DEMO = [
     'Notebook não conecta ao Wi-Fi',
     'O equipamento deixou de localizar a rede corporativa.',
     'Rede',
-    'Alta',
+    'Baixa',
     'Aguardando Cliente',
     1,
     1,
-    3,
+    2,
   ],
   [
     'Solicitação de acesso ao sistema fiscal',
@@ -110,7 +117,7 @@ export const CHAMADOS_DEMO = [
     'A conexão remota cai várias vezes ao longo do dia.',
     'Rede',
     'Alta',
-    'Em Atendimento',
+    'Resolvido',
     3,
     1,
     2,
@@ -133,14 +140,14 @@ export const CHAMADOS_DEMO = [
     'Novo',
     4,
     3,
-    1,
+    0,
   ],
   [
     'Cadastro bloqueado após tentativas',
     'O usuário não consegue acessar o portal interno.',
     'Acesso',
     'Alta',
-    'Aguardando Cliente',
+    'Fechado',
     5,
     0,
     4,
@@ -179,11 +186,11 @@ export const CHAMADOS_DEMO = [
     'Scanner não reconhecido pelo computador',
     'O scanner USB não aparece entre os dispositivos.',
     'Hardware',
-    'Alta',
+    'Baixa',
     'Em Atendimento',
     1,
     0,
-    7,
+    1,
   ],
   [
     'Criar acesso para professor substituto',

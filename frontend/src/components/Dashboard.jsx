@@ -5,7 +5,6 @@ import {
   BellRing,
   ChartNoAxesColumn,
   CircleAlert,
-  CircleCheck,
   CirclePlus,
   Clock3,
   Gauge,
@@ -20,7 +19,6 @@ import {
   TimerOff,
   Tickets,
   UserCog,
-  UserRoundCheck,
   UsersRound,
 } from "lucide-react";
 import "./Dashboard.css";
@@ -560,7 +558,7 @@ function Dashboard({ onLogout }) {
               <span />
             </div>
             <div className="summary-grid">
-              {Array.from({ length: 14 }, (_, indice) => (
+              {Array.from({ length: 6 }, (_, indice) => (
                 <div className="summary-card skeleton-card" key={indice}>
                   <span />
                   <div>
@@ -837,91 +835,6 @@ function Dashboard({ onLogout }) {
               <button
                 className="summary-card"
                 type="button"
-                aria-label="Ver todos os chamados"
-                onClick={abrirChamados}
-              >
-                <div className="summary-icon blue">
-                  <Tickets aria-hidden="true" />
-                </div>
-
-                <div>
-                  <span>Total de chamados</span>
-                  <strong>{dashboard.total_chamados}</strong>
-                  <small>Todos os registros</small>
-                </div>
-              </button>
-
-              <button
-                className="summary-card"
-                type="button"
-                aria-label="Ver chamados novos"
-                onClick={() => abrirChamadosComFiltro({ status: "Novo" })}
-              >
-                <div className="summary-icon red">
-                  <CircleAlert aria-hidden="true" />
-                </div>
-
-                <div>
-                  <span>Novos</span>
-                  <strong>{dashboard.chamados_novos}</strong>
-                  <small>Aguardando atendimento</small>
-                </div>
-              </button>
-
-              <button
-                className="summary-card"
-                type="button"
-                aria-label="Ver chamados em atendimento"
-                onClick={() => abrirChamadosComFiltro({ status: "Em Atendimento" })}
-              >
-                <div className="summary-icon orange">
-                  <Clock3 aria-hidden="true" />
-                </div>
-
-                <div>
-                  <span>Em atendimento</span>
-                  <strong>{dashboard.chamados_em_atendimento}</strong>
-                  <small>Em análise pela equipe</small>
-                </div>
-              </button>
-
-              <button
-                className="summary-card"
-                type="button"
-                aria-label="Ver chamados aguardando cliente"
-                onClick={() => abrirChamadosComFiltro({ status: "Aguardando Cliente" })}
-              >
-                <div className="summary-icon green">
-                  <UserRoundCheck aria-hidden="true" />
-                </div>
-
-                <div>
-                  <span>Aguardando cliente</span>
-                  <strong>{dashboard.chamados_aguardando_cliente}</strong>
-                  <small>Pendentes de retorno</small>
-                </div>
-              </button>
-
-              <button
-                className="summary-card"
-                type="button"
-                aria-label="Ver chamados resolvidos"
-                onClick={() => abrirChamadosComFiltro({ status: "Resolvido" })}
-              >
-                <div className="summary-icon green">
-                  <CircleCheck aria-hidden="true" />
-                </div>
-
-                <div>
-                  <span>Resolvidos</span>
-                  <strong>{dashboard.chamados_resolvidos}</strong>
-                  <small>Solução aplicada</small>
-                </div>
-              </button>
-
-              <button
-                className="summary-card"
-                type="button"
                 aria-label="Ver chamados fechados"
                 onClick={() => abrirChamadosComFiltro({ status: "Fechado" })}
               >
@@ -973,23 +886,6 @@ function Dashboard({ onLogout }) {
               <button
                 className="summary-card"
                 type="button"
-                aria-label="Ver chamados de prioridade crítica"
-                onClick={() => abrirChamadosComFiltro({ prioridade: "Crítica" })}
-              >
-                <div className="summary-icon red">
-                  <ShieldAlert aria-hidden="true" />
-                </div>
-
-                <div>
-                  <span>Prioridade crítica</span>
-                  <strong>{dashboard.chamados_criticos}</strong>
-                  <small>Atendimento imediato</small>
-                </div>
-              </button>
-
-              <button
-                className="summary-card"
-                type="button"
                 aria-label="Ver usuários cadastrados"
                 onClick={() => setPaginaAtiva("usuarios")}
               >
@@ -1001,40 +897,6 @@ function Dashboard({ onLogout }) {
                   <span>Total de usuários</span>
                   <strong>{dashboard.total_usuarios}</strong>
                   <small>Contas cadastradas</small>
-                </div>
-              </button>
-
-              <button
-                className="summary-card"
-                type="button"
-                aria-label="Ver chamados com SLA vencido"
-                onClick={() => abrirChamadosComFiltro({ sla: "Vencido" })}
-              >
-                <div className="summary-icon red">
-                  <TimerOff aria-hidden="true" />
-                </div>
-
-                <div>
-                  <span>SLA vencido</span>
-                  <strong>{dashboard.sla_vencidos}</strong>
-                  <small>Chamados fora do prazo</small>
-                </div>
-              </button>
-
-              <button
-                className="summary-card"
-                type="button"
-                aria-label="Ver chamados próximos do vencimento do SLA"
-                onClick={() => abrirChamadosComFiltro({ sla: "Próximo do vencimento" })}
-              >
-                <div className="summary-icon orange">
-                  <Timer aria-hidden="true" />
-                </div>
-
-                <div>
-                  <span>SLA próximo do vencimento</span>
-                  <strong>{dashboard.sla_proximos_vencimento}</strong>
-                  <small>Consumo acima de 80%</small>
                 </div>
               </button>
 
