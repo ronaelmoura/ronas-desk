@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "node --test",
-    "test:coverage": "node --experimental-test-coverage --test --test-coverage-include='src/**/*.js' --test-coverage-lines=60 --test-coverage-functions=65 --test-coverage-branches=75",
-    "test:coverage:ci": "node --experimental-test-coverage --test --test-reporter=spec --test-coverage-include='src/**/*.js' --test-coverage-lines=60 --test-coverage-functions=65 --test-coverage-branches=75",
+    "test:integration": "node --test \"test-integration/*.integration.js\"",
+    "test:coverage": "c8 --config .c8rc.json node --test",
+    "test:coverage:ci": "c8 --config .c8rc.json --check-coverage --lines 60 --functions 65 --branches 75 node --test",
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "migrate": "node src/scripts/migrate.js",
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
+    "c8": "^12.0.0",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.7.0",
