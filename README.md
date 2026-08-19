@@ -8,6 +8,7 @@ O Ronas Desk centraliza clientes, usuários, chamados e indicadores de atendimen
 
 ![Status](https://img.shields.io/badge/Status-Est%C3%A1vel-16A34A?style=for-the-badge)
 ![Versão](https://img.shields.io/badge/Vers%C3%A3o-1.0.0-16A34A?style=for-the-badge)
+![Testes](https://img.shields.io/badge/Testes-122_aprovados-16A34A?style=for-the-badge)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
@@ -391,7 +392,7 @@ fica restrito ao log do servidor.
 
 O workflow `.github/workflows/ci.yml` usa Node.js 22 e executa automaticamente:
 
-- testes e lint do backend;
+- os 122 testes automatizados e o lint do backend;
 - lint e build do frontend.
 
 O CI roda em Pull Requests e em pushes para `main`, sem acesso a credenciais de
@@ -596,7 +597,8 @@ Todos os itens essenciais foram aprovados para a versão estável `1.0.0`.
 
 - [GitHub](https://github.com/ronaelmoura)
 - [LinkedIn](https://www.linkedin.com/in/ronael-moura)
-- [Portfólio](https://ronaelmoura.github.io/portfolio-ronas-tech/)
+- [Portfólio](https://ronaelmoura.github.io/)
+- [Currículo](https://raw.githubusercontent.com/ronaelmoura/ronaelmoura/main/assets/curriculo-ronael-moura.pdf)
 
 ---
 
@@ -604,6 +606,6 @@ Todos os itens essenciais foram aprovados para a versão estável `1.0.0`.
 
 Se este projeto foi útil para você, deixe uma ⭐ no repositório.
 
-Desenvolvido com dedicação por **Ronael Moura**.
+**Ronas Desk** · v1.0.0 · 122 testes automatizados · por **Ronael Moura**.
 
 </div>
