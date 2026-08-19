@@ -66,6 +66,7 @@ test('gerarRelatorioPaginado monta resumo, distribuições, chamados e total', a
   const resultado = await relatorioModel.gerarRelatorioPaginado(
     periodo,
     paginacao,
+    {},
     executor,
   )
 
@@ -127,10 +128,58 @@ test('gerarRelatorioPaginado retorna nulos quando não há chamados resolvidos',
   const resultado = await relatorioModel.gerarRelatorioPaginado(
     { data_inicio: '2026-07-01', data_fim: '2026-07-31' },
     { limite: 10, offset: 0 },
+    {},
     executor,
   )
 
   assert.equal(resultado.resumo.sla_cumprido_percentual, null)
   assert.equal(resultado.resumo.tempo_medio_resolucao_minutos, null)
   assert.equal(resultado.total, 0)
+})
+
+test('gerarRelatorioPaginado aplica filtros de status, prioridade e categoria na consulta', async () => {
+  const chamadas = []
+  const respostas = [
+    [[{
+      total_chamados: '1',
+      chamados_abertos: '1',
+      chamados_encerrados: '0',
+      chamados_cancelados: '0',
+      tempo_medio_resolucao_minutos: null,
+      sla_cumprido_percentual: null,
+    }]],
+    [[{ rotulo: 'Novo', total: 1 }]],
+    [[{ rotulo: 'Alta', total: 1 }]],
+    [[{ rotulo: 'Rede', total: 1 }]],
+    [[{ rotulo: 'Não atribuído', total: 1 }]],
+    [[{ id: 1, titulo: 'Chamado filtrado' }]],
+    [[{ total: 1 }]],
+  ]
+  const executor = {
+    async execute(sql, parametros) {
+      chamadas.push({ sql, parametros })
+      return respostas[chamadas.length - 1]
+    },
+  }
+
+  const filtros = { status: 'Novo', prioridade: 'Alta', categoria: 'Rede' }
+
+  const resultado = await relatorioModel.gerarRelatorioPaginado(
+    { data_inicio: '2026-07-01', data_fim: '2026-07-31' },
+    { limite: 10, offset: 0 },
+    filtros,
+    executor,
+  )
+
+  assert.match(chamadas[0].sql, /AND chamados\.status = \?/)
+  assert.match(chamadas[0].sql, /AND chamados\.prioridade = \?/)
+  assert.match(chamadas[0].sql, /AND chamados\.categoria = \?/)
+  assert.deepEqual(chamadas[0].parametros, [
+    '2026-07-01',
+    '2026-07-31',
+    'Novo',
+    'Alta',
+    'Rede',
+  ])
+  assert.equal(resultado.total, 1)
 })

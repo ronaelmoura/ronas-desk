@@ -27,8 +27,22 @@ function criarPeriodoInicial() {
   return {
     dataInicio: formatarDataInput(inicio),
     dataFim: formatarDataInput(fim),
+    status: "",
+    prioridade: "",
+    categoria: "",
   };
 }
+
+const STATUS_OPCOES = [
+  "Novo",
+  "Em Atendimento",
+  "Aguardando Cliente",
+  "Resolvido",
+  "Fechado",
+  "Cancelado",
+];
+const PRIORIDADE_OPCOES = ["Crítica", "Alta", "Média", "Baixa"];
+const CATEGORIA_OPCOES = ["Hardware", "Software", "Rede", "Acesso", "Outro"];
 
 const relatorioInicial = {
   periodo: null,
@@ -129,6 +143,11 @@ function Relatorios() {
         periodo.dataInicio,
         periodo.dataFim,
         pagina,
+        {
+          status: periodo.status,
+          prioridade: periodo.prioridade,
+          categoria: periodo.categoria,
+        },
       );
       setRelatorio(dados);
     } catch (error) {
@@ -254,9 +273,69 @@ function Relatorios() {
             }
           />
         </div>
+        <div>
+          <label htmlFor="report-status">Status</label>
+          <select
+            id="report-status"
+            value={filtros.status}
+            onChange={(event) =>
+              setFiltros((atuais) => ({
+                ...atuais,
+                status: event.target.value,
+              }))
+            }
+          >
+            <option value="">Todos</option>
+            {STATUS_OPCOES.map((opcao) => (
+              <option key={opcao} value={opcao}>
+                {opcao}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="report-prioridade">Prioridade</label>
+          <select
+            id="report-prioridade"
+            value={filtros.prioridade}
+            onChange={(event) =>
+              setFiltros((atuais) => ({
+                ...atuais,
+                prioridade: event.target.value,
+              }))
+            }
+          >
+            <option value="">Todas</option>
+            {PRIORIDADE_OPCOES.map((opcao) => (
+              <option key={opcao} value={opcao}>
+                {opcao}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="report-categoria">Categoria</label>
+          <select
+            id="report-categoria"
+            value={filtros.categoria}
+            onChange={(event) =>
+              setFiltros((atuais) => ({
+                ...atuais,
+                categoria: event.target.value,
+              }))
+            }
+          >
+            <option value="">Todas</option>
+            {CATEGORIA_OPCOES.map((opcao) => (
+              <option key={opcao} value={opcao}>
+                {opcao}
+              </option>
+            ))}
+          </select>
+        </div>
         <button type="submit" disabled={carregando}>
           <CalendarDays size={18} aria-hidden="true" />
-          {carregando ? "Gerando..." : "Aplicar período"}
+          {carregando ? "Gerando..." : "Aplicar filtros"}
         </button>
       </form>
 

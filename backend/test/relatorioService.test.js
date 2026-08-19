@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import relatorioService, {
+  FiltroRelatorioInvalidoError,
   gerarRelatorio,
+  normalizarFiltros,
   normalizarPeriodo,
   PeriodoRelatorioInvalidoError,
 } from '../src/services/relatorioService.js'
@@ -113,4 +115,32 @@ test('gera indicadores, distribuições e detalhes sem duplicar regra de SLA', (
   assert.equal(relatorio.chamados[0].sla_status, 'Dentro do prazo')
   assert.equal(relatorio.chamados[1].sla_status, 'Vencido')
   assert.equal(relatorioService.gerarRelatorio, gerarRelatorio)
+})
+
+test('normalizarFiltros aceita filtros válidos e omite os ausentes', () => {
+  assert.deepEqual(normalizarFiltros({}), {
+    status: undefined,
+    prioridade: undefined,
+    categoria: undefined,
+  })
+
+  assert.deepEqual(
+    normalizarFiltros({ status: 'Novo', prioridade: 'Alta', categoria: 'Rede' }),
+    { status: 'Novo', prioridade: 'Alta', categoria: 'Rede' },
+  )
+})
+
+test('normalizarFiltros rejeita status, prioridade ou categoria inválidos', () => {
+  assert.throws(
+    () => normalizarFiltros({ status: 'Inexistente' }),
+    FiltroRelatorioInvalidoError,
+  )
+  assert.throws(
+    () => normalizarFiltros({ prioridade: 'Urgente' }),
+    /Prioridade inválida/,
+  )
+  assert.throws(
+    () => normalizarFiltros({ categoria: 'Inventada' }),
+    /Categoria inválida/,
+  )
 })

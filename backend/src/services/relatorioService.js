@@ -5,11 +5,49 @@ const DIA_EM_MS = 24 * 60 * 60 * 1000
 const LIMITE_DIAS = 366
 const STATUS_ABERTOS = ['Novo', 'Em Atendimento', 'Aguardando Cliente']
 
+const STATUS_PERMITIDOS = [
+  'Novo',
+  'Em Atendimento',
+  'Aguardando Cliente',
+  'Resolvido',
+  'Fechado',
+  'Cancelado',
+]
+const PRIORIDADES_PERMITIDAS = ['Crítica', 'Alta', 'Média', 'Baixa']
+const CATEGORIAS_PERMITIDAS = ['Hardware', 'Software', 'Rede', 'Acesso', 'Outro']
+
 export class PeriodoRelatorioInvalidoError extends Error {
   constructor(message) {
     super(message)
     this.name = 'PeriodoRelatorioInvalidoError'
   }
+}
+
+export class FiltroRelatorioInvalidoError extends Error {
+  constructor(message) {
+    super(message)
+    this.name = 'FiltroRelatorioInvalidoError'
+  }
+}
+
+export function normalizarFiltros(query = {}) {
+  const status = query.status || undefined
+  const prioridade = query.prioridade || undefined
+  const categoria = query.categoria || undefined
+
+  if (status && !STATUS_PERMITIDOS.includes(status)) {
+    throw new FiltroRelatorioInvalidoError('Status inválido.')
+  }
+
+  if (prioridade && !PRIORIDADES_PERMITIDAS.includes(prioridade)) {
+    throw new FiltroRelatorioInvalidoError('Prioridade inválida.')
+  }
+
+  if (categoria && !CATEGORIAS_PERMITIDAS.includes(categoria)) {
+    throw new FiltroRelatorioInvalidoError('Categoria inválida.')
+  }
+
+  return { status, prioridade, categoria }
 }
 
 function formatarData(data) {
@@ -143,5 +181,6 @@ export function gerarRelatorio(chamados, periodo, agora = new Date()) {
 
 export default {
   normalizarPeriodo,
+  normalizarFiltros,
   gerarRelatorio,
 }

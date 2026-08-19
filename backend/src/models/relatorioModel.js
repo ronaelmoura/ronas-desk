@@ -31,10 +31,26 @@ async function listarChamadosPorPeriodo(dataInicio, dataFim, executor = pool) {
   return rows
 }
 
-export async function gerarRelatorioPaginado(periodo, paginacao, executor = pool) {
-  const parametros = [periodo.data_inicio, periodo.data_fim]
+function montarFiltroCampos(filtros = {}) {
+  const clausulas = []
+  const parametros = []
+
+  for (const campo of ['status', 'prioridade', 'categoria']) {
+    if (filtros[campo]) {
+      clausulas.push(`chamados.${campo} = ?`)
+      parametros.push(filtros[campo])
+    }
+  }
+
+  return { clausulas, parametros }
+}
+
+export async function gerarRelatorioPaginado(periodo, paginacao, filtros = {}, executor = pool) {
+  const filtroCampos = montarFiltroCampos(filtros)
+  const parametros = [periodo.data_inicio, periodo.data_fim, ...filtroCampos.parametros]
   const where = `WHERE chamados.created_at >= ?
-    AND chamados.created_at < DATE_ADD(?, INTERVAL 1 DAY)`
+    AND chamados.created_at < DATE_ADD(?, INTERVAL 1 DAY)
+    ${filtroCampos.clausulas.map((clausula) => `AND ${clausula}`).join('\n    ')}`
   const inicioSla = 'COALESCE(chamados.sla_started_at, chamados.created_at)'
   const limiteSla = `CASE chamados.prioridade
     WHEN 'Crítica' THEN 120 WHEN 'Alta' THEN 480
