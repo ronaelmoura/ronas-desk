@@ -6,13 +6,26 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
     files: 1,
-    fileSize: TAMANHO_MAXIMO_ANEXO,
+    // multer/busboy disparam o limite de tamanho um byte antes do fim,
+    // rejeitando até arquivos com exatamente TAMANHO_MAXIMO_ANEXO bytes
+    // (https://github.com/expressjs/multer/issues/1348). Autoriza-se
+    // 1 byte a mais aqui e o tamanho real é conferido abaixo.
+    fileSize: TAMANHO_MAXIMO_ANEXO + 1,
   },
 })
 
 export default function anexoUploadMiddleware(request, response, next) {
   upload.single('arquivo')(request, response, (error) => {
-    if (!error) return next()
+    if (!error) {
+      if (request.file && request.file.size > TAMANHO_MAXIMO_ANEXO) {
+        return response.status(400).json({
+          status: 'erro',
+          message: 'O anexo deve ter no máximo 10 MB.',
+        })
+      }
+
+      return next()
+    }
 
     if (error instanceof multer.MulterError) {
       const message =
