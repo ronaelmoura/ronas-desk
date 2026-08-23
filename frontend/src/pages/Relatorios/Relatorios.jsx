@@ -9,6 +9,11 @@ import {
   FolderOpen,
 } from "lucide-react";
 import { buscarRelatorioChamadosApi } from "../../services/relatoriosApi";
+import {
+  CATEGORIAS_CHAMADOS,
+  PRIORIDADES_CHAMADOS,
+  STATUS_CHAMADOS,
+} from "../../utils/chamados";
 import Paginacao from "../../components/ui/Paginacao";
 import "./relatorios.css";
 
@@ -32,17 +37,6 @@ function criarPeriodoInicial() {
     categoria: "",
   };
 }
-
-const STATUS_OPCOES = [
-  "Novo",
-  "Em Atendimento",
-  "Aguardando Cliente",
-  "Resolvido",
-  "Fechado",
-  "Cancelado",
-];
-const PRIORIDADE_OPCOES = ["Crítica", "Alta", "Média", "Baixa"];
-const CATEGORIA_OPCOES = ["Hardware", "Software", "Rede", "Acesso", "Outro"];
 
 const relatorioInicial = {
   periodo: null,
@@ -286,7 +280,7 @@ function Relatorios() {
             }
           >
             <option value="">Todos</option>
-            {STATUS_OPCOES.map((opcao) => (
+            {STATUS_CHAMADOS.map((opcao) => (
               <option key={opcao} value={opcao}>
                 {opcao}
               </option>
@@ -306,7 +300,7 @@ function Relatorios() {
             }
           >
             <option value="">Todas</option>
-            {PRIORIDADE_OPCOES.map((opcao) => (
+            {PRIORIDADES_CHAMADOS.map((opcao) => (
               <option key={opcao} value={opcao}>
                 {opcao}
               </option>
@@ -326,7 +320,7 @@ function Relatorios() {
             }
           >
             <option value="">Todas</option>
-            {CATEGORIA_OPCOES.map((opcao) => (
+            {CATEGORIAS_CHAMADOS.map((opcao) => (
               <option key={opcao} value={opcao}>
                 {opcao}
               </option>

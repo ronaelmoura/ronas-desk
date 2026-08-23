@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Download,
   FileText,
@@ -21,7 +21,12 @@ import {
   listarComentariosChamadoApi,
 } from "../services/chamadosApi";
 import { listarUsuariosApi } from "../services/usuariosApi";
-import { PRIORIDADES_CHAMADOS, STATUS_CHAMADOS } from "../utils/chamados";
+import {
+  CATEGORIAS_CHAMADOS,
+  PRIORIDADES_CHAMADOS,
+  STATUS_CHAMADOS,
+} from "../utils/chamados";
+import useFocusTrap from "../hooks/useFocusTrap";
 import SlaCard from "./sla/SlaCard";
 import TicketTimeline from "./TicketTimeline";
 import "./TicketDetailsModal.css";
@@ -81,65 +86,13 @@ function TicketDetailsModal({
   const [excluindoChamado, setExcluindoChamado] = useState(false);
   const [resumoIa, setResumoIa] = useState(null);
   const [gerandoResumoIa, setGerandoResumoIa] = useState(false);
-  const modalRef = useRef(null);
-  const onCloseRef = useRef(onClose);
-  const operacaoEmAndamentoRef = useRef(false);
-  const confirmandoExclusaoRef = useRef(false);
-
-  useEffect(() => {
-    onCloseRef.current = onClose;
-  }, [onClose]);
-
-  useEffect(() => {
-    operacaoEmAndamentoRef.current = salvando || excluindoChamado;
-  }, [salvando, excluindoChamado]);
-
-  useEffect(() => {
-    confirmandoExclusaoRef.current = confirmandoExclusao;
-  }, [confirmandoExclusao]);
-
-  useEffect(() => {
-    const elementoAnterior = document.activeElement;
-    modalRef.current?.querySelector("button")?.focus();
-
-    function controlarTeclado(event) {
-      if (event.key === "Escape") {
-        if (operacaoEmAndamentoRef.current) return;
-
-        if (confirmandoExclusaoRef.current) {
-          setConfirmandoExclusao(false);
-        } else {
-          onCloseRef.current();
-        }
-        return;
-      }
-
-      if (event.key !== "Tab") return;
-
-      const elementos = [
-        ...(modalRef.current?.querySelectorAll(
-          "button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled)",
-        ) ?? []),
-      ];
-      const primeiro = elementos[0];
-      const ultimo = elementos.at(-1);
-
-      if (event.shiftKey && document.activeElement === primeiro) {
-        event.preventDefault();
-        ultimo?.focus();
-      } else if (!event.shiftKey && document.activeElement === ultimo) {
-        event.preventDefault();
-        primeiro?.focus();
-      }
-    }
-
-    document.addEventListener("keydown", controlarTeclado);
-
-    return () => {
-      document.removeEventListener("keydown", controlarTeclado);
-      elementoAnterior?.focus?.();
-    };
-  }, []);
+  const modalRef = useFocusTrap({
+    bloquearEscape: salvando || excluindoChamado,
+    onEscape: () => {
+      if (confirmandoExclusao) setConfirmandoExclusao(false);
+      else onClose();
+    },
+  });
 
   useEffect(() => {
     async function carregarDados() {
@@ -460,13 +413,11 @@ function TicketDetailsModal({
                   value={categoria}
                   onChange={(event) => setCategoria(event.target.value)}
                 >
-                  {["Hardware", "Software", "Rede", "Acesso", "Outro"].map(
-                    (opcao) => (
-                      <option key={opcao} value={opcao}>
-                        {opcao}
-                      </option>
-                    ),
-                  )}
+                  {CATEGORIAS_CHAMADOS.map((opcao) => (
+                    <option key={opcao} value={opcao}>
+                      {opcao}
+                    </option>
+                  ))}
                 </select>
               </div>
 

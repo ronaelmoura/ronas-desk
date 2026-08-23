@@ -10,13 +10,12 @@ import {
   listarMensagensChamadoApi,
   listarMeusChamadosApi,
 } from '../../services/portalClienteApi'
-import { classeChamado } from '../../utils/chamados'
+import { CATEGORIAS_CHAMADOS, classeChamado, PRIORIDADES_CHAMADOS } from '../../utils/chamados'
+import useFocusTrap from '../../hooks/useFocusTrap'
 import Paginacao from '../../components/ui/Paginacao'
 import './PortalCliente.css'
 import './AvaliacaoPortal.css'
 
-const CATEGORIAS = ['Hardware', 'Software', 'Rede', 'Acesso', 'Outro']
-const PRIORIDADES = ['Crítica', 'Alta', 'Média', 'Baixa']
 const STATUS_ENCERRADOS = new Set(['Resolvido', 'Fechado'])
 
 function formatarData(data) {
@@ -27,9 +26,12 @@ function formatarData(data) {
 }
 
 function ModalPortal({ children, onClose, tituloId }) {
+  const modalRef = useFocusTrap({ onEscape: onClose })
+
   return (
     <div className="portal-modal-backdrop" onMouseDown={onClose}>
       <section
+        ref={modalRef}
         aria-labelledby={tituloId}
         aria-modal="true"
         className="portal-modal"
@@ -92,14 +94,14 @@ function NovoChamadoPortal({ onClose, onCreated }) {
             Categoria
             <select name="categoria" onChange={atualizarCampo} required value={formulario.categoria}>
               <option value="">Selecione</option>
-              {CATEGORIAS.map((item) => <option key={item} value={item}>{item}</option>)}
+              {CATEGORIAS_CHAMADOS.map((item) => <option key={item} value={item}>{item}</option>)}
             </select>
           </label>
           <label>
             Prioridade
             <select name="prioridade" onChange={atualizarCampo} required value={formulario.prioridade}>
               <option value="">Selecione</option>
-              {PRIORIDADES.map((item) => <option key={item} value={item}>{item}</option>)}
+              {PRIORIDADES_CHAMADOS.map((item) => <option key={item} value={item}>{item}</option>)}
             </select>
           </label>
         </div>

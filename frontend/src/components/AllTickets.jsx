@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
-import { classeChamado, PRIORIDADES_CHAMADOS, STATUS_CHAMADOS } from "../utils/chamados";
+import {
+  CATEGORIAS_CHAMADOS,
+  classeChamado,
+  PRIORIDADES_CHAMADOS,
+  STATUS_CHAMADOS,
+} from "../utils/chamados";
 import { listarChamadosApi } from "../services/chamadosApi";
 import SlaBadge from "./sla/SlaBadge";
 import Paginacao from "./ui/Paginacao";
 import "./AllTickets.css";
 
 const ITENS_POR_PAGINA = 10;
-const CATEGORIAS = ["Hardware", "Software", "Rede", "Acesso", "Outro"];
 
 function AllTickets({ onSelectTicket, onNewTicket, filtrosIniciais, atualizacao }) {
   const [busca, setBusca] = useState("");
@@ -84,7 +88,7 @@ function AllTickets({ onSelectTicket, onNewTicket, filtrosIniciais, atualizacao 
         <div className="all-search-field"><label htmlFor="all-ticket-search">Buscar chamado</label><input id="all-ticket-search" type="search" placeholder="Título, descrição ou categoria" value={busca} onChange={(event) => setBusca(event.target.value)} /></div>
         <div className="all-filter-field"><label htmlFor="all-status-filter">Status</label><select id="all-status-filter" value={filtroStatus} onChange={(event) => setFiltroStatus(event.target.value)}><option value="Todos">Todos</option>{STATUS_CHAMADOS.map((item) => <option key={item}>{item}</option>)}</select></div>
         <div className="all-filter-field"><label htmlFor="all-priority-filter">Prioridade</label><select id="all-priority-filter" value={filtroPrioridade} onChange={(event) => setFiltroPrioridade(event.target.value)}><option value="Todas">Todas</option>{PRIORIDADES_CHAMADOS.map((item) => <option key={item}>{item}</option>)}</select></div>
-        <div className="all-filter-field"><label htmlFor="all-category-filter">Categoria</label><select id="all-category-filter" value={filtroCategoria} onChange={(event) => setFiltroCategoria(event.target.value)}><option value="Todas">Todas</option>{CATEGORIAS.map((item) => <option key={item}>{item}</option>)}</select></div>
+        <div className="all-filter-field"><label htmlFor="all-category-filter">Categoria</label><select id="all-category-filter" value={filtroCategoria} onChange={(event) => setFiltroCategoria(event.target.value)}><option value="Todas">Todas</option>{CATEGORIAS_CHAMADOS.map((item) => <option key={item}>{item}</option>)}</select></div>
         <div className="all-filter-field"><label htmlFor="all-sla-filter">SLA</label><select id="all-sla-filter" value={filtroSla} onChange={(event) => setFiltroSla(event.target.value)}><option value="Todos">Todos</option><option>Dentro do prazo</option><option>Próximo do vencimento</option><option>Vencido</option></select></div>
         <div className="all-filter-field"><label htmlFor="all-start-date-filter">Data inicial</label><input id="all-start-date-filter" type="date" value={filtroDataInicio} onChange={(event) => setFiltroDataInicio(event.target.value)} /></div>
         <div className="all-filter-field"><label htmlFor="all-end-date-filter">Data final</label><input id="all-end-date-filter" type="date" value={filtroDataFim} min={filtroDataInicio || undefined} onChange={(event) => setFiltroDataFim(event.target.value)} /></div>

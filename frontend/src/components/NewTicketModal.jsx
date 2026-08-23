@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { listarClientesApi } from "../services/clientesApi";
 import { listarUsuariosApi } from "../services/usuariosApi";
-import { PRIORIDADES_CHAMADOS } from "../utils/chamados";
+import { CATEGORIAS_CHAMADOS, PRIORIDADES_CHAMADOS } from "../utils/chamados";
+import useFocusTrap from "../hooks/useFocusTrap";
 import "./NewTicketModal.css";
 
 function NewTicketModal({ onClose, onSave }) {
@@ -18,50 +19,13 @@ function NewTicketModal({ onClose, onSave }) {
   const [carregandoClientes, setCarregandoClientes] = useState(true);
   const [carregandoUsuarios, setCarregandoUsuarios] = useState(true);
   const [salvando, setSalvando] = useState(false);
-  const modalRef = useRef(null);
   const botaoFecharRef = useRef(null);
-  const salvandoRef = useRef(false);
 
-  useEffect(() => {
-    salvandoRef.current = salvando;
-  }, [salvando]);
-
-  useEffect(() => {
-    const elementoAnterior = document.activeElement;
-    botaoFecharRef.current?.focus();
-
-    function controlarTeclado(event) {
-      if (event.key === "Escape" && !salvandoRef.current) {
-        onClose();
-        return;
-      }
-
-      if (event.key !== "Tab") return;
-
-      const elementos = [
-        ...(modalRef.current?.querySelectorAll(
-          "button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled)",
-        ) ?? []),
-      ];
-      const primeiro = elementos[0];
-      const ultimo = elementos.at(-1);
-
-      if (event.shiftKey && document.activeElement === primeiro) {
-        event.preventDefault();
-        ultimo?.focus();
-      } else if (!event.shiftKey && document.activeElement === ultimo) {
-        event.preventDefault();
-        primeiro?.focus();
-      }
-    }
-
-    document.addEventListener("keydown", controlarTeclado);
-
-    return () => {
-      document.removeEventListener("keydown", controlarTeclado);
-      elementoAnterior?.focus?.();
-    };
-  }, [onClose]);
+  const modalRef = useFocusTrap({
+    focoInicialRef: botaoFecharRef,
+    bloquearEscape: salvando,
+    onEscape: onClose,
+  });
 
   useEffect(() => {
     async function carregarRelacionamentos() {
@@ -229,13 +193,7 @@ function NewTicketModal({ onClose, onSave }) {
                 onChange={(event) => setCategoria(event.target.value)}
               >
                 <option value="">Selecione</option>
-                {[
-                  "Hardware",
-                  "Software",
-                  "Rede",
-                  "Acesso",
-                  "Outro",
-                ].map((opcao) => (
+                {CATEGORIAS_CHAMADOS.map((opcao) => (
                   <option key={opcao} value={opcao}>
                     {opcao}
                   </option>

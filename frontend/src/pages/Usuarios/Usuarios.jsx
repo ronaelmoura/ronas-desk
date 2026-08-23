@@ -122,7 +122,7 @@ function Usuarios({ administrador }) {
       await carregarUsuarios();
       setToast({
         tipo: "sucesso",
-        mensagem: `Usuário ${atualizado.ativo ? "ativado" : "desativado"} com sucesso.`,
+        mensagem: `Usuário ${!usuario.ativo ? "ativado" : "desativado"} com sucesso.`,
       });
     } catch (error) {
       setErro(error.message);

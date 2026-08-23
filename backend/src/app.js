@@ -14,6 +14,7 @@ import portalClienteRouter from './routes/portalCliente.routes.js'
 import notificacoesRouter from './routes/notificacoes.routes.js'
 import avaliacoesRouter from './routes/avaliacoes.routes.js'
 import authMiddleware from './middlewares/authMiddleware.js'
+import errorHandlerMiddleware from './middlewares/errorHandlerMiddleware.js'
 import demoReadOnlyMiddleware from './middlewares/demoReadOnlyMiddleware.js'
 import equipeMiddleware from './middlewares/equipeMiddleware.js'
 import portalClienteMiddleware from './middlewares/portalClienteMiddleware.js'
@@ -140,6 +141,8 @@ export function criarApp({ database = pool, variaveis = process.env } = {}) {
       message: 'Rota não encontrada.',
     })
   })
+
+  app.use(errorHandlerMiddleware)
 
   return app
 }

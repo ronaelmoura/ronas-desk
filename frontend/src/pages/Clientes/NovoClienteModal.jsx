@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { X } from "lucide-react";
+import useFocusTrap from "../../hooks/useFocusTrap";
 import "./clientes.css";
 
 function NovoClienteModal({ fechar, onSave, cliente }) {
@@ -11,50 +12,13 @@ function NovoClienteModal({ fechar, onSave, cliente }) {
   });
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
-  const modalRef = useRef(null);
   const primeiroCampoRef = useRef(null);
-  const salvandoRef = useRef(false);
 
-  useEffect(() => {
-    salvandoRef.current = salvando;
-  }, [salvando]);
-
-  useEffect(() => {
-    const elementoAnterior = document.activeElement;
-    primeiroCampoRef.current?.focus();
-
-    function controlarTeclado(event) {
-      if (event.key === "Escape" && !salvandoRef.current) {
-        fechar();
-        return;
-      }
-
-      if (event.key !== "Tab") return;
-
-      const elementos = [
-        ...(modalRef.current?.querySelectorAll(
-          "button:not(:disabled), input:not(:disabled)",
-        ) ?? []),
-      ];
-      const primeiro = elementos[0];
-      const ultimo = elementos.at(-1);
-
-      if (event.shiftKey && document.activeElement === primeiro) {
-        event.preventDefault();
-        ultimo?.focus();
-      } else if (!event.shiftKey && document.activeElement === ultimo) {
-        event.preventDefault();
-        primeiro?.focus();
-      }
-    }
-
-    document.addEventListener("keydown", controlarTeclado);
-
-    return () => {
-      document.removeEventListener("keydown", controlarTeclado);
-      elementoAnterior?.focus?.();
-    };
-  }, [fechar]);
+  const modalRef = useFocusTrap({
+    focoInicialRef: primeiroCampoRef,
+    bloquearEscape: salvando,
+    onEscape: fechar,
+  });
 
   function alterar(event) {
     const { name, value } = event.target;

@@ -9,6 +9,14 @@ export const STATUS_CHAMADOS = [
 
 export const PRIORIDADES_CHAMADOS = ["Crítica", "Alta", "Média", "Baixa"];
 
+export const CATEGORIAS_CHAMADOS = [
+  "Hardware",
+  "Software",
+  "Rede",
+  "Acesso",
+  "Outro",
+];
+
 export function classeChamado(prefixo, valor = "") {
   const sufixo = valor
     .normalize("NFD")

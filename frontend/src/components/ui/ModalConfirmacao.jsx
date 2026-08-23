@@ -1,5 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { AlertTriangle, X } from "lucide-react";
+import useFocusTrap from "../../hooks/useFocusTrap";
 import "./ModalConfirmacao.css";
 
 function ModalConfirmacao({
@@ -12,64 +13,19 @@ function ModalConfirmacao({
   rotuloConfirmar = "Confirmar",
   confirmandoTexto = "Processando...",
 }) {
-  const modalRef = useRef(null);
   const botaoCancelarRef = useRef(null);
-  const onCancelRef = useRef(onCancel);
-  const confirmandoRef = useRef(confirmando);
 
-  useEffect(() => {
-    onCancelRef.current = onCancel;
-  }, [onCancel]);
-
-  useEffect(() => {
-    confirmandoRef.current = confirmando;
-  }, [confirmando]);
-
-  useEffect(() => {
-    if (!aberto) return undefined;
-
-    const focoAnterior = document.activeElement;
-    const quadroAnimacao = window.requestAnimationFrame(() => {
-      botaoCancelarRef.current?.focus();
-    });
-
-    function controlarTeclado(event) {
-      if (event.key === "Escape" && !confirmandoRef.current) {
-        onCancelRef.current?.();
-        return;
-      }
-
-      if (event.key !== "Tab") return;
-
-      const elementos = [
-        ...(modalRef.current?.querySelectorAll("button:not(:disabled)") ?? []),
-      ];
-      if (!elementos.length) return;
-
-      const primeiro = elementos[0];
-      const ultimo = elementos[elementos.length - 1];
-
-      if (event.shiftKey && document.activeElement === primeiro) {
-        event.preventDefault();
-        ultimo.focus();
-      } else if (!event.shiftKey && document.activeElement === ultimo) {
-        event.preventDefault();
-        primeiro.focus();
-      }
-    }
-
-    document.addEventListener("keydown", controlarTeclado);
-    return () => {
-      window.cancelAnimationFrame(quadroAnimacao);
-      document.removeEventListener("keydown", controlarTeclado);
-      focoAnterior?.focus?.();
-    };
-  }, [aberto]);
+  const modalRef = useFocusTrap({
+    ativo: aberto,
+    focoInicialRef: botaoCancelarRef,
+    bloquearEscape: confirmando,
+    onEscape: () => onCancel?.(),
+  });
 
   if (!aberto) return null;
 
   function cancelar() {
-    if (!confirmando) onCancelRef.current?.();
+    if (!confirmando) onCancel?.();
   }
 
   return (

@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { listarClientesApi } from "../../services/clientesApi";
+import useFocusTrap from "../../hooks/useFocusTrap";
 
 const formularioInicial = {
   nome: "",
@@ -16,6 +17,13 @@ function UsuarioModal({ usuario, onClose, onSave }) {
   const [erro, setErro] = useState("");
   const [clientes, setClientes] = useState([]);
   const [carregandoClientes, setCarregandoClientes] = useState(false);
+  const primeiroCampoRef = useRef(null);
+
+  const modalRef = useFocusTrap({
+    focoInicialRef: primeiroCampoRef,
+    bloquearEscape: salvando,
+    onEscape: onClose,
+  });
 
   useEffect(() => {
     if (usuario) {
@@ -50,15 +58,6 @@ function UsuarioModal({ usuario, onClose, onSave }) {
     };
   }, [formulario.cargo]);
 
-  useEffect(() => {
-    function fecharComEscape(event) {
-      if (event.key === "Escape" && !salvando) onClose();
-    }
-
-    document.addEventListener("keydown", fecharComEscape);
-    return () => document.removeEventListener("keydown", fecharComEscape);
-  }, [onClose, salvando]);
-
   function atualizarCampo(event) {
     const { name, value } = event.target;
     setFormulario((atual) => ({
@@ -90,6 +89,7 @@ function UsuarioModal({ usuario, onClose, onSave }) {
     >
       <section
         className="usuario-modal"
+        ref={modalRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="usuario-modal-titulo"
@@ -114,11 +114,11 @@ function UsuarioModal({ usuario, onClose, onSave }) {
           <label>
             Nome
             <input
+              ref={primeiroCampoRef}
               name="nome"
               value={formulario.nome}
               onChange={atualizarCampo}
               maxLength="120"
-              autoFocus
               required
             />
           </label>
@@ -168,7 +168,7 @@ function UsuarioModal({ usuario, onClose, onSave }) {
                 ))}
               </select>
               <small>
-                Vincule esta conta ao cliente que poderÃ¡ acessar o portal. O
+                Vincule esta conta ao cliente que poderá acessar o portal. O
                 e-mail da conta deve ser o mesmo do cadastro selecionado.
               </small>
             </label>
