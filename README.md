@@ -8,7 +8,7 @@ O Ronas Desk centraliza clientes, usuários, chamados e indicadores de atendimen
 
 ![Status](https://img.shields.io/badge/Status-Est%C3%A1vel-16A34A?style=for-the-badge)
 ![Versão](https://img.shields.io/badge/Vers%C3%A3o-1.0.0-16A34A?style=for-the-badge)
-![Testes](https://img.shields.io/badge/Testes-122_aprovados-16A34A?style=for-the-badge)
+![Testes](https://img.shields.io/badge/Testes-370_aprovados-16A34A?style=for-the-badge)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
@@ -59,9 +59,9 @@ principais fluxos públicos e autenticados em produção.
 - Vite
 - JavaScript
 - Axios
-- React Router
 - SweetAlert2
-- Lucide React e React Icons
+- Lucide React
+- Vitest e Testing Library
 
 ### Backend
 
@@ -392,12 +392,22 @@ fica restrito ao log do servidor.
 
 O workflow `.github/workflows/ci.yml` usa Node.js 22 e executa automaticamente:
 
-- os 122 testes automatizados e o lint do backend;
-- lint e build do frontend.
+- os 307 testes unitários e o lint do backend;
+- os 54 testes automatizados, o lint e o build do frontend.
 
 O CI roda em Pull Requests e em pushes para `main`, sem acesso a credenciais de
 produção. O `format:check` será incluído depois que a dívida de formatação antiga
 for corrigida em uma mudança isolada.
+
+Além dos 307 testes unitários (mockados, sem dependências externas), o projeto
+tem 9 testes de integração em `backend/test-integration/` que sobem um servidor
+Express real contra um banco MySQL real (`*_test`) para validar autorização
+entre papéis (admin/atendente/cliente) e regras de SLA. Eles não rodam no CI
+hoje por exigirem um serviço MySQL disponível no runner — rodam localmente via
+`npm run test:integration`. Total do backend: 316 testes automatizados (307
+verificados no CI + 9 de integração rodados localmente). Somando os 54 testes
+do frontend (Vitest + Testing Library, também no CI), o projeto tem 370
+testes automatizados no total.
 
 ## 🖥️ Conta de demonstração segura
 
@@ -606,6 +616,6 @@ Todos os itens essenciais foram aprovados para a versão estável `1.0.0`.
 
 Se este projeto foi útil para você, deixe uma ⭐ no repositório.
 
-**Ronas Desk** · v1.0.0 · 122 testes automatizados · por **Ronael Moura**.
+**Ronas Desk** · v1.0.0 · 370 testes automatizados (316 backend + 54 frontend) · por **Ronael Moura**.
 
 </div>
