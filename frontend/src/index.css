@@ -95,3 +95,68 @@ h4 {
 p {
   margin: 0;
 }
+
+::selection {
+  background: color-mix(in srgb, var(--brand-primary) 28%, transparent);
+  color: var(--color-text-strong);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
+  background-clip: padding-box;
+  background-color: color-mix(in srgb, var(--color-text-faint) 55%, transparent);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in srgb, var(--brand-primary) 55%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.usuarios-page,
+.clientes-page,
+.visits-page,
+.notifications-page,
+.ratings-page,
+.reports-page,
+.all-tickets-page {
+  animation: page-fade-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .usuarios-page,
+  .clientes-page,
+  .visits-page,
+  .notifications-page,
+  .ratings-page,
+  .reports-page,
+  .all-tickets-page {
+    animation: none;
+  }
+}

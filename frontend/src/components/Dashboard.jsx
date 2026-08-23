@@ -33,6 +33,8 @@ import Visitas from "../pages/Visitas/Visitas";
 import Notificacoes from "../pages/Notificacoes/Notificacoes";
 import Avaliacoes from "../pages/Avaliacoes/Avaliacoes";
 import Toast from "./ui/Toast";
+import CountUp from "./ui/CountUp";
+import StatusDonutChart from "./dashboard/StatusDonutChart";
 import useAuth from "../hooks/useAuth";
 import useCompanyBrand from "../hooks/useCompanyBrand";
 import {
@@ -120,29 +122,33 @@ function Dashboard({ onLogout }) {
       total: dashboard.chamados_novos,
       status: "Novo",
       classe: "novo",
+      cor: "#1b86eb",
     },
     {
       rotulo: "Em atendimento",
       total: dashboard.chamados_em_atendimento,
       status: "Em Atendimento",
       classe: "atendimento",
+      cor: "#e99a25",
     },
     {
       rotulo: "Aguardando cliente",
       total: dashboard.chamados_aguardando_cliente,
       status: "Aguardando Cliente",
       classe: "aguardando",
+      cor: "#d4b22b",
     },
     {
       rotulo: "Resolvidos",
       total: dashboard.chamados_resolvidos,
       status: "Resolvido",
       classe: "resolvido",
+      cor: "#2aa866",
     },
   ];
-  const maiorStatus = Math.max(
-    ...distribuicaoStatus.map((indicador) => indicador.total),
-    1,
+  const totalDistribuicaoStatus = distribuicaoStatus.reduce(
+    (acumulado, indicador) => acumulado + indicador.total,
+    0,
   );
 
   useEffect(() => {
@@ -699,7 +705,9 @@ function Dashboard({ onLogout }) {
                 onClick={abrirChamados}
               >
                 <span>Total no período</span>
-                <strong>{dashboard.total_chamados}</strong>
+                <strong>
+                  <CountUp value={dashboard.total_chamados} />
+                </strong>
                 <small>Visualizar todos os chamados</small>
                 <Tickets aria-hidden="true" />
               </button>
@@ -710,7 +718,9 @@ function Dashboard({ onLogout }) {
                 onClick={() => abrirChamadosComFiltro({ status: "Novo" })}
               >
                 <span>Novas solicitações</span>
-                <strong>{dashboard.chamados_novos}</strong>
+                <strong>
+                  <CountUp value={dashboard.chamados_novos} />
+                </strong>
                 <small>Precisam de primeira análise</small>
                 <CircleAlert aria-hidden="true" />
               </button>
@@ -723,7 +733,9 @@ function Dashboard({ onLogout }) {
                 }
               >
                 <span>Em atendimento</span>
-                <strong>{dashboard.chamados_em_atendimento}</strong>
+                <strong>
+                  <CountUp value={dashboard.chamados_em_atendimento} />
+                </strong>
                 <small>Em acompanhamento pela equipe</small>
                 <Clock3 aria-hidden="true" />
               </button>
@@ -734,7 +746,9 @@ function Dashboard({ onLogout }) {
                 onClick={() => abrirChamadosComFiltro({ sla: "Vencido" })}
               >
                 <span>Prioridade de agora</span>
-                <strong>{dashboard.sla_vencidos}</strong>
+                <strong>
+                  <CountUp value={dashboard.sla_vencidos} />
+                </strong>
                 <small>Chamados com SLA vencido</small>
                 <TimerOff aria-hidden="true" />
               </button>
@@ -748,35 +762,39 @@ function Dashboard({ onLogout }) {
                     <h2>Como estão os atendimentos</h2>
                   </div>
                   <span className="operational-total">
-                    {chamadosEmFluxo} em andamento
+                    <CountUp value={chamadosEmFluxo} /> em andamento
                   </span>
                 </div>
 
-                <div className="status-distribution">
-                  {distribuicaoStatus.map((indicador) => (
-                    <button
-                      className="status-distribution-item"
-                      key={indicador.status}
-                      type="button"
-                      onClick={() =>
-                        abrirChamadosComFiltro({ status: indicador.status })
-                      }
-                    >
-                      <span>{indicador.rotulo}</span>
-                      <strong>{indicador.total}</strong>
-                      <span className="status-progress" aria-hidden="true">
-                        <span
-                          className={`status-progress-value ${indicador.classe}`}
-                          style={{
-                            width: `${Math.max(
-                              indicador.total ? 8 : 0,
-                              (indicador.total / maiorStatus) * 100,
-                            )}%`,
-                          }}
-                        />
-                      </span>
-                    </button>
-                  ))}
+                <div className="status-overview">
+                  <StatusDonutChart
+                    segmentos={distribuicaoStatus}
+                    total={totalDistribuicaoStatus}
+                  />
+
+                  <div className="status-distribution">
+                    {distribuicaoStatus.map((indicador) => (
+                      <button
+                        className="status-distribution-item"
+                        key={indicador.status}
+                        type="button"
+                        onClick={() =>
+                          abrirChamadosComFiltro({ status: indicador.status })
+                        }
+                      >
+                        <span>
+                          <i
+                            className={`status-dot ${indicador.classe}`}
+                            aria-hidden="true"
+                          />
+                          {indicador.rotulo}
+                        </span>
+                        <strong>
+                          <CountUp value={indicador.total} />
+                        </strong>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </article>
 
@@ -796,7 +814,9 @@ function Dashboard({ onLogout }) {
                   >
                     <TimerOff aria-hidden="true" />
                     <span>
-                      <strong>{dashboard.sla_vencidos}</strong>
+                      <strong>
+                        <CountUp value={dashboard.sla_vencidos} />
+                      </strong>
                       SLA vencido
                     </span>
                     <small>Ver chamados</small>
@@ -809,7 +829,9 @@ function Dashboard({ onLogout }) {
                   >
                     <Timer aria-hidden="true" />
                     <span>
-                      <strong>{dashboard.sla_proximos_vencimento}</strong>
+                      <strong>
+                        <CountUp value={dashboard.sla_proximos_vencimento} />
+                      </strong>
                       SLA próximo do limite
                     </span>
                     <small>Ver chamados</small>
@@ -822,7 +844,9 @@ function Dashboard({ onLogout }) {
                   >
                     <ShieldAlert aria-hidden="true" />
                     <span>
-                      <strong>{dashboard.chamados_criticos}</strong>
+                      <strong>
+                        <CountUp value={dashboard.chamados_criticos} />
+                      </strong>
                       Prioridade crítica
                     </span>
                     <small>Ver chamados</small>
@@ -844,7 +868,9 @@ function Dashboard({ onLogout }) {
 
                 <div>
                   <span>Fechados</span>
-                  <strong>{dashboard.chamados_fechados}</strong>
+                  <strong>
+                    <CountUp value={dashboard.chamados_fechados} />
+                  </strong>
                   <small>Atendimentos encerrados</small>
                 </div>
               </button>
@@ -861,7 +887,9 @@ function Dashboard({ onLogout }) {
 
                 <div>
                   <span>Cancelados</span>
-                  <strong>{dashboard.chamados_cancelados}</strong>
+                  <strong>
+                    <CountUp value={dashboard.chamados_cancelados} />
+                  </strong>
                   <small>Solicitações canceladas</small>
                 </div>
               </button>
@@ -878,7 +906,9 @@ function Dashboard({ onLogout }) {
 
                 <div>
                   <span>Total de clientes</span>
-                  <strong>{dashboard.total_clientes}</strong>
+                  <strong>
+                    <CountUp value={dashboard.total_clientes} />
+                  </strong>
                   <small>Clientes cadastrados</small>
                 </div>
               </button>
@@ -895,7 +925,9 @@ function Dashboard({ onLogout }) {
 
                 <div>
                   <span>Total de usuários</span>
-                  <strong>{dashboard.total_usuarios}</strong>
+                  <strong>
+                    <CountUp value={dashboard.total_usuarios} />
+                  </strong>
                   <small>Contas cadastradas</small>
                 </div>
               </button>
