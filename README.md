@@ -59,9 +59,8 @@ principais fluxos públicos e autenticados em produção.
 - Vite
 - JavaScript
 - Axios
-- React Router
 - SweetAlert2
-- Lucide React e React Icons
+- Lucide React
 - Vitest e Testing Library
 
 ### Backend
@@ -393,12 +392,22 @@ fica restrito ao log do servidor.
 
 O workflow `.github/workflows/ci.yml` usa Node.js 22 e executa automaticamente:
 
-- os 316 testes automatizados (307 unitários + 9 de integração) e o lint do backend;
+- os 307 testes unitários e o lint do backend;
 - os 54 testes automatizados, o lint e o build do frontend.
 
 O CI roda em Pull Requests e em pushes para `main`, sem acesso a credenciais de
 produção. O `format:check` será incluído depois que a dívida de formatação antiga
 for corrigida em uma mudança isolada.
+
+Além dos 307 testes unitários (mockados, sem dependências externas), o projeto
+tem 9 testes de integração em `backend/test-integration/` que sobem um servidor
+Express real contra um banco MySQL real (`*_test`) para validar autorização
+entre papéis (admin/atendente/cliente) e regras de SLA. Eles não rodam no CI
+hoje por exigirem um serviço MySQL disponível no runner — rodam localmente via
+`npm run test:integration`. Total do backend: 316 testes automatizados (307
+verificados no CI + 9 de integração rodados localmente). Somando os 54 testes
+do frontend (Vitest + Testing Library, também no CI), o projeto tem 370
+testes automatizados no total.
 
 ## 🖥️ Conta de demonstração segura
 
