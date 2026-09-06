@@ -29,7 +29,10 @@ test('clientesController lista clientes com sucesso', async () => {
   })
 
   try {
-    await clientesController.listar({ query: { pagina: '1', limite: '10' } }, response)
+    await clientesController.listar(
+      { query: { pagina: '1', limite: '10' } },
+      response,
+    )
 
     assert.equal(response.statusCode, 200)
     assert.equal(response.body.paginacao.total, 1)
@@ -216,9 +219,20 @@ test('clientesController lista chamados do cliente com sucesso', async () => {
   const originalBuscarPorId = clienteModel.buscarPorId
   const originalBuscarChamados = clienteModel.buscarChamados
 
-  clienteModel.buscarPorId = async () => ({ id: 1, nome: 'Cliente A', email: 'a@cliente.com', ativo: true })
+  clienteModel.buscarPorId = async () => ({
+    id: 1,
+    nome: 'Cliente A',
+    email: 'a@cliente.com',
+    ativo: true,
+  })
   clienteModel.buscarChamados = async () => [
-    { id: 101, titulo: 'Chamado 1', status: 'Novo', prioridade: 'Alta', created_at: '2026-08-01T10:00:00Z' },
+    {
+      id: 101,
+      titulo: 'Chamado 1',
+      status: 'Novo',
+      prioridade: 'Alta',
+      created_at: '2026-08-01T10:00:00Z',
+    },
   ]
 
   try {

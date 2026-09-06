@@ -25,12 +25,25 @@ test('usuariosController lista usuários com sucesso', async () => {
   const original = usuarioModel.listarPaginado
 
   usuarioModel.listarPaginado = async () => ({
-    dados: [{ id: 1, nome: 'Ana', email: 'ana@empresa.com', cargo: 'Atendente', cliente_id: null, ativo: true, is_demo: false }],
+    dados: [
+      {
+        id: 1,
+        nome: 'Ana',
+        email: 'ana@empresa.com',
+        cargo: 'Atendente',
+        cliente_id: null,
+        ativo: true,
+        is_demo: false,
+      },
+    ],
     total: 1,
   })
 
   try {
-    await usuariosController.listar({ query: { pagina: '1', limite: '10' } }, response)
+    await usuariosController.listar(
+      { query: { pagina: '1', limite: '10' } },
+      response,
+    )
 
     assert.equal(response.statusCode, 200)
     assert.equal(response.body.paginacao.total, 1)
@@ -154,7 +167,10 @@ test('usuariosController responde 409 quando email já está em uso', async () =
   const originalBuscarEmail = usuarioModel.buscarPorEmail
   const originalCliente = clienteModel.buscarPorId
 
-  usuarioModel.buscarPorEmail = async () => ({ id: 8, email: 'jaexiste@empresa.com' })
+  usuarioModel.buscarPorEmail = async () => ({
+    id: 8,
+    email: 'jaexiste@empresa.com',
+  })
   clienteModel.buscarPorId = async () => null
 
   try {
@@ -188,7 +204,15 @@ test('usuariosController atualiza usuário válido', async () => {
   const originalBuscarPorEmail = usuarioModel.buscarPorEmail
   const originalAtualizar = usuarioModel.atualizar
 
-  usuarioModel.buscarPorId = async () => ({ id: 5, nome: 'Edu', email: 'edu@empresa.com', cargo: 'Atendente', cliente_id: null, ativo: true, is_demo: false })
+  usuarioModel.buscarPorId = async () => ({
+    id: 5,
+    nome: 'Edu',
+    email: 'edu@empresa.com',
+    cargo: 'Atendente',
+    cliente_id: null,
+    ativo: true,
+    is_demo: false,
+  })
   usuarioModel.buscarPorEmail = async () => null
   usuarioModel.atualizar = async () => ({
     id: 5,
@@ -414,7 +438,11 @@ test('usuariosController responde 500 quando banco falha ao atualizar', async ()
   const originalAtualizar = usuarioModel.atualizar
   const originalConsoleError = console.error
 
-  usuarioModel.buscarPorId = async () => ({ id: 2, email: 'bruno@empresa.com', cargo: 'Atendente' })
+  usuarioModel.buscarPorId = async () => ({
+    id: 2,
+    email: 'bruno@empresa.com',
+    cargo: 'Atendente',
+  })
   usuarioModel.buscarPorEmail = async () => null
   usuarioModel.atualizar = async () => {
     throw new Error('falha do banco')
@@ -425,7 +453,11 @@ test('usuariosController responde 500 quando banco falha ao atualizar', async ()
     await usuariosController.atualizar(
       {
         params: { id: '2' },
-        body: { nome: 'Bruno Novo', email: 'bruno.novo@empresa.com', cargo: 'Atendente' },
+        body: {
+          nome: 'Bruno Novo',
+          email: 'bruno.novo@empresa.com',
+          cargo: 'Atendente',
+        },
         usuario: { id: 1, cargo: 'Administrador' },
       },
       response,

@@ -38,7 +38,9 @@ async function listarPaginado({ busca = '' }, paginacao) {
   const clausulaBusca = busca
     ? 'AND (nome LIKE ? OR email LIKE ? OR empresa LIKE ?)'
     : ''
-  const parametrosBusca = busca ? [`%${busca}%`, `%${busca}%`, `%${busca}%`] : []
+  const parametrosBusca = busca
+    ? [`%${busca}%`, `%${busca}%`, `%${busca}%`]
+    : []
   const clausulaPaginacao = criarClausulaPaginacao(paginacao)
 
   const [resultadoDados, resultadoTotal] = await Promise.all([

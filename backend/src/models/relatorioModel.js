@@ -45,9 +45,18 @@ function montarFiltroCampos(filtros = {}) {
   return { clausulas, parametros }
 }
 
-export async function gerarRelatorioPaginado(periodo, paginacao, filtros = {}, executor = pool) {
+export async function gerarRelatorioPaginado(
+  periodo,
+  paginacao,
+  filtros = {},
+  executor = pool,
+) {
   const filtroCampos = montarFiltroCampos(filtros)
-  const parametros = [periodo.data_inicio, periodo.data_fim, ...filtroCampos.parametros]
+  const parametros = [
+    periodo.data_inicio,
+    periodo.data_fim,
+    ...filtroCampos.parametros,
+  ]
   const where = `WHERE chamados.created_at >= ?
     AND chamados.created_at < DATE_ADD(?, INTERVAL 1 DAY)
     ${filtroCampos.clausulas.map((clausula) => `AND ${clausula}`).join('\n    ')}`
@@ -63,13 +72,22 @@ export async function gerarRelatorioPaginado(periodo, paginacao, filtros = {}, e
       ELSE 'Dentro do prazo' END
     ELSE NULL END`
   const clausulaPaginacao = criarClausulaPaginacao(paginacao)
-  const distribuicao = (campo) => executor.execute(
-    `SELECT COALESCE(${campo}, 'Não atribuído') AS rotulo, COUNT(*) AS total
+  const distribuicao = (campo) =>
+    executor.execute(
+      `SELECT COALESCE(${campo}, 'Não atribuído') AS rotulo, COUNT(*) AS total
      FROM chamados LEFT JOIN usuarios ON usuarios.id = chamados.responsavel_id
      ${where} GROUP BY ${campo} ORDER BY total DESC, rotulo ASC`,
-    parametros,
-  )
-  const [resumoResultado, statusResultado, prioridadeResultado, categoriaResultado, responsavelResultado, detalhesResultado, totalResultado] = await Promise.all([
+      parametros,
+    )
+  const [
+    resumoResultado,
+    statusResultado,
+    prioridadeResultado,
+    categoriaResultado,
+    responsavelResultado,
+    detalhesResultado,
+    totalResultado,
+  ] = await Promise.all([
     executor.execute(
       `SELECT COUNT(*) AS total_chamados,
         COALESCE(SUM(chamados.status IN ('Novo', 'Em Atendimento', 'Aguardando Cliente')), 0) AS chamados_abertos,
@@ -96,7 +114,10 @@ export async function gerarRelatorioPaginado(periodo, paginacao, filtros = {}, e
        ORDER BY chamados.created_at DESC, chamados.id DESC ${clausulaPaginacao}`,
       parametros,
     ),
-    executor.execute(`SELECT COUNT(*) AS total FROM chamados ${where}`, parametros),
+    executor.execute(
+      `SELECT COUNT(*) AS total FROM chamados ${where}`,
+      parametros,
+    ),
   ])
 
   const resumo = resumoResultado[0][0]
@@ -106,11 +127,20 @@ export async function gerarRelatorioPaginado(periodo, paginacao, filtros = {}, e
       chamados_abertos: Number(resumo.chamados_abertos ?? 0),
       chamados_encerrados: Number(resumo.chamados_encerrados ?? 0),
       chamados_cancelados: Number(resumo.chamados_cancelados ?? 0),
-      sla_cumprido_percentual: resumo.sla_cumprido_percentual === null ? null : Number(Number(resumo.sla_cumprido_percentual).toFixed(2)),
-      tempo_medio_resolucao_minutos: resumo.tempo_medio_resolucao_minutos === null ? null : Number(Number(resumo.tempo_medio_resolucao_minutos).toFixed(2)),
+      sla_cumprido_percentual:
+        resumo.sla_cumprido_percentual === null
+          ? null
+          : Number(Number(resumo.sla_cumprido_percentual).toFixed(2)),
+      tempo_medio_resolucao_minutos:
+        resumo.tempo_medio_resolucao_minutos === null
+          ? null
+          : Number(Number(resumo.tempo_medio_resolucao_minutos).toFixed(2)),
     },
     distribuicoes: {
-      status: statusResultado[0], prioridade: prioridadeResultado[0], categoria: categoriaResultado[0], responsavel: responsavelResultado[0],
+      status: statusResultado[0],
+      prioridade: prioridadeResultado[0],
+      categoria: categoriaResultado[0],
+      responsavel: responsavelResultado[0],
     },
     chamados: detalhesResultado[0],
     total: totalResultado[0][0].total,

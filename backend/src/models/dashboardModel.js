@@ -146,7 +146,9 @@ export async function buscarIndicadoresSla(
     tempo_medio_primeira_resposta_minutos:
       resultado.tempo_medio_primeira_resposta_minutos === null
         ? null
-        : Number(Number(resultado.tempo_medio_primeira_resposta_minutos).toFixed(2)),
+        : Number(
+            Number(resultado.tempo_medio_primeira_resposta_minutos).toFixed(2),
+          ),
   }
 }
 

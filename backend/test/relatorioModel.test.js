@@ -140,14 +140,18 @@ test('gerarRelatorioPaginado retorna nulos quando não há chamados resolvidos',
 test('gerarRelatorioPaginado aplica filtros de status, prioridade e categoria na consulta', async () => {
   const chamadas = []
   const respostas = [
-    [[{
-      total_chamados: '1',
-      chamados_abertos: '1',
-      chamados_encerrados: '0',
-      chamados_cancelados: '0',
-      tempo_medio_resolucao_minutos: null,
-      sla_cumprido_percentual: null,
-    }]],
+    [
+      [
+        {
+          total_chamados: '1',
+          chamados_abertos: '1',
+          chamados_encerrados: '0',
+          chamados_cancelados: '0',
+          tempo_medio_resolucao_minutos: null,
+          sla_cumprido_percentual: null,
+        },
+      ],
+    ],
     [[{ rotulo: 'Novo', total: 1 }]],
     [[{ rotulo: 'Alta', total: 1 }]],
     [[{ rotulo: 'Rede', total: 1 }]],

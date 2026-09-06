@@ -85,16 +85,20 @@ async function listar(request, response) {
       },
       paginacao,
     )
-    return response.status(200).json(
-      criarRespostaPaginada(
-        slaService.enriquecerChamados(resultado.dados),
-        resultado.total,
-        paginacao,
-      ),
-    )
+    return response
+      .status(200)
+      .json(
+        criarRespostaPaginada(
+          slaService.enriquecerChamados(resultado.dados),
+          resultado.total,
+          paginacao,
+        ),
+      )
   } catch (error) {
     if (error instanceof PaginacaoInvalidaError) {
-      return response.status(400).json({ status: 'erro', message: error.message })
+      return response
+        .status(400)
+        .json({ status: 'erro', message: error.message })
     }
     console.error('Erro ao listar chamados do portal:', error)
     return response.status(500).json({

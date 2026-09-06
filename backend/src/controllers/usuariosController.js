@@ -132,7 +132,9 @@ async function listar(request, response) {
       .json(criarRespostaPaginada(resultado.dados, resultado.total, paginacao))
   } catch (error) {
     if (error instanceof PaginacaoInvalidaError) {
-      return response.status(400).json({ status: 'erro', message: error.message })
+      return response
+        .status(400)
+        .json({ status: 'erro', message: error.message })
     }
     return responderErro(error, response, 'Erro ao listar usuários:')
   }

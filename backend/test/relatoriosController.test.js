@@ -4,7 +4,6 @@ import test from 'node:test'
 import relatoriosController from '../src/controllers/relatoriosController.js'
 import relatorioModel from '../src/models/relatorioModel.js'
 import relatorioService, {
-  FiltroRelatorioInvalidoError,
   PeriodoRelatorioInvalidoError,
 } from '../src/services/relatorioService.js'
 
@@ -54,7 +53,14 @@ test('relatoriosController gera relatório de chamados com sucesso', async () =>
 
   try {
     await relatoriosController.buscarChamados(
-      { query: { data_inicio: '2026-08-01', data_fim: '2026-08-10', pagina: '1', limite: '10' } },
+      {
+        query: {
+          data_inicio: '2026-08-01',
+          data_fim: '2026-08-10',
+          pagina: '1',
+          limite: '10',
+        },
+      },
       response,
     )
 
@@ -142,7 +148,13 @@ test('relatoriosController responde 400 para paginação inválida', async () =>
 
   try {
     await relatoriosController.buscarChamados(
-      { query: { data_inicio: '2026-08-01', data_fim: '2026-08-10', pagina: '0' } },
+      {
+        query: {
+          data_inicio: '2026-08-01',
+          data_fim: '2026-08-10',
+          pagina: '0',
+        },
+      },
       response,
     )
 
@@ -174,7 +186,14 @@ test('relatoriosController responde 500 quando a geração falha', async () => {
 
   try {
     await relatoriosController.buscarChamados(
-      { query: { data_inicio: '2026-08-01', data_fim: '2026-08-10', pagina: '1', limite: '10' } },
+      {
+        query: {
+          data_inicio: '2026-08-01',
+          data_fim: '2026-08-10',
+          pagina: '1',
+          limite: '10',
+        },
+      },
       response,
     )
 

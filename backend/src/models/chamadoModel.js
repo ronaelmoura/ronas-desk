@@ -76,7 +76,9 @@ function criarFiltrosListagem(filtros = {}, incluirCliente = false) {
     if (filtros.sla_status === 'Vencido') {
       clausulas.push(`(${minutosConsumidos}) >= (${limiteSla})`)
     } else if (filtros.sla_status === 'Próximo do vencimento') {
-      clausulas.push(`(${minutosConsumidos}) >= ((${limiteSla}) * 0.8) AND (${minutosConsumidos}) < (${limiteSla})`)
+      clausulas.push(
+        `(${minutosConsumidos}) >= ((${limiteSla}) * 0.8) AND (${minutosConsumidos}) < (${limiteSla})`,
+      )
     } else {
       clausulas.push(`(${minutosConsumidos}) < ((${limiteSla}) * 0.8)`)
     }
@@ -144,8 +146,16 @@ async function listarPaginado(filtros, paginacao, executor = pool) {
   return { dados: resultadoDados[0], total: resultadoTotal[0][0].total }
 }
 
-async function listarPaginadoPorCliente(clienteId, filtros, paginacao, executor = pool) {
-  const filtro = criarFiltrosListagem({ ...filtros, cliente_id: clienteId }, true)
+async function listarPaginadoPorCliente(
+  clienteId,
+  filtros,
+  paginacao,
+  executor = pool,
+) {
+  const filtro = criarFiltrosListagem(
+    { ...filtros, cliente_id: clienteId },
+    true,
+  )
   const clausulaPaginacao = criarClausulaPaginacao(paginacao)
   const [resultadoDados, resultadoTotal] = await Promise.all([
     executor.execute(

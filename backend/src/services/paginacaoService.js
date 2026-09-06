@@ -13,7 +13,9 @@ function inteiroPositivo(valor, nome, padrao) {
 
   const numero = Number(valor)
   if (!Number.isInteger(numero) || numero < 1) {
-    throw new PaginacaoInvalidaError(`${nome} deve ser um número inteiro positivo.`)
+    throw new PaginacaoInvalidaError(
+      `${nome} deve ser um número inteiro positivo.`,
+    )
   }
 
   return numero

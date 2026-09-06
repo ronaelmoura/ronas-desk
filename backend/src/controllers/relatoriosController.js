@@ -14,17 +14,19 @@ async function buscarChamados(request, response) {
     const periodo = relatorioService.normalizarPeriodo(request.query)
     const filtros = relatorioService.normalizarFiltros(request.query)
     const paginacao = normalizarPaginacao(request.query)
-    const relatorio = await relatorioModel.gerarRelatorioPaginado(periodo, paginacao, filtros)
+    const relatorio = await relatorioModel.gerarRelatorioPaginado(
+      periodo,
+      paginacao,
+      filtros,
+    )
 
-    return response
-      .status(200)
-      .json({
-        periodo,
-        filtros,
-        resumo: relatorio.resumo,
-        distribuicoes: relatorio.distribuicoes,
-        ...criarRespostaPaginada(relatorio.chamados, relatorio.total, paginacao),
-      })
+    return response.status(200).json({
+      periodo,
+      filtros,
+      resumo: relatorio.resumo,
+      distribuicoes: relatorio.distribuicoes,
+      ...criarRespostaPaginada(relatorio.chamados, relatorio.total, paginacao),
+    })
   } catch (error) {
     if (
       error instanceof PeriodoRelatorioInvalidoError ||

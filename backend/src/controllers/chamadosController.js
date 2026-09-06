@@ -129,13 +129,22 @@ async function listar(request, response) {
     if (filtros.status && !statusPermitidos.includes(filtros.status)) {
       throw new PaginacaoInvalidaError('Status inválido.')
     }
-    if (filtros.prioridade && !prioridadesPermitidas.includes(filtros.prioridade)) {
+    if (
+      filtros.prioridade &&
+      !prioridadesPermitidas.includes(filtros.prioridade)
+    ) {
       throw new PaginacaoInvalidaError('Prioridade inválida.')
     }
-    if (filtros.categoria && !categoriasPermitidas.includes(filtros.categoria)) {
+    if (
+      filtros.categoria &&
+      !categoriasPermitidas.includes(filtros.categoria)
+    ) {
       throw new PaginacaoInvalidaError('Categoria inválida.')
     }
-    if (filtros.sla_status && !statusSlaPermitidos.includes(filtros.sla_status)) {
+    if (
+      filtros.sla_status &&
+      !statusSlaPermitidos.includes(filtros.sla_status)
+    ) {
       throw new PaginacaoInvalidaError('Status de SLA inválido.')
     }
     if (filtros.ordenacao === 'sla') {

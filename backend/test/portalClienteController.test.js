@@ -47,7 +47,8 @@ test('portal do cliente não permite visualizar chamado de outro cliente', async
 test('portal do cliente não permite comentário em chamado de outro cliente', async () => {
   const response = criarResposta()
   const originalBuscar = chamadoModel.buscarPorIdParaAtualizacao
-  const originalPool = (await import('../src/database/db.js')).default.getConnection
+  const originalPool = (await import('../src/database/db.js')).default
+    .getConnection
 
   chamadoModel.buscarPorIdParaAtualizacao = async () => ({
     id: 15,

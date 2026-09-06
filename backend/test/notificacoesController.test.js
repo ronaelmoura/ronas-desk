@@ -29,7 +29,9 @@ test('notificacoesController lista notificações e total não lidas', async () 
   const originalListar = notificacaoModel.listarPorUsuario
   const originalContar = notificacaoModel.contarNaoLidas
 
-  notificacaoModel.listarPorUsuario = async () => [{ id: 1, titulo: 'Chamado atualizado' }]
+  notificacaoModel.listarPorUsuario = async () => [
+    { id: 1, titulo: 'Chamado atualizado' },
+  ]
   notificacaoModel.contarNaoLidas = async () => 3
 
   try {
@@ -161,7 +163,10 @@ test('notificacoesController marca todas como lidas com sucesso', async () => {
   }
 
   try {
-    await notificacoesController.marcarTodasComoLidas({ usuario: { id: 7 } }, response)
+    await notificacoesController.marcarTodasComoLidas(
+      { usuario: { id: 7 } },
+      response,
+    )
 
     assert.equal(response.statusCode, 204)
     assert.equal(response.enviado, true)
@@ -182,7 +187,10 @@ test('notificacoesController responde 500 quando falha ao marcar todas como lida
   console.error = () => {}
 
   try {
-    await notificacoesController.marcarTodasComoLidas({ usuario: { id: 7 } }, response)
+    await notificacoesController.marcarTodasComoLidas(
+      { usuario: { id: 7 } },
+      response,
+    )
 
     assert.equal(response.statusCode, 500)
     assert.deepEqual(response.body, {

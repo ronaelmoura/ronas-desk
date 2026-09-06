@@ -59,8 +59,15 @@ test('avaliacoesController buscarDoPortal retorna avaliação com sucesso', asyn
   const originalChamado = chamadoModel.buscarPorIdDoCliente
   const originalBuscar = avaliacaoModel.buscarPorChamadoCliente
 
-  chamadoModel.buscarPorIdDoCliente = async () => ({ id: 5, status: 'Resolvido' })
-  avaliacaoModel.buscarPorChamadoCliente = async () => ({ id: 1, nota: 5, comentario: '' })
+  chamadoModel.buscarPorIdDoCliente = async () => ({
+    id: 5,
+    status: 'Resolvido',
+  })
+  avaliacaoModel.buscarPorChamadoCliente = async () => ({
+    id: 1,
+    nota: 5,
+    comentario: '',
+  })
 
   try {
     await avaliacoesController.buscarDoPortal(
@@ -124,14 +131,21 @@ test('avaliacoesController criarDoPortal rejeita nota inválida', async () => {
   )
 
   assert.equal(response.statusCode, 400)
-  assert.deepEqual(response.body, { status: 'erro', message: 'Escolha uma nota de 1 a 5.' })
+  assert.deepEqual(response.body, {
+    status: 'erro',
+    message: 'Escolha uma nota de 1 a 5.',
+  })
 })
 
 test('avaliacoesController criarDoPortal rejeita comentário muito longo', async () => {
   const response = criarResposta()
 
   await avaliacoesController.criarDoPortal(
-    { params: { id: '5' }, body: { nota: 4, comentario: 'a'.repeat(1001) }, usuario: { cliente_id: 1 } },
+    {
+      params: { id: '5' },
+      body: { nota: 4, comentario: 'a'.repeat(1001) },
+      usuario: { cliente_id: 1 },
+    },
     response,
   )
 
@@ -187,7 +201,10 @@ test('avaliacoesController criarDoPortal responde 409 quando chamado já foi ava
   const originalChamado = chamadoModel.buscarPorIdDoCliente
   const originalBuscar = avaliacaoModel.buscarPorChamadoCliente
 
-  chamadoModel.buscarPorIdDoCliente = async () => ({ id: 5, status: 'Resolvido' })
+  chamadoModel.buscarPorIdDoCliente = async () => ({
+    id: 5,
+    status: 'Resolvido',
+  })
   avaliacaoModel.buscarPorChamadoCliente = async () => ({ id: 1, nota: 5 })
 
   try {
@@ -213,13 +230,20 @@ test('avaliacoesController criarDoPortal cria avaliação com sucesso', async ()
   const originalBuscar = avaliacaoModel.buscarPorChamadoCliente
   const originalCriar = avaliacaoModel.criar
 
-  chamadoModel.buscarPorIdDoCliente = async () => ({ id: 5, status: 'Resolvido' })
+  chamadoModel.buscarPorIdDoCliente = async () => ({
+    id: 5,
+    status: 'Resolvido',
+  })
   avaliacaoModel.buscarPorChamadoCliente = async () => null
   avaliacaoModel.criar = async (dados) => ({ id: 10, ...dados })
 
   try {
     await avaliacoesController.criarDoPortal(
-      { params: { id: '5' }, body: { nota: 4, comentario: 'Ótimo atendimento' }, usuario: { cliente_id: 1 } },
+      {
+        params: { id: '5' },
+        body: { nota: 4, comentario: 'Ótimo atendimento' },
+        usuario: { cliente_id: 1 },
+      },
       response,
     )
 
@@ -241,7 +265,10 @@ test('avaliacoesController criarDoPortal trata corrida de duplicidade (ER_DUP_EN
   const originalCriar = avaliacaoModel.criar
   const originalConsoleError = console.error
 
-  chamadoModel.buscarPorIdDoCliente = async () => ({ id: 5, status: 'Resolvido' })
+  chamadoModel.buscarPorIdDoCliente = async () => ({
+    id: 5,
+    status: 'Resolvido',
+  })
   avaliacaoModel.buscarPorChamadoCliente = async () => null
   avaliacaoModel.criar = async () => {
     const erro = new Error('duplicado')
@@ -276,7 +303,10 @@ test('avaliacoesController criarDoPortal responde 500 quando banco falha', async
   const originalCriar = avaliacaoModel.criar
   const originalConsoleError = console.error
 
-  chamadoModel.buscarPorIdDoCliente = async () => ({ id: 5, status: 'Resolvido' })
+  chamadoModel.buscarPorIdDoCliente = async () => ({
+    id: 5,
+    status: 'Resolvido',
+  })
   avaliacaoModel.buscarPorChamadoCliente = async () => null
   avaliacaoModel.criar = async () => {
     throw new Error('falha do banco')

@@ -36,7 +36,10 @@ function criarConexaoFake() {
 test('chamadoInteracoesController listarHistorico rejeita id inválido', async () => {
   const response = criarResposta()
 
-  await chamadoInteracoesController.listarHistorico({ params: { id: 'abc' } }, response)
+  await chamadoInteracoesController.listarHistorico(
+    { params: { id: 'abc' } },
+    response,
+  )
 
   assert.equal(response.statusCode, 400)
   assert.deepEqual(response.body, { status: 'erro', message: 'ID inválido.' })
@@ -49,7 +52,10 @@ test('chamadoInteracoesController listarHistorico responde 404 quando chamado n�
   chamadoModel.buscarPorId = async () => null
 
   try {
-    await chamadoInteracoesController.listarHistorico({ params: { id: '5' } }, response)
+    await chamadoInteracoesController.listarHistorico(
+      { params: { id: '5' } },
+      response,
+    )
 
     assert.equal(response.statusCode, 404)
     assert.deepEqual(response.body, {
@@ -70,7 +76,10 @@ test('chamadoInteracoesController listarHistorico retorna histórico com sucesso
   historyService.listarPorChamado = async () => [{ id: 1, acao: 'criado' }]
 
   try {
-    await chamadoInteracoesController.listarHistorico({ params: { id: '5' } }, response)
+    await chamadoInteracoesController.listarHistorico(
+      { params: { id: '5' } },
+      response,
+    )
 
     assert.equal(response.statusCode, 200)
     assert.equal(response.body[0].acao, 'criado')
@@ -89,7 +98,10 @@ test('chamadoInteracoesController listarTimeline delega para listarHistorico', a
   historyService.listarPorChamado = async () => [{ id: 2, acao: 'comentario' }]
 
   try {
-    await chamadoInteracoesController.listarTimeline({ params: { id: '5' } }, response)
+    await chamadoInteracoesController.listarTimeline(
+      { params: { id: '5' } },
+      response,
+    )
 
     assert.equal(response.statusCode, 200)
     assert.equal(response.body[0].acao, 'comentario')
@@ -110,7 +122,10 @@ test('chamadoInteracoesController listarHistorico responde 500 quando falha', as
   console.error = () => {}
 
   try {
-    await chamadoInteracoesController.listarHistorico({ params: { id: '5' } }, response)
+    await chamadoInteracoesController.listarHistorico(
+      { params: { id: '5' } },
+      response,
+    )
 
     assert.equal(response.statusCode, 500)
     assert.deepEqual(response.body, {
@@ -130,7 +145,10 @@ test('chamadoInteracoesController listarComentarios responde 404 quando chamado 
   chamadoModel.buscarPorId = async () => null
 
   try {
-    await chamadoInteracoesController.listarComentarios({ params: { id: '5' } }, response)
+    await chamadoInteracoesController.listarComentarios(
+      { params: { id: '5' } },
+      response,
+    )
 
     assert.equal(response.statusCode, 404)
   } finally {
@@ -147,7 +165,10 @@ test('chamadoInteracoesController listarComentarios retorna comentários com suc
   comentarioModel.listarPorChamado = async () => [{ id: 1, conteudo: 'Olá' }]
 
   try {
-    await chamadoInteracoesController.listarComentarios({ params: { id: '5' } }, response)
+    await chamadoInteracoesController.listarComentarios(
+      { params: { id: '5' } },
+      response,
+    )
 
     assert.equal(response.statusCode, 200)
     assert.equal(response.body[0].conteudo, 'Olá')
@@ -168,7 +189,10 @@ test('chamadoInteracoesController listarComentarios responde 500 quando falha', 
   console.error = () => {}
 
   try {
-    await chamadoInteracoesController.listarComentarios({ params: { id: '5' } }, response)
+    await chamadoInteracoesController.listarComentarios(
+      { params: { id: '5' } },
+      response,
+    )
 
     assert.equal(response.statusCode, 500)
     assert.deepEqual(response.body, {
@@ -200,7 +224,11 @@ test('chamadoInteracoesController criarComentario rejeita conteúdo muito longo'
   const response = criarResposta()
 
   await chamadoInteracoesController.criarComentario(
-    { params: { id: '5' }, body: { conteudo: 'a'.repeat(2001) }, usuario: { id: 1 } },
+    {
+      params: { id: '5' },
+      body: { conteudo: 'a'.repeat(2001) },
+      usuario: { id: 1 },
+    },
     response,
   )
 
@@ -215,7 +243,11 @@ test('chamadoInteracoesController criarComentario rejeita tipo inválido', async
   const response = criarResposta()
 
   await chamadoInteracoesController.criarComentario(
-    { params: { id: '5' }, body: { conteudo: 'Olá', tipo: 'INVALIDO' }, usuario: { id: 1 } },
+    {
+      params: { id: '5' },
+      body: { conteudo: 'Olá', tipo: 'INVALIDO' },
+      usuario: { id: 1 },
+    },
     response,
   )
 
@@ -271,7 +303,11 @@ test('chamadoInteracoesController criarComentario cria comentário PUBLICO e not
 
   try {
     await chamadoInteracoesController.criarComentario(
-      { params: { id: '5' }, body: { conteudo: 'Olá equipe', tipo: 'publico' }, usuario: { id: 1 } },
+      {
+        params: { id: '5' },
+        body: { conteudo: 'Olá equipe', tipo: 'publico' },
+        usuario: { id: 1 },
+      },
       response,
     )
 
@@ -311,7 +347,11 @@ test('chamadoInteracoesController criarComentario cria comentário INTERNO sem n
 
   try {
     await chamadoInteracoesController.criarComentario(
-      { params: { id: '5' }, body: { conteudo: 'Nota interna' }, usuario: { id: 1 } },
+      {
+        params: { id: '5' },
+        body: { conteudo: 'Nota interna' },
+        usuario: { id: 1 },
+      },
       response,
     )
 

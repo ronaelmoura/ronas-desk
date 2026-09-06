@@ -5,7 +5,9 @@ import anexosController from '../src/controllers/anexosController.js'
 import pool from '../src/database/db.js'
 import anexoModel from '../src/models/anexoModel.js'
 import chamadoModel from '../src/models/chamadoModel.js'
-import anexoService, { CloudinaryNaoConfiguradoError } from '../src/services/anexoService.js'
+import anexoService, {
+  CloudinaryNaoConfiguradoError,
+} from '../src/services/anexoService.js'
 import historyService from '../src/services/historyService.js'
 
 function criarResposta() {
@@ -122,7 +124,10 @@ test('anexosController listar responde 500 quando banco falha', async () => {
 test('anexosController criar rejeita id inválido', async () => {
   const response = criarResposta()
 
-  await anexosController.criar({ params: { id: '0' }, file: arquivoValido }, response)
+  await anexosController.criar(
+    { params: { id: '0' }, file: arquivoValido },
+    response,
+  )
 
   assert.equal(response.statusCode, 400)
   assert.deepEqual(response.body, { status: 'erro', message: 'ID inválido.' })
@@ -131,7 +136,10 @@ test('anexosController criar rejeita id inválido', async () => {
 test('anexosController criar rejeita quando nenhum arquivo é enviado', async () => {
   const response = criarResposta()
 
-  await anexosController.criar({ params: { id: '5' }, file: undefined }, response)
+  await anexosController.criar(
+    { params: { id: '5' }, file: undefined },
+    response,
+  )
 
   assert.equal(response.statusCode, 400)
   assert.equal(response.body.status, 'erro')
@@ -173,7 +181,11 @@ test('anexosController criar registra anexo com sucesso', async () => {
   })
   chamadoModel.buscarPorId = async () => ({ id: 5 })
   chamadoModel.buscarPorIdParaAtualizacao = async () => ({ id: 5 })
-  anexoService.enviar = async () => ({ public_id: 'abc123', url: 'https://cdn/abc123', tamanho_bytes: 1024 })
+  anexoService.enviar = async () => ({
+    public_id: 'abc123',
+    url: 'https://cdn/abc123',
+    tamanho_bytes: 1024,
+  })
   anexoModel.criar = async (dados) => ({ id: 20, ...dados })
   historyService.registrarAnexoAdicionado = async () => {}
 
@@ -232,7 +244,10 @@ test('anexosController criar responde 404 e remove o arquivo quando o chamado so
   pool.getConnection = async () => criarConexaoFake()
   chamadoModel.buscarPorId = async () => ({ id: 5 })
   chamadoModel.buscarPorIdParaAtualizacao = async () => null
-  anexoService.enviar = async () => ({ public_id: 'abc123', tamanho_bytes: 1024 })
+  anexoService.enviar = async () => ({
+    public_id: 'abc123',
+    tamanho_bytes: 1024,
+  })
   anexoService.remover = async () => {
     removido = true
   }
@@ -271,7 +286,10 @@ test('anexosController criar responde 500 quando o banco falha após o envio', a
   pool.getConnection = async () => criarConexaoFake()
   chamadoModel.buscarPorId = async () => ({ id: 5 })
   chamadoModel.buscarPorIdParaAtualizacao = async () => ({ id: 5 })
-  anexoService.enviar = async () => ({ public_id: 'abc123', tamanho_bytes: 1024 })
+  anexoService.enviar = async () => ({
+    public_id: 'abc123',
+    tamanho_bytes: 1024,
+  })
   anexoModel.criar = async () => {
     throw new Error('falha do banco')
   }
@@ -303,7 +321,10 @@ test('anexosController criar responde 500 quando o banco falha após o envio', a
 test('anexosController gerarDownload rejeita id inválido', async () => {
   const response = criarResposta()
 
-  await anexosController.gerarDownload({ params: { id: 'x', anexoId: '1' } }, response)
+  await anexosController.gerarDownload(
+    { params: { id: 'x', anexoId: '1' } },
+    response,
+  )
 
   assert.equal(response.statusCode, 400)
 })
@@ -315,7 +336,10 @@ test('anexosController gerarDownload responde 404 quando anexo não existe', asy
   anexoModel.buscarPorId = async () => null
 
   try {
-    await anexosController.gerarDownload({ params: { id: '5', anexoId: '9' } }, response)
+    await anexosController.gerarDownload(
+      { params: { id: '5', anexoId: '9' } },
+      response,
+    )
 
     assert.equal(response.statusCode, 404)
   } finally {
@@ -332,7 +356,10 @@ test('anexosController gerarDownload retorna url temporária', async () => {
   anexoService.gerarUrlTemporaria = () => 'https://cdn/temp-url'
 
   try {
-    await anexosController.gerarDownload({ params: { id: '5', anexoId: '9' } }, response)
+    await anexosController.gerarDownload(
+      { params: { id: '5', anexoId: '9' } },
+      response,
+    )
 
     assert.equal(response.statusCode, 200)
     assert.equal(response.body.url, 'https://cdn/temp-url')
@@ -356,7 +383,10 @@ test('anexosController gerarDownload responde 502 quando o armazenamento falha',
   console.error = () => {}
 
   try {
-    await anexosController.gerarDownload({ params: { id: '5', anexoId: '9' } }, response)
+    await anexosController.gerarDownload(
+      { params: { id: '5', anexoId: '9' } },
+      response,
+    )
 
     assert.equal(response.statusCode, 502)
   } finally {
@@ -369,7 +399,10 @@ test('anexosController gerarDownload responde 502 quando o armazenamento falha',
 test('anexosController excluir rejeita id inválido', async () => {
   const response = criarResposta()
 
-  await anexosController.excluir({ params: { id: 'x', anexoId: '1' } }, response)
+  await anexosController.excluir(
+    { params: { id: 'x', anexoId: '1' } },
+    response,
+  )
 
   assert.equal(response.statusCode, 400)
 })
@@ -409,7 +442,10 @@ test('anexosController excluir remove anexo com sucesso', async () => {
       comitado = true
     },
   })
-  anexoModel.buscarPorIdParaAtualizacao = async () => ({ id: 9, public_id: 'abc' })
+  anexoModel.buscarPorIdParaAtualizacao = async () => ({
+    id: 9,
+    public_id: 'abc',
+  })
   anexoService.remover = async () => {}
   anexoModel.excluir = async () => {}
   historyService.registrarAnexoRemovido = async () => {}

@@ -14,7 +14,13 @@ const STATUS_PERMITIDOS = [
   'Cancelado',
 ]
 const PRIORIDADES_PERMITIDAS = ['Crítica', 'Alta', 'Média', 'Baixa']
-const CATEGORIAS_PERMITIDAS = ['Hardware', 'Software', 'Rede', 'Acesso', 'Outro']
+const CATEGORIAS_PERMITIDAS = [
+  'Hardware',
+  'Software',
+  'Rede',
+  'Acesso',
+  'Outro',
+]
 
 export class PeriodoRelatorioInvalidoError extends Error {
   constructor(message) {

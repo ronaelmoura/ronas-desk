@@ -125,7 +125,11 @@ test('normalizarFiltros aceita filtros válidos e omite os ausentes', () => {
   })
 
   assert.deepEqual(
-    normalizarFiltros({ status: 'Novo', prioridade: 'Alta', categoria: 'Rede' }),
+    normalizarFiltros({
+      status: 'Novo',
+      prioridade: 'Alta',
+      categoria: 'Rede',
+    }),
     { status: 'Novo', prioridade: 'Alta', categoria: 'Rede' },
   )
 })

@@ -155,8 +155,11 @@ test('chamadosController cria chamado válido com transação, histórico e noti
   const originalCliente = chamadoModel.buscarClienteAtivo
   const originalResponsavel = chamadoModel.buscarResponsavelAtivo
   const originalCriar = chamadoModel.criar
-  const originalHistorico = (await import('../src/services/historyService.js')).default.registrarCriacao
-  const originalNotificacao = (await import('../src/services/notificacaoService.js')).default.novoChamado
+  const originalHistorico = (await import('../src/services/historyService.js'))
+    .default.registrarCriacao
+  const originalNotificacao = (
+    await import('../src/services/notificacaoService.js')
+  ).default.novoChamado
   const originalPool = pool.getConnection
 
   chamadoModel.buscarClienteAtivo = async () => ({ id: 7, ativo: true })
@@ -175,8 +178,11 @@ test('chamadosController cria chamado válido com transação, histórico e noti
     sla_started_at: '2026-08-17T00:00:00.000Z',
     executor,
   })
-  const historyService = (await import('../src/services/historyService.js')).default
-  const notificacaoService = (await import('../src/services/notificacaoService.js')).default
+  const historyService = (await import('../src/services/historyService.js'))
+    .default
+  const notificacaoService = (
+    await import('../src/services/notificacaoService.js')
+  ).default
   historyService.registrarCriacao = async () => {}
   notificacaoService.novoChamado = async () => {}
   pool.getConnection = async () => ({
@@ -211,8 +217,12 @@ test('chamadosController cria chamado válido com transação, histórico e noti
     chamadoModel.buscarClienteAtivo = originalCliente
     chamadoModel.buscarResponsavelAtivo = originalResponsavel
     chamadoModel.criar = originalCriar
-    const historyServiceReset = (await import('../src/services/historyService.js')).default
-    const notificacaoServiceReset = (await import('../src/services/notificacaoService.js')).default
+    const historyServiceReset = (
+      await import('../src/services/historyService.js')
+    ).default
+    const notificacaoServiceReset = (
+      await import('../src/services/notificacaoService.js')
+    ).default
     historyServiceReset.registrarCriacao = originalHistorico
     notificacaoServiceReset.novoChamado = originalNotificacao
     pool.getConnection = originalPool
@@ -288,7 +298,12 @@ test('chamadosController falha ao atualizar com erro do banco e faz rollback', a
     await chamadosController.atualizar(
       {
         params: { id: '12' },
-        body: { titulo: 'Novo título', descricao: 'Nova descrição', categoria: 'Software', prioridade: 'Baixa' },
+        body: {
+          titulo: 'Novo título',
+          descricao: 'Nova descrição',
+          categoria: 'Software',
+          prioridade: 'Baixa',
+        },
         usuario: { id: 4 },
       },
       response,

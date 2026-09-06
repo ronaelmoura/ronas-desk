@@ -63,7 +63,9 @@ test('assistenteIaController gerarResumo retorna resumo com sucesso', async () =
   chamadoModel.buscarPorId = async () => ({ id: 5, titulo: 'Chamado teste' })
   comentarioModel.listarPorChamado = async () => [{ id: 1, conteudo: 'Olá' }]
   historyService.listarPorChamado = async () => [{ id: 1, acao: 'criado' }]
-  assistenteIaService.gerarResumoChamado = async () => ({ resumo: 'Resumo gerado com sucesso' })
+  assistenteIaService.gerarResumoChamado = async () => ({
+    resumo: 'Resumo gerado com sucesso',
+  })
 
   try {
     await assistenteIaController.gerarResumo({ params: { id: '5' } }, response)
