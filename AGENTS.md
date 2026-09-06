@@ -26,6 +26,6 @@ Estas regras se aplicam a todo o repositório e são a fonte permanente de orien
 
 ## Entrega e Git
 
-- Para mudanças rotineiras do Ronas Desk, o agente pode criar branch `codex/`, implementar, validar, criar commit, fazer push e abrir uma Pull Request sem pedir confirmações intermediárias.
-- Não mescle Pull Requests sem autorização explícita do usuário.
+- Para mudanças rotineiras do Ronas Desk, o agente pode criar branch `codex/`, implementar, validar, criar commit, fazer push, abrir Pull Request e mesclar após uma revisão final, sem pedir confirmações intermediárias.
+- Antes de mesclar, confirme que os checks aplicáveis passaram, que o diff está focado e que não há conflitos ou alterações locais da tarefa fora do escopo.
 - Mantenha commits e Pull Requests focados: não misture alterações locais, ferramentas ou configurações sem relação com a tarefa.
