@@ -49,6 +49,13 @@
   --radius-3xl: 18px;
   --radius-pill: 999px;
 
+  /* Altura de controle de formulário. A base legada tem seis alturas
+     distintas (34/36/42/44/48/50px); o degrau padrão mantém o alvo de toque
+     adequado no toque. */
+  --control-height-sm: 36px;
+  --control-height: 44px;
+  --control-height-lg: 50px;
+
   /* --- Escala de espaçamento (base 4px) ---------------------------------
      Use estes tokens em padding, margin e gap. Valores fora da escala
      (7/9/11/13/15px) ainda existem em telas legadas e devem migrar para o
@@ -326,4 +333,30 @@ p {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* --- Botões e ícones ----------------------------------------------------
+   O produto tem 43 seletores de botão espalhados por 20 folhas de estilo, e
+   as regras abaixo são o piso comum. Todas usam :where() para especificidade
+   zero, então continuam sendo o piso e não a palavra final. */
+
+/* Ícone dentro de botão nunca encolhe. Em flexbox o padrão é o SVG ceder
+   espaço para o texto, e o ícone chega achatado e fora de proporção antes de
+   o rótulo sequer quebrar. */
+:where(button, a) > svg {
+  flex-shrink: 0;
+}
+
+
+/* Botão de ação num cabeçalho flex não encolhe. O padrão do flexbox é o botão
+   ceder largura para o título ao lado, e o rótulo quebra dentro do próprio
+   botão antes de qualquer outra coisa dar sinal — "Exportar CSV" virava duas
+   linhas abaixo de 700px por isso.
+
+   Vale notar que `white-space: nowrap` não resolve este caso: o `text-wrap:
+   balance` aplicado a `button` mais acima neste arquivo define o longhand
+   `text-wrap-mode` com especificidade maior que a de um seletor `:where()`, e
+   ganha. O problema também não é de quebra de texto, e sim de largura. */
+:where(.reports-export-button, .btn-novo-cliente, .usuarios-header .botao-primario) {
+  flex-shrink: 0;
 }

@@ -47,7 +47,11 @@
 
 .reports-filters {
   display: grid;
-  grid-template-columns: repeat(5, minmax(150px, 200px)) auto;
+  /* auto-fit com min(100%, 150px) faz as colunas refluírem sozinhas. O mínimo
+     rígido de 150px exigia 750px só para as cinco colunas, e o layout dependia
+     de um breakpoint para não vazar do cartão — entre 600 e 700px os últimos
+     controles ficavam inalcançáveis. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
   align-items: end;
   gap: 14px;
   margin-top: 26px;
@@ -127,7 +131,9 @@
 
 .reports-summary {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  /* auto-fit preenche a linha na largura que houver. Com cinco cartoes num
+     grid de tres colunas fixas sobrava um vao na segunda linha. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
   gap: 14px;
   margin-top: 24px;
 }
@@ -328,12 +334,6 @@
   padding: 50px 20px;
   color: var(--color-text-faint);
   text-align: center;
-}
-
-@media (max-width: 1440px) {
-  .reports-summary {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 900px) {
