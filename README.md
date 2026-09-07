@@ -607,7 +607,7 @@ Todos os itens essenciais foram aprovados para a versão estável `1.0.0`.
 
 - [GitHub](https://github.com/ronaelmoura)
 - [LinkedIn](https://www.linkedin.com/in/ronael-moura)
-- [Portfólio](https://ronaelmoura.github.io/)
+- [Portfólio](https://ronaelmoura.github.io/portfolio-ronael-moura/)
 - [Currículo](https://raw.githubusercontent.com/ronaelmoura/ronaelmoura/main/assets/curriculo-ronael-moura.pdf)
 
 ---
