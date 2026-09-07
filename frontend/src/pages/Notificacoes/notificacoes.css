@@ -1,7 +1,7 @@
 .notifications-page { max-width: 1180px; margin: 0 auto; padding: 8px 0 48px; }
 .notifications-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 26px; }
-.notifications-heading p { margin: 0 0 6px; color: var(--brand-primary); font-size: .72rem; font-weight: 800; letter-spacing: .14em; }
-.notifications-heading h1 { margin: 0; font-size: clamp(1.7rem, 3vw, 2.25rem); }
+.notifications-heading p { margin: 0 0 6px; color: var(--brand-primary); font-size: var(--text-xs); font-weight: 800; letter-spacing: .14em; }
+.notifications-heading h1 { margin: 0; font-size: var(--text-page-title); }
 .notifications-heading span { display: block; margin-top: 7px; color: var(--color-text-muted); }
 .notifications-heading button { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #cfe0f3; border-radius: var(--radius-md); padding: 11px 14px; background: var(--color-white); color: #176fc9; font: inherit; font-weight: 800; cursor: pointer; }
 .notifications-heading button:disabled { opacity: .65; cursor: wait; }
@@ -14,11 +14,11 @@
 .notification-copy { min-width: 0; display: grid; gap: 4px; }
 .notification-copy strong { color: #1d304a; }
 .notification-copy > span, .notification-copy small { color: #70819b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.notification-copy small { font-size: .76rem; }
+.notification-copy small { font-size: var(--text-xs); }
 .notification-dot { width: 9px; height: 9px; margin-left: auto; border-radius: 50%; background: var(--brand-primary); }
 .notifications-empty { min-height: 210px; display: grid; place-items: center; align-content: center; gap: 9px; border: 1px solid var(--color-border-alt); border-radius: var(--radius-2xl); background: var(--color-white); color: #70819b; text-align: center; }
 .notifications-empty svg { color: var(--brand-primary); }
 .notifications-empty strong { color: #263c59; }
 .notifications-error { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; padding: 13px; border: 1px solid #ffc9c9; border-radius: var(--radius-md); background: var(--color-danger-bg-alt); color: #b42929; }
 .notifications-error button { margin-left: auto; border: 0; background: transparent; color: inherit; font: inherit; font-weight: 800; text-decoration: underline; cursor: pointer; }
-@media (max-width: 640px) { .notifications-heading { align-items: flex-start; flex-direction: column; } .notifications-heading button { width: 100%; justify-content: center; } .notification-item { align-items: flex-start; } .notification-copy > span { white-space: normal; } }
+@media (max-width: 600px) { .notifications-heading { align-items: flex-start; flex-direction: column; } .notifications-heading button { width: 100%; justify-content: center; } .notification-item { align-items: flex-start; } .notification-copy > span { white-space: normal; } }

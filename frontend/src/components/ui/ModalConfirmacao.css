@@ -18,7 +18,7 @@
   padding: 26px;
   border-radius: var(--radius-3xl);
   background: var(--color-white);
-  box-shadow: 0 24px 70px rgba(5, 15, 30, 0.3);
+  box-shadow: var(--shadow-lg);
   text-align: center;
   animation: confirmacao-modal-in 200ms ease-out;
 }
@@ -109,7 +109,7 @@
 .confirmacao-fechar:focus-visible,
 .confirmacao-cancelar:focus-visible,
 .confirmacao-confirmar:focus-visible {
-  outline: 3px solid rgba(20, 126, 232, 0.28);
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
   outline-offset: 2px;
 }
 

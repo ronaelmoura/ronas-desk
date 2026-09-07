@@ -18,7 +18,8 @@ function App() {
   if (carregando) {
     return (
       <main className="session-loading">
-        Validando sessão...
+        <div aria-hidden="true" className="session-loading-spinner" />
+        <p role="status">Validando sessão...</p>
       </main>
     )
   }

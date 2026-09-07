@@ -31,7 +31,7 @@
 
 .brand strong {
   display: block;
-  font-size: 1.2rem;
+  font-size: var(--text-lg);
   font-weight: 800;
   letter-spacing: -0.025em;
 }
@@ -40,7 +40,7 @@
   display: block;
   margin-top: 2px;
   color: #9eb1cc;
-  font-size: 0.86rem;
+  font-size: var(--text-base);
 }
 
 .presentation-content {
@@ -51,7 +51,7 @@
 .eyebrow {
   margin-bottom: 12px;
   color: color-mix(in srgb, var(--brand-primary) 72%, white);
-  font-size: 0.78rem;
+  font-size: var(--text-sm);
   font-weight: 800;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -69,7 +69,7 @@
   max-width: 570px;
   margin-top: 24px;
   color: #b9c7db;
-  font-size: 1.06rem;
+  font-size: var(--text-md);
   line-height: 1.8;
 }
 
@@ -100,7 +100,7 @@
 
 .copyright {
   color: #7890ad;
-  font-size: 0.82rem;
+  font-size: var(--text-sm);
 }
 
 .login-area {
@@ -146,7 +146,7 @@
 .login-card h2 {
   margin: 0;
   color: var(--color-text-strong);
-  font-size: 2rem;
+  font-size: var(--text-3xl);
   letter-spacing: -0.03em;
 }
 
@@ -165,7 +165,7 @@
   display: block;
   margin-bottom: 8px;
   color: #28364a;
-  font-size: 0.9rem;
+  font-size: var(--text-base);
   font-weight: 700;
 }
 
@@ -180,7 +180,7 @@
   border: 0;
   background: transparent;
   color: var(--brand-primary);
-  font-size: 0.82rem;
+  font-size: var(--text-sm);
   cursor: pointer;
 }
 
@@ -234,13 +234,13 @@
 }
 
 .password-toggle:focus-visible {
-  outline: 3px solid rgba(22, 130, 255, 0.2);
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
   outline-offset: 1px;
 }
 
 .field input:focus {
   border-color: var(--brand-primary);
-  box-shadow: 0 0 0 4px rgba(22, 130, 255, 0.12);
+  box-shadow: var(--focus-ring-soft);
 }
 
 .login-button {
@@ -265,7 +265,7 @@
 }
 
 .login-button:focus-visible {
-  outline: 3px solid rgba(22, 130, 255, 0.22);
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
   outline-offset: 3px;
 }
 
@@ -279,7 +279,7 @@
   margin-top: 16px;
   padding: 12px;
   border-radius: var(--radius-md);
-  font-size: 0.88rem;
+  font-size: var(--text-base);
   text-align: center;
 }
 
@@ -296,7 +296,7 @@
   gap: 7px;
   margin: 22px 0 0;
   color: #718096;
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
   text-align: center;
 }
 
@@ -312,7 +312,7 @@
   align-items: center;
   gap: 12px;
   color: #718096;
-  font-size: 0.78rem;
+  font-size: var(--text-sm);
 }
 
 .demo-access > span::before,
@@ -345,7 +345,7 @@
 }
 
 .demo-button:focus-visible {
-  outline: 3px solid rgba(22, 130, 255, 0.2);
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
   outline-offset: 2px;
 }
 
@@ -356,14 +356,14 @@
 
 .demo-access small {
   color: #718096;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   line-height: 1.45;
 }
 
 .login-privacy-note {
   margin-top: 14px;
   color: #8995a6;
-  font-size: 0.68rem;
+  font-size: var(--text-2xs);
   line-height: 1.45;
   text-align: center;
 }
@@ -377,7 +377,7 @@
 .register-text {
   margin-top: 26px;
   color: #68768a;
-  font-size: 0.9rem;
+  font-size: var(--text-base);
   text-align: center;
 }
 
@@ -410,14 +410,14 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   .login-card {
     padding: 34px 24px;
     border-radius: var(--radius-3xl);
   }
 
   .login-card h2 {
-    font-size: 1.7rem;
+    font-size: var(--text-2xl);
   }
 
   .label-row {
@@ -436,7 +436,7 @@
   }
 }
 
-@media (min-width: 901px) and (max-width: 1180px) {
+@media (min-width: 901px) and (max-width: 1200px) {
   .presentation {
     padding-inline: 42px;
   }

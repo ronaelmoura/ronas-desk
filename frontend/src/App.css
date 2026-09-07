@@ -1,9 +1,39 @@
+/* Tela de espera enquanto a sessão é validada. É o primeiro quadro que todo
+   usuário vê ao abrir o app, então precisa comunicar progresso — texto
+   estático parece travamento em conexões lentas. */
 .session-loading {
   min-height: 100vh;
   display: grid;
-  place-items: center;
-  padding: 24px;
+  padding: var(--space-6);
   background: var(--color-bg-page);
-  color: #68768a;
-  font-weight: 700;
+  color: var(--color-text-secondary);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  gap: var(--space-4);
+  place-content: center;
+  place-items: center;
+}
+
+.session-loading-spinner {
+  width: 34px;
+  height: 34px;
+  border: 3px solid var(--color-border);
+  border-radius: 50%;
+  border-top-color: var(--brand-primary);
+  animation: session-loading-spin 800ms linear infinite;
+}
+
+@keyframes session-loading-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* Sem animação, o anel vira um indicador estático mas ainda legível; o texto
+   ao lado continua anunciando o estado para leitores de tela. */
+@media (prefers-reduced-motion: reduce) {
+  .session-loading-spinner {
+    border-top-color: var(--brand-primary);
+    opacity: 0.6;
+  }
 }

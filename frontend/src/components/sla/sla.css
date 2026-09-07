@@ -6,7 +6,7 @@
   padding: 6px 9px;
   border: 1px solid;
   border-radius: var(--radius-pill);
-  font-size: 0.7rem;
+  font-size: var(--text-2xs);
   font-weight: 900;
   white-space: nowrap;
 }
@@ -52,7 +52,7 @@
 
 .sla-card-eyebrow {
   color: var(--brand-primary-deep);
-  font-size: 0.66rem;
+  font-size: var(--text-2xs);
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -61,7 +61,7 @@
 .sla-card h3 {
   margin: 4px 0 0;
   color: #223249;
-  font-size: 1rem;
+  font-size: var(--text-md);
 }
 
 .sla-progress-wrapper {
@@ -74,7 +74,7 @@
   justify-content: space-between;
   margin-bottom: 7px;
   color: #66758a;
-  font-size: 0.7rem;
+  font-size: var(--text-2xs);
 }
 
 .sla-progress-label strong {
@@ -131,16 +131,16 @@
 
 .sla-card-metrics span {
   color: #7a8799;
-  font-size: 0.66rem;
+  font-size: var(--text-2xs);
 }
 
 .sla-card-metrics strong {
   margin-top: 2px;
   color: #34445a;
-  font-size: 0.78rem;
+  font-size: var(--text-sm);
 }
 
-@media (max-width: 520px) {
+@media (max-width: 600px) {
   .sla-card > header {
     align-items: stretch;
     flex-direction: column;

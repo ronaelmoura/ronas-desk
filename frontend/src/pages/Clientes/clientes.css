@@ -23,7 +23,7 @@
 .cliente-modal-header p {
   margin: 0 0 6px;
   color: var(--brand-primary);
-  font-size: 0.76rem;
+  font-size: var(--text-xs);
   font-weight: 900;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -32,7 +32,7 @@
 .clientes-header h1 {
   margin: 0;
   color: var(--color-text-strong);
-  font-size: 2rem;
+  font-size: var(--text-3xl);
   letter-spacing: -0.035em;
 }
 
@@ -92,7 +92,7 @@
   max-width: 360px;
   margin: 20px 18px 22px;
   color: #385174;
-  font-size: 0.84rem;
+  font-size: var(--text-base);
   font-weight: 700;
 }
 
@@ -108,7 +108,7 @@
 }
 
 .clientes-search input:focus {
-  outline: 3px solid rgba(22, 135, 243, 0.18);
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
   border-color: #1687f3;
 }
 
@@ -129,7 +129,7 @@
   border-bottom: 1px solid var(--color-border-light);
   background: var(--color-bg-subtle);
   color: #728097;
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   font-weight: 900;
   letter-spacing: 0.055em;
   text-align: left;
@@ -140,7 +140,7 @@
 .clientes-table td {
   padding: 16px 18px;
   border-bottom: 1px solid #edf1f6;
-  font-size: 0.9rem;
+  font-size: var(--text-base);
   vertical-align: middle;
 }
 
@@ -196,7 +196,7 @@
   justify-content: center;
   padding: 6px 11px;
   border-radius: var(--radius-pill);
-  font-size: 0.76rem;
+  font-size: var(--text-xs);
   font-weight: 850;
 }
 
@@ -267,7 +267,7 @@
 .clientes-empty-state strong {
   margin-top: 12px;
   color: #1d2b3f;
-  font-size: 1rem;
+  font-size: var(--text-md);
 }
 
 .clientes-feedback p,
@@ -313,7 +313,7 @@
 .cliente-detalhes-card > div > span,
 .cliente-detalhes-dados dt {
   color: #6a7890;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   font-weight: 850;
   text-transform: uppercase;
 }
@@ -321,7 +321,7 @@
 .cliente-detalhes-card h1 {
   margin: 5px 0;
   color: var(--color-text-strong);
-  font-size: 1.65rem;
+  font-size: var(--text-2xl);
 }
 
 .cliente-detalhes-card p,
@@ -351,7 +351,7 @@
 .historico-header h2 {
   margin: 0;
   color: #172338;
-  font-size: 1.05rem;
+  font-size: var(--text-md);
 }
 
 .historico-header p,
@@ -396,7 +396,7 @@
 .cliente-modal-header h2 {
   margin: 0;
   color: var(--color-text-strong);
-  font-size: 1.45rem;
+  font-size: var(--text-xl);
 }
 
 .cliente-modal-header span {
@@ -437,7 +437,7 @@
   display: block;
   margin-bottom: 7px;
   color: #33445a;
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
   font-weight: 850;
 }
 
@@ -469,7 +469,7 @@
   border-radius: 9px;
   background: var(--color-danger-bg-alt);
   color: #b42318;
-  font-size: 0.86rem;
+  font-size: var(--text-base);
 }
 
 .cliente-modal-acoes {
@@ -504,11 +504,11 @@
 
 .clientes-page button:focus-visible,
 .cliente-modal button:focus-visible {
-  outline: 3px solid rgba(20, 126, 232, 0.28);
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
   outline-offset: 2px;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 600px) {
   .clientes-header,
   .cliente-detalhes-card,
   .cliente-detalhes-dados {
