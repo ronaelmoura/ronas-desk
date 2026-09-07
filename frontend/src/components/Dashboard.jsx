@@ -745,16 +745,18 @@ function Dashboard({ onLogout }) {
               </button>
 
               <button
-                className="primary-metric primary-metric--attention"
+                className="primary-metric"
                 type="button"
-                onClick={() => abrirChamadosComFiltro({ sla: "Vencido" })}
+                onClick={() =>
+                  abrirChamadosComFiltro({ status: "Aguardando Cliente" })
+                }
               >
-                <span>Prioridade de agora</span>
+                <span>Aguardando cliente</span>
                 <strong>
-                  <CountUp value={dashboard.sla_vencidos} />
+                  <CountUp value={dashboard.chamados_aguardando_cliente} />
                 </strong>
-                <small>Chamados com SLA vencido</small>
-                <TimerOff aria-hidden="true" />
+                <small>Esperando resposta de quem abriu</small>
+                <MessageCircle aria-hidden="true" />
               </button>
             </section>
 
