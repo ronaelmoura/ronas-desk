@@ -479,11 +479,6 @@
   color: #8dd6ff;
 }
 
-.primary-metric--attention > svg {
-  background: #fff1ef;
-  color: #d4443d;
-}
-
 .dashboard-operational-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
@@ -728,12 +723,15 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  min-height: 135px;
-  padding: 22px;
+  /* Segundo nível da hierarquia. Antes estes seis cartões tinham a mesma
+     elevação e quase a mesma altura dos quatro da linha principal, e as dez
+     caixas liam como um bloco só, sem indicar o que olhar primeiro. */
+  min-height: 112px;
+  padding: 18px 20px;
   border: 1px solid var(--color-border);
   border-radius: 17px;
   background: var(--color-white);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-xs);
   color: inherit;
   font: inherit;
   text-align: left;
