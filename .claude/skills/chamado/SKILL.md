@@ -1,6 +1,6 @@
 ---
 name: chamado
-description: Como criar, atualizar, comentar, anexar e excluir chamados no Ronas Desk — o padrão de transação, o histórico auditável, as notificações e as regras de transição de status. Use sempre que a tarefa tocar chamados, tickets, status, prioridade, responsável, comentários, anexos ou timeline, mesmo que o pedido não use a palavra "chamado" (ex.: "marcar como resolvido", "atribuir ao atendente", "adicionar observação interna").
+description: Como criar, atualizar, comentar, anexar e excluir chamados no Ronas Desk — o padrão de transação, o histórico auditável, as notificações e as regras de transição de status. Use sempre que a tarefa tocar chamados, tickets, status, prioridade, responsável, comentários, anexos ou timeline, mesmo que o pedido não use a palavra "chamado" — por exemplo, "marcar como resolvido", "atribuir ao atendente" ou "adicionar observação interna".
 ---
 
 # Chamados
