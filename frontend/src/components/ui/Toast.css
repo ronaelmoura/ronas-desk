@@ -28,7 +28,7 @@
 .toast span {
   flex: 1;
   color: var(--color-surface-darker);
-  font-size: 0.86rem;
+  font-size: var(--text-base);
   font-weight: 700;
 }
 
@@ -49,7 +49,7 @@
 }
 
 .toast button:focus-visible {
-  outline: 3px solid rgba(20, 126, 232, 0.28);
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
   outline-offset: 2px;
 }
 

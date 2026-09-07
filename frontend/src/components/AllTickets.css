@@ -12,7 +12,7 @@
 .all-tickets-header h1 {
   margin: 0;
   color: var(--color-text-strong);
-  font-size: 2rem;
+  font-size: var(--text-3xl);
   letter-spacing: -0.035em;
 }
 
@@ -27,7 +27,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-3xl);
   background: var(--color-white);
-  box-shadow: 0 14px 40px rgba(20, 40, 70, 0.05);
+  box-shadow: var(--shadow-md);
 }
 
 .all-tickets-filters {
@@ -54,7 +54,7 @@
   display: block;
   margin-bottom: 7px;
   color: var(--color-text-secondary);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   font-weight: 800;
 }
 
@@ -71,7 +71,7 @@
   background: var(--color-white);
   color: var(--color-surface-dark);
   font: inherit;
-  font-size: 0.84rem;
+  font-size: var(--text-base);
 }
 
 .all-search-field input:focus,
@@ -89,7 +89,7 @@
   background: var(--color-white);
   color: var(--color-text-secondary);
   font: inherit;
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
   font-weight: 800;
   cursor: pointer;
 }
@@ -102,7 +102,7 @@
 .all-tickets-result {
   margin: 16px 0;
   color: #7a8799;
-  font-size: 0.82rem;
+  font-size: var(--text-sm);
 }
 
 .all-tickets-result strong {
@@ -127,7 +127,7 @@
   white-space: nowrap;
 }
 
-@media (max-width: 1350px) {
+@media (max-width: 1440px) {
   .all-tickets-filters {
     grid-template-columns: repeat(
       auto-fit,

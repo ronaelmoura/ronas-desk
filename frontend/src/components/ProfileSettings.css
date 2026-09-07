@@ -5,7 +5,7 @@
 .settings-header h1 {
   margin: 0;
   color: var(--color-text-strong);
-  font-size: 2rem;
+  font-size: var(--text-3xl);
   letter-spacing: -0.035em;
 }
 
@@ -32,7 +32,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-3xl);
   background: var(--color-white);
-  box-shadow: 0 14px 40px rgba(20, 40, 70, 0.05);
+  box-shadow: var(--shadow-md);
 }
 
 .settings-card-header {
@@ -61,7 +61,7 @@
   place-items: center;
   border-radius: 50%;
   background: #edf5ff;
-  font-size: 1.45rem;
+  font-size: var(--text-xl);
 }
 
 .settings-brand-icon {
@@ -90,7 +90,7 @@
 .settings-info-card p {
   margin-top: 5px;
   color: #758399;
-  font-size: 0.88rem;
+  font-size: var(--text-base);
 }
 
 .settings-field {
@@ -101,7 +101,7 @@
   display: block;
   margin-bottom: 8px;
   color: var(--color-surface-deep);
-  font-size: 0.88rem;
+  font-size: var(--text-base);
   font-weight: 800;
 }
 
@@ -127,7 +127,7 @@
 .settings-field input:focus,
 .settings-field textarea:focus {
   border-color: var(--brand-primary);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand-primary) 12%, transparent);
+  box-shadow: var(--focus-ring-soft);
 }
 
 .settings-field input[readonly] {
@@ -140,14 +140,14 @@
   display: block;
   margin-top: 7px;
   color: #7d899b;
-  font-size: 0.78rem;
+  font-size: var(--text-sm);
 }
 
 .settings-message {
   margin-bottom: 18px;
   padding: 12px 14px;
   border-radius: var(--radius-md);
-  font-size: 0.86rem;
+  font-size: var(--text-base);
 }
 
 .settings-message.error {
@@ -208,7 +208,7 @@
 .company-brand-preview span {
   margin-top: 3px;
   color: rgba(255, 255, 255, 0.72);
-  font-size: 0.78rem;
+  font-size: var(--text-sm);
 }
 
 .company-brand-preview i {
@@ -286,12 +286,12 @@
 
 .settings-info-item span {
   color: #7a8799;
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
 }
 
 .settings-info-item strong {
   color: #27364b;
-  font-size: 0.82rem;
+  font-size: var(--text-sm);
   text-align: right;
 }
 

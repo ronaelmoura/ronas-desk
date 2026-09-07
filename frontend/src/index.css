@@ -49,6 +49,97 @@
   --radius-3xl: 18px;
   --radius-pill: 999px;
 
+  /* --- Escala de espaçamento (base 4px) ---------------------------------
+     Use estes tokens em padding, margin e gap. Valores fora da escala
+     (7/9/11/13/15px) ainda existem em telas legadas e devem migrar para o
+     degrau mais próximo numa passada de QA visual dedicada. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* --- Escala tipográfica -----------------------------------------------
+     Nove degraus cobrem todo o produto, no lugar dos 33 tamanhos avulsos da
+     base legada — muitos separados por 0.02rem, diferença que ninguém enxerga
+     e que só impedia manter hierarquia consistente entre telas.
+
+     Todo degrau cai num pixel inteiro com raiz de 16px. Os valores antigos
+     não caíam: 0.78rem dava 12.48px e 0.86rem dava 13.76px, que o navegador
+     arredondava de formas diferentes conforme a tela.
+
+     Os degraus foram escolhidos a partir dos agrupamentos que já existiam no
+     produto, então a migração desloca a maioria das declarações em menos de
+     3%. */
+  --text-2xs: 0.6875rem; /* 11px — selos, contadores */
+  --text-xs: 0.75rem; /* 12px — rótulos, eyebrow */
+  --text-sm: 0.8125rem; /* 13px — texto de apoio, células densas */
+  --text-base: 0.875rem; /* 14px — corpo padrão */
+  --text-md: 1rem; /* 16px — corpo em destaque */
+  --text-lg: 1.25rem; /* 20px — título de cartão */
+  --text-xl: 1.5rem; /* 24px — título de seção */
+  --text-2xl: 1.75rem; /* 28px — título de modal */
+  --text-3xl: 2rem; /* 32px — número de métrica */
+
+  /* Título de página: mesmo clamp repetido em Avaliações e Notificações. */
+  --text-page-title: clamp(1.75rem, 3vw, 2.25rem);
+
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+
+  /* --- Elevação ----------------------------------------------------------
+     Quatro degraus de sombra em vez das 36 variações avulsas de hoje.
+     Todas partem do mesmo azul-acinzentado para a luz cair sempre igual. */
+  --shadow-xs: 0 1px 2px rgba(20, 40, 70, 0.06);
+  --shadow-sm: 0 8px 24px rgba(20, 40, 70, 0.05);
+  --shadow-md: 0 14px 40px rgba(20, 40, 70, 0.05);
+  --shadow-lg: 0 24px 70px rgba(5, 15, 30, 0.3);
+  --shadow-brand: 0 12px 30px color-mix(in srgb, var(--brand-primary) 25%, transparent);
+
+  /* --- Foco --------------------------------------------------------------
+     Anel único de foco para todo o app. Sempre visível sobre fundo claro e
+     sobre a sidebar escura. */
+  --focus-ring: 0 0 0 3px
+    color-mix(in srgb, var(--brand-primary-light) 35%, transparent);
+  --focus-ring-soft: 0 0 0 4px
+    color-mix(in srgb, var(--brand-primary-light) 12%, transparent);
+  --focus-outline-color: var(--brand-primary);
+  --focus-outline-width: 2px;
+  --focus-outline-color-inverse: #8bd0ff;
+
+  /* --- Movimento ---------------------------------------------------------
+     Durações e curvas nomeadas; respeitam prefers-reduced-motion no final
+     deste arquivo. */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 420ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: var(--duration-base) var(--ease-in-out);
+
+  /* --- Breakpoints -------------------------------------------------------
+     CSS puro não aceita custom property dentro de media query, então estes
+     valores existem como documentação do contrato. A base legada usava 16
+     larguras diferentes (460/480/520/600/640/700/760/800/900/1150/1180/1250/
+     1350); hoje são quatro degraus e todo o produto está migrado.
+
+       600px   sm — conteúdo empilha (uma coluna, botões full-width)
+       900px   md — a sidebar colapsa e vira topo; conteúdo ganha a largura
+                    toda, por isso só empilha depois, em 600px
+      1200px   lg — grades de métrica caem de 4 para 2 colunas
+      1440px   xl — grades de filtro e resumo relaxam
+
+     Ao consolidar, cada regra subiu para o degrau seguinte em vez de descer,
+     para nunca abrir uma faixa sem a adaptação que existia antes. A exceção
+     são as regras de empilhamento de conteúdo (eram 640/700/760), que
+     desceram para 600 justamente porque a sidebar passou a colapsar em 900 e
+     devolveu ~260px de largura ao conteúdo. */
+
   font-family: var(--font-sans);
   font-weight: var(--font-weight-regular);
   color: var(--color-text);
@@ -158,5 +249,81 @@ p {
   .reports-page,
   .all-tickets-page {
     animation: none;
+  }
+}
+
+/* --- Baseline de acessibilidade ----------------------------------------
+   Antes desta regra, o foco de teclado dependia de cada folha de estilo:
+   botões e links tinham anel só em Dashboard, Login, Usuarios, Clientes e
+   nos três modais. Nas demais telas o usuário de teclado navegava às cegas,
+   e vários inputs zeravam o outline sem devolver indicador nenhum.
+
+   O seletor usa :where() para ter especificidade zero: serve de piso e
+   qualquer componente continua livre para desenhar o próprio foco. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: 2px;
+}
+
+/* Sobre a sidebar escura o azul da marca não separa o suficiente do fundo;
+   o azul claro invertido garante contraste em qualquer estado do item de menu. */
+:where(.sidebar, .portal-header) :where(a, button, [tabindex]):focus-visible {
+  outline-color: var(--focus-outline-color-inverse);
+}
+
+/* Conteúdo só para leitor de tela — usado pelo link de pular navegação e por
+   rótulos de ícone que não cabem visualmente. */
+.sr-only {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  margin: -1px;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* O link de pular navegação fica escondido até receber foco. */
+.skip-link {
+  position: fixed;
+  z-index: 999;
+  top: var(--space-2);
+  left: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--brand-primary);
+  box-shadow: var(--shadow-md);
+  color: var(--color-white);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  transform: translateY(calc(-100% - var(--space-4)));
+  transition: transform var(--transition-base);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* Alvo mínimo de toque no celular (WCAG 2.5.5). Aplica-se só onde o dedo é o
+   ponteiro, para não inflar a densidade das tabelas no desktop. */
+@media (pointer: coarse) {
+  :where(button, [role='button'], a[href], select, summary) {
+    min-height: 44px;
+  }
+}
+
+/* Corte global de animação. As folhas de estilo individuais já tratam alguns
+   casos, mas cada tela nova precisava lembrar de repetir a regra. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }

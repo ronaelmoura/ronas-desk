@@ -334,6 +334,10 @@ function Dashboard({ onLogout }) {
 
   return (
     <div className="dashboard-page">
+      <a className="skip-link" href="#conteudo-principal">
+        Pular para o conteúdo
+      </a>
+
       <aside className="sidebar">
         <div className="sidebar-brand">
           <img
@@ -349,7 +353,7 @@ function Dashboard({ onLogout }) {
           </div>
         </div>
 
-        <nav className="sidebar-menu">
+        <nav aria-label="Navegação principal" className="sidebar-menu">
           <button
             className={`menu-item ${
               paginaAtiva === "visao-geral" ? "active" : ""
@@ -495,7 +499,7 @@ function Dashboard({ onLogout }) {
         </div>
       </aside>
 
-      <main className="dashboard-content">
+      <main className="dashboard-content" id="conteudo-principal" tabIndex={-1}>
         {somenteLeitura && (
           <div className="demo-mode-banner" role="status">
             <MonitorPlay aria-hidden="true" />
