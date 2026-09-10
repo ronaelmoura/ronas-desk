@@ -1,0 +1,62 @@
+/* Entry experience: preserves configurable branding and the existing auth flow. */
+.page { background: #f6f8fb; grid-template-columns: minmax(0, 1.12fr) minmax(420px, 1fr); }
+.presentation { padding: 38px clamp(32px, 5vw, 80px); background: linear-gradient(150deg, #0b1729 15%, #142b4c 100%); position: relative; }
+.presentation .brand-logo-image { width: 48px; height: 48px; box-shadow: none; }
+.presentation .brand strong { font-size: 21px; letter-spacing: -.7px; }
+.presentation .brand span { font-size: 13px; color: #a9b8cd; }
+.presentation-content { padding: 48px 0; max-width: 610px; }
+.presentation .eyebrow { display: flex; align-items: center; gap: 12px; color: #9bbfeb; font-size: 12px; font-weight: 600; letter-spacing: 2px; margin-bottom: 25px; }
+.login-brand-line { width: 28px; height: 2px; background: #79aef5; }
+.presentation h1 { font-size: clamp(2.3rem, 3.7vw, 3.8rem); line-height: 1.1; letter-spacing: -.045em; font-weight: 650; }
+.presentation .description { font-size: 16px; line-height: 1.8; color: #b8c7da; max-width: 440px; margin-top: 24px; }
+.presentation .features { gap: 7px; margin-top: 28px; }
+.presentation .feature { gap: 12px; padding: 5px 0; }
+.presentation .feature>span { min-width: 26px; width: 26px; height: 26px; border-radius: 50%; background: #254368; color: #aecfff; display: grid; place-items: center; }
+.presentation .feature p { font-size: 14px; color: #d6e1ef; margin: 0; }
+.login-workflow { margin-top: 38px; border: 1px solid #3d5574; border-radius: 14px; padding: 22px; background: #ffffff05; }
+.login-workflow-heading { display: flex; gap: 10px; align-items: center; color: #a9c4e8; font-size: 12px; letter-spacing: 1px; }
+.login-workflow ol { display: flex; list-style: none; margin: 20px 0 0; padding: 0; gap: 18px; }
+.login-workflow li { display: flex; flex: 1; flex-direction: column; gap: 8px; border-top: 1px solid #48607d; padding-top: 13px; color: #e4ecf8; font-size: 14px; font-weight: 500; }
+.login-workflow li span { color: #a2b7d2; font-size: 12px; font-weight: 400; }
+.presentation .copyright { color: #a3b4cb; font-size: 12px; line-height: 1.7; }
+.login-area { background: #f6f8fb; padding: 48px 32px; }
+.login-card { padding: 0; border: 0; background: transparent; box-shadow: none; border-radius: 0; width: min(390px, 100%); overflow: visible; }
+.login-card::before { display: none; }
+.login-card>.eyebrow { color: var(--brand-primary-deep); letter-spacing: 1.5px; font-size: 12px; font-weight: 650; }
+.login-card h2 { font-size: 32px; font-weight: 650; letter-spacing: -1.2px; color: #15243b; }
+.login-description { font-size: 15px; color: #5d6c81; line-height: 1.7; }
+.login-card .field label { font-size: 14px; font-weight: 600; color: #273951; }
+.login-card .field input { background: #fff; border-color: #d5deea; border-radius: 9px; min-height: 50px; font-size: 15px; }
+.login-card .login-button { display: flex; align-items: center; justify-content: center; gap: 16px; border-radius: 9px; min-height: 50px; font-size: 15px; box-shadow: 0 5px 12px #147ee819; }
+.login-card .demo-access { border-top: 1px solid #dce3ec; padding-top: 23px; margin-top: 27px; }
+.login-card .demo-access>span { font-size: 13px; color: #66758b; }
+.login-card .demo-button { min-height: 49px; border: 1px solid #b8cbe3; border-radius: 9px; background: #ecf2fa; color: #245180; font-size: 14px; }
+.login-card .demo-button:hover:not(:disabled) { background: #e0ebf9; }
+.login-card .demo-access small { font-size: 12px; line-height: 1.6; color: #66758b; }
+.login-card .login-security-note { font-size: 12px; color: #64748b; }
+.login-card .login-privacy-note { font-size: 12px; line-height: 1.7; color: #68758a; }
+@media (max-width: 1100px) and (min-width: 901px) {
+  .page { grid-template-columns: minmax(0, 1fr) minmax(390px, 1fr); }
+  .presentation { padding: 32px; }
+  .presentation h1 { font-size: 2.7rem; }
+}
+@media (max-width: 900px) {
+  .page { grid-template-columns: 1fr; }
+  .presentation { display: flex; min-height: auto; padding: 26px 32px; }
+  .presentation-content { padding: 28px 0 4px; max-width: 680px; }
+  .presentation h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); max-width: 650px; }
+  .presentation .eyebrow { margin-bottom: 14px; }
+  .presentation .description { margin-top: 16px; max-width: 600px; }
+  .presentation .features, .login-workflow, .presentation .copyright { display: none; }
+  .login-area { min-height: auto; padding: 38px 24px 45px; }
+  .login-card { width: min(480px, 100%); }
+  .login-card .mobile-logo-image { display: none; }
+}
+@media (max-width: 600px) {
+  .presentation { padding: 23px 24px; }
+  .presentation-content { display: none; }
+  .presentation .description { font-size: 14px; }
+  .presentation .brand-logo-image { width: 40px; height: 40px; }
+  .presentation .brand span { font-size: 12px; }
+  .login-card h2 { font-size: 29px; }
+}

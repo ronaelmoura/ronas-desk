@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { Eye, EyeOff, LockKeyhole, MonitorPlay } from 'lucide-react'
+import { ArrowUpRight, Check, Eye, EyeOff, LockKeyhole, MonitorPlay, Workflow } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import useCompanyBrand from '../../hooks/useCompanyBrand'
 import { usarLogoPadrao } from '../../utils/companyBrand'
 import './Login.css'
+import './LoginExperience.css'
 
 function Login() {
   const { login, loginDemo } = useAuth()
@@ -66,30 +67,34 @@ function Login() {
         </div>
 
         <div className="presentation-content">
-          <p className="eyebrow">Sistema de chamados</p>
+          <p className="eyebrow"><span className="login-brand-line" /> SUPORTE COM DIREÇÃO</p>
 
           <h1>{configuracao.mensagem_boas_vindas}</h1>
 
           <p className="description">
-            Uma plataforma para registrar, acompanhar e gerenciar
-            chamados de suporte técnico.
+            Menos solicitações dispersas. Mais contexto para sua equipe
+            resolver o que importa.
           </p>
 
           <div className="features">
             <div className="feature">
-              <span>01</span>
-              <p>Abertura e acompanhamento de chamados</p>
+              <span><Check size={17} aria-hidden="true" /></span>
+              <p>Chamados, clientes e equipe no mesmo lugar</p>
             </div>
 
             <div className="feature">
-              <span>02</span>
-              <p>Controle de prioridade e status</p>
+              <span><Check size={17} aria-hidden="true" /></span>
+              <p>Prioridades claras e prazos de SLA visíveis</p>
             </div>
 
             <div className="feature">
-              <span>03</span>
-              <p>Painel organizado para usuários e administradores</p>
+              <span><Check size={17} aria-hidden="true" /></span>
+              <p>Histórico completo, do primeiro contato à solução</p>
             </div>
+          </div>
+          <div className="login-workflow" aria-label="Fluxo de atendimento">
+            <div className="login-workflow-heading"><Workflow size={18} aria-hidden="true" /><span>UM FLUXO. TODA A OPERAÇÃO.</span></div>
+            <ol><li><span>01</span>Receber</li><li><span>02</span>Priorizar</li><li><span>03</span>Resolver</li></ol>
           </div>
         </div>
 
@@ -107,7 +112,7 @@ function Login() {
             onError={usarLogoPadrao}
           />
 
-          <p className="eyebrow">Bem-vindo</p>
+          <p className="eyebrow">SEU ESPAÇO DE TRABALHO</p>
           <h2>Entre na sua conta</h2>
 
           <p className="login-description">
@@ -177,7 +182,7 @@ function Login() {
               type="submit"
               disabled={enviando}
             >
-              {enviando ? 'Entrando...' : 'Entrar'}
+              {enviando ? 'Entrando...' : 'Entrar'} <ArrowUpRight size={18} aria-hidden="true" />
             </button>
 
             {erro && (
