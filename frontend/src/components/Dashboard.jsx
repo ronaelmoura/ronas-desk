@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Archive,
   Ban,
@@ -13,6 +13,9 @@ import {
   MessageCircle,
   MessageSquareHeart,
   MonitorPlay,
+  Menu,
+  X,
+  ChevronRight,
   Settings,
   ShieldAlert,
   Timer,
@@ -22,6 +25,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import "./Dashboard.css";
+import "./Workspace.css";
 import NewTicketModal from "./NewTicketModal";
 import TicketDetailsModal from "./TicketDetailsModal";
 import AllTickets from "./AllTickets";
@@ -108,6 +112,13 @@ function Dashboard({ onLogout }) {
   const [modalAberto, setModalAberto] = useState(false);
   const [chamadoSelecionado, setChamadoSelecionado] = useState(null);
   const [paginaAtiva, setPaginaAtiva] = useState("visao-geral");
+  const [menuAberto, setMenuAberto] = useState(false);
+  const menuToggle = useRef(null);
+  const paginas = {
+    "visao-geral": "Visão geral", chamados: "Chamados", clientes: "Clientes",
+    usuarios: "Usuários", relatorios: "Relatórios", notificacoes: "Notificações",
+    avaliacoes: "Avaliações", visitas: "Visitas", configuracoes: "Configurações",
+  };
   const [toast, setToast] = useState(null);
   const [periodoDashboard, setPeriodoDashboard] = useState({ tipo: "todo" });
   const [filtroInicialChamados, setFiltroInicialChamados] = useState(null);
@@ -145,6 +156,8 @@ function Dashboard({ onLogout }) {
       classe: "resolvido",
       cor: "#2aa866",
     },
+    { rotulo: "Fechados", total: dashboard.chamados_fechados, status: "Fechado", classe: "fechado", cor: "#7667bc" },
+    { rotulo: "Cancelados", total: dashboard.chamados_cancelados, status: "Cancelado", classe: "cancelado", cor: "#94a3b8" },
   ];
   const totalDistribuicaoStatus = distribuicaoStatus.reduce(
     (acumulado, indicador) => acumulado + indicador.total,
@@ -338,7 +351,7 @@ function Dashboard({ onLogout }) {
         Pular para o conteúdo
       </a>
 
-      <aside className="sidebar">
+      <aside className={`sidebar ${menuAberto ? "sidebar--open" : ""}`}>
         <div className="sidebar-brand">
           <img
             className="sidebar-logo-image"
@@ -353,7 +366,24 @@ function Dashboard({ onLogout }) {
           </div>
         </div>
 
-        <nav aria-label="Navegação principal" className="sidebar-menu">
+        <button className="workspace-menu-toggle" ref={menuToggle} type="button"
+          aria-expanded={menuAberto} aria-controls="workspace-navigation"
+          onClick={() => setMenuAberto((atual) => !atual)}>
+          {menuAberto ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
+          {menuAberto ? "Fechar menu" : "Abrir menu"}
+        </button>
+        <nav id="workspace-navigation" aria-label="Navegação principal" className="sidebar-menu"
+          onKeyDown={(event) => {
+            if (event.key === "Escape") { setMenuAberto(false); menuToggle.current?.focus(); }
+          }}
+          onClick={(event) => {
+            if (event.target.closest("button")) {
+              setMenuAberto(false);
+              if (window.matchMedia("(max-width: 900px)").matches) {
+                document.getElementById("conteudo-principal")?.focus();
+              }
+            }
+          }}>
           <button
             className={`menu-item ${
               paginaAtiva === "visao-geral" ? "active" : ""
@@ -500,12 +530,16 @@ function Dashboard({ onLogout }) {
       </aside>
 
       <main className="dashboard-content" id="conteudo-principal" tabIndex={-1}>
+        <div className="workspace-topbar">
+          <div className="workspace-breadcrumb"><span>{configuracao.nome_central}</span><ChevronRight size={14} aria-hidden="true" /><strong>{paginas[paginaAtiva]}</strong></div>
+          <div className="workspace-identity"><span className="workspace-avatar" aria-hidden="true">{obterIniciais(usuario?.nome)}</span><span>{obterPrimeiroNome(usuario?.nome)}<small>{somenteLeitura ? "Visitante · somente leitura" : usuario?.cargo}</small></span></div>
+        </div>
         {somenteLeitura && (
           <div className="demo-mode-banner" role="status">
             <MonitorPlay aria-hidden="true" />
             <div>
               <strong>Você está explorando a demonstração</strong>
-              <span>Os dados são reais da demonstração e estão protegidos contra alterações.</span>
+              <span>Explore os chamados, clientes e relatórios com dados fictícios, em modo somente leitura.</span>
             </div>
           </div>
         )}
@@ -597,12 +631,12 @@ function Dashboard({ onLogout }) {
           <>
             <header className="dashboard-header">
               <div>
-                <p className="dashboard-eyebrow">Painel de controle</p>
+                <p className="dashboard-eyebrow">Sua operação, em perspectiva</p>
 
-                <h1>Olá, {obterPrimeiroNome(usuario?.nome)} 👋</h1>
+                <h1>Visão geral do suporte</h1>
 
                 <p>
-                  Acompanhe os chamados e as atividades recentes do suporte.
+                  Olá, {obterPrimeiroNome(usuario?.nome)}. Veja o que precisa de atenção e acompanhe sua equipe.
                 </p>
 
                 <div className="dashboard-period-selector">

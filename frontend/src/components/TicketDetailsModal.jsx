@@ -413,6 +413,9 @@ function TicketDetailsModal({
                   value={categoria}
                   onChange={(event) => setCategoria(event.target.value)}
                 >
+                  {categoria && !CATEGORIAS_CHAMADOS.includes(categoria) && (
+                    <option value={categoria}>{categoria}</option>
+                  )}
                   {CATEGORIAS_CHAMADOS.map((opcao) => (
                     <option key={opcao} value={opcao}>
                       {opcao}
