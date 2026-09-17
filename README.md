@@ -20,7 +20,37 @@ email ou senha. O ambiente apresenta atendentes, clientes, chamados,
 comentários, histórico, indicadores e relatórios fictícios em modo seguro
 somente leitura.
 
+<img src="frontend/public/ronas-desk-linkedin-preview.png" alt="Painel do Ronas Desk com indicadores de chamados, SLA e status da equipe" width="850" />
+
+</div>
+
 ---
+
+<details>
+<summary><strong>📚 Sumário</strong></summary>
+
+- [📖 Sobre o projeto](#-sobre-o-projeto)
+- [✨ Funcionalidades](#-funcionalidades)
+- [🛠️ Tecnologias](#️-tecnologias)
+- [🏗️ Arquitetura](#️-arquitetura)
+- [📂 Estrutura do projeto](#-estrutura-do-projeto)
+- [⚙️ Como executar](#️-como-executar)
+- [🐳 Como executar com Docker](#-como-executar-com-docker)
+- [🌐 Deploy gratuito com Render e Aiven](#-deploy-gratuito-com-render-e-aiven)
+- [🛡️ Segurança e integração contínua](#️-segurança-e-integração-contínua)
+- [🖥️ Conta de demonstração segura](#️-conta-de-demonstração-segura)
+- [👤 Perfil e segurança da conta](#-perfil-e-segurança-da-conta)
+- [⏱️ Tempo de primeira resposta](#️-tempo-de-primeira-resposta)
+- [📡 Principais rotas da API](#-principais-rotas-da-api)
+- [🕓 Histórico e auditoria de chamados](#-histórico-e-auditoria-de-chamados)
+- [🧠 Decisão técnica em destaque](#-decisão-técnica-em-destaque)
+- [📎 Anexos em chamados](#-anexos-em-chamados)
+- [📊 Relatórios operacionais](#-relatórios-operacionais)
+- [🗺️ Roadmap](#️-roadmap)
+- [✅ Checklist da versão 1.0.0](#-checklist-da-versão-100)
+- [👨‍💻 Autor](#-autor)
+
+</details>
 
 ## 📖 Sobre o projeto
 
@@ -511,6 +541,18 @@ backend/sql/006_sprint_9_4_ticket_history.sql
 A migration cria `ticket_history` e importa de forma idempotente os eventos
 legados da tabela `auditoria`.
 
+## 🧠 Decisão técnica em destaque
+
+**Contexto.** Uma atualização de chamado pode alterar status, responsável e prioridade ao mesmo tempo. Registrar apenas uma mensagem genérica dificulta a investigação; registrar eventos de status duplicados torna a linha do tempo confusa.
+
+**Decisão implementada.** O [historyService](backend/src/services/historyService.js) compara os valores anteriores e novos, separa os tipos de evento e trata resolução, fechamento e reabertura de maneira específica. Uma atualização sem mudança não gera histórico. A gravação recebe um executor, permitindo compartilhar a conexão da transação do chamador, e propaga erros em vez de escondê-los.
+
+**Alternativas para comparação.** Um log textual genérico seria mais simples, mas perderia campos estruturados. Registrar toda atualização, mesmo sem mudança, produziria ruído. Estas são alternativas analíticas; não representam um histórico documentado de decisões de equipe.
+
+**Evidência.** Os [testes do serviço](backend/test/historyService.test.js) verificam mudanças de status, prioridade e responsável, ausência de duplicação, atualizações sem alteração e propagação de falha de gravação. São testes unitários com executor simulado; não demonstram, isoladamente, rollback em MySQL real.
+
+**Limite.** Uma linha do tempo estruturada não equivale a auditoria inviolável. O projeto é uma demonstração com dados fictícios, sem métricas comerciais ou escala comprovada.
+
 ## 📎 Anexos em chamados
 
 A Sprint 9.5 permite enviar imagens JPG, PNG, WEBP e GIF ou documentos PDF de
@@ -619,15 +661,3 @@ Se este projeto foi útil para você, deixe uma ⭐ no repositório.
 **Ronas Desk** · v1.0.0 · 370 testes automatizados (316 backend + 54 frontend) · por **Ronael Moura**.
 
 </div>
-
-## Estudo técnico: histórico de alterações sem eventos duplicados
-
-**Contexto.** Uma atualização de chamado pode alterar status, responsável e prioridade ao mesmo tempo. Registrar apenas uma mensagem genérica dificulta a investigação; registrar eventos de status duplicados torna a linha do tempo confusa.
-
-**Decisão implementada.** O [historyService](backend/src/services/historyService.js) compara os valores anteriores e novos, separa os tipos de evento e trata resolução, fechamento e reabertura de maneira específica. Uma atualização sem mudança não gera histórico. A gravação recebe um executor, permitindo compartilhar a conexão da transação do chamador, e propaga erros em vez de escondê-los.
-
-**Alternativas para comparação.** Um log textual genérico seria mais simples, mas perderia campos estruturados. Registrar toda atualização, mesmo sem mudança, produziria ruído. Estas são alternativas analíticas; não representam um histórico documentado de decisões de equipe.
-
-**Evidência.** Os [testes do serviço](backend/test/historyService.test.js) verificam mudanças de status, prioridade e responsável, ausência de duplicação, atualizações sem alteração e propagação de falha de gravação. São testes unitários com executor simulado; não demonstram, isoladamente, rollback em MySQL real.
-
-**Limite.** Uma linha do tempo estruturada não equivale a auditoria inviolável. O projeto é uma demonstração com dados fictícios, sem métricas comerciais ou escala comprovada.
