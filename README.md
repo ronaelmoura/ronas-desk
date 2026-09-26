@@ -1,28 +1,27 @@
-<div align="center">
+# Ronas Desk
 
-# 🖥️ Ronas Desk
+Sistema web de atendimento e gestão de chamados desenvolvido com foco em um cenário operacional real.
 
-### Sistema Full Stack de gerenciamento de chamados técnicos
+O projeto representa um fluxo completo de atendimento: abertura e acompanhamento de chamados, responsáveis, prioridades, SLA, permissões, auditoria e informações para gestão.
 
-O Ronas Desk centraliza clientes, usuários, chamados e indicadores de atendimento em uma interface moderna de Help Desk.
+Mais do que um CRUD, o objetivo foi construir uma aplicação com regras de negócio, controle de acesso, testes automatizados e uma estrutura preparada para execução em produção.
 
-![Status](https://img.shields.io/badge/Status-Est%C3%A1vel-16A34A?style=for-the-badge)
-![Versão](https://img.shields.io/badge/Vers%C3%A3o-1.0.0-16A34A?style=for-the-badge)
-![Testes](https://img.shields.io/badge/Testes-370_aprovados-16A34A?style=for-the-badge)
-![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+## O que este projeto demonstra
 
-### [🚀 Acessar demonstração online](https://ronas-desk.onrender.com)
+- Desenvolvimento Full Stack
+- Modelagem e implementação de regras de negócio
+- API REST, autenticação e autorização
+- Controle de permissões, SLA e prioridades
+- Auditoria de operações
+- Upload e gerenciamento de arquivos
+- Testes automatizados e integração contínua
+- Docker, Nginx e deploy de demonstração
 
-Clique em **Acessar demonstração** na tela de login. Não é necessário informar
-email ou senha. O ambiente apresenta atendentes, clientes, chamados,
-comentários, histórico, indicadores e relatórios fictícios em modo seguro
-somente leitura.
+## Demonstração
+
+[Abra a aplicação](https://ronas-desk.onrender.com) e selecione **Acessar demonstração** na tela de login. O ambiente usa dados fictícios e modo somente leitura.
 
 <img src="frontend/public/ronas-desk-linkedin-preview.png" alt="Painel do Ronas Desk com indicadores de chamados, SLA e status da equipe" width="850" />
-
-</div>
 
 ---
 
