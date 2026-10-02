@@ -14,7 +14,7 @@
   --color-text: #142238;
   --color-text-strong: #101b2d;
   --color-text-secondary: #536176;
-  --color-text-muted: #71819c;
+  --color-text-muted: #596b85;
   --color-text-muted-2: #65748a;
   --color-text-faint: #8793a5;
 
@@ -345,6 +345,37 @@ p {
    o rótulo sequer quebrar. */
 :where(button, a) > svg {
   flex-shrink: 0;
+}
+
+/* A mesma espessura e proporção em navegação, formulários e indicadores. */
+:where(.lucide) {
+  flex-shrink: 0;
+  stroke-width: 1.75;
+  vertical-align: middle;
+}
+
+/* Logos enviadas podem ser horizontais: preserve a imagem inteira. */
+.brand-logo-image,
+.mobile-logo-image,
+.sidebar-logo-image,
+.company-brand-preview img,
+.settings-logo img,
+.portal-brand img {
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.brand > div,
+.sidebar-brand > div,
+.company-brand-preview > div,
+.portal-brand > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+:where(.notifications-empty, .ratings-empty, .clientes-empty-state, .usuarios-empty-state) {
+  padding: var(--space-6);
+  line-height: var(--leading-normal);
 }
 
 

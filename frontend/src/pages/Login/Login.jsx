@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowUpRight, Check, Eye, EyeOff, LockKeyhole, MonitorPlay, Workflow } from 'lucide-react'
+import { ArrowRight, Check, Eye, EyeOff, Inbox, ListFilter, CircleCheck, LockKeyhole, MonitorPlay, Workflow } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import useCompanyBrand from '../../hooks/useCompanyBrand'
 import { usarLogoPadrao } from '../../utils/companyBrand'
@@ -94,7 +94,11 @@ function Login() {
           </div>
           <div className="login-workflow" aria-label="Fluxo de atendimento">
             <div className="login-workflow-heading"><Workflow size={18} aria-hidden="true" /><span>UM FLUXO. TODA A OPERAÇÃO.</span></div>
-            <ol><li><span>01</span>Receber</li><li><span>02</span>Priorizar</li><li><span>03</span>Resolver</li></ol>
+            <ol>
+              <li><Inbox size={22} aria-hidden="true" /><span>01</span>Receber</li>
+              <li><ListFilter size={22} aria-hidden="true" /><span>02</span>Priorizar</li>
+              <li><CircleCheck size={22} aria-hidden="true" /><span>03</span>Resolver</li>
+            </ol>
           </div>
         </div>
 
@@ -182,7 +186,7 @@ function Login() {
               type="submit"
               disabled={enviando}
             >
-              {enviando ? 'Entrando...' : 'Entrar'} <ArrowUpRight size={18} aria-hidden="true" />
+              {enviando ? 'Entrando...' : 'Entrar'} <ArrowRight size={18} aria-hidden="true" />
             </button>
 
             {erro && (
