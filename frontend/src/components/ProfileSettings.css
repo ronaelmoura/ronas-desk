@@ -197,7 +197,7 @@
   height: 56px;
   flex: 0 0 56px;
   border-radius: 15px;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .company-brand-preview strong,

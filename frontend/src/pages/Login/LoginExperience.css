@@ -17,6 +17,7 @@
 .login-workflow-heading { display: flex; gap: 10px; align-items: center; color: #a9c4e8; font-size: 12px; letter-spacing: 1px; }
 .login-workflow ol { display: flex; list-style: none; margin: 20px 0 0; padding: 0; gap: 18px; }
 .login-workflow li { display: flex; flex: 1; flex-direction: column; gap: 8px; border-top: 1px solid #48607d; padding-top: 13px; color: #e4ecf8; font-size: 14px; font-weight: 500; }
+.login-workflow li > svg { color: #aecfff; margin-bottom: 4px; }
 .login-workflow li span { color: #a2b7d2; font-size: 12px; font-weight: 400; }
 .presentation .copyright { color: #a3b4cb; font-size: 12px; line-height: 1.7; }
 .login-area { background: #f6f8fb; padding: 48px 32px; }
@@ -27,6 +28,7 @@
 .login-description { font-size: 15px; color: #5d6c81; line-height: 1.7; }
 .login-card .field label { font-size: 14px; font-weight: 600; color: #273951; }
 .login-card .field input { background: #fff; border-color: #d5deea; border-radius: 9px; min-height: 50px; font-size: 15px; }
+.login-card .field input[aria-invalid="true"] { border-color: #b42318; background: #fffafa; }
 .login-card .login-button { display: flex; align-items: center; justify-content: center; gap: 16px; border-radius: 9px; min-height: 50px; font-size: 15px; box-shadow: 0 5px 12px #147ee819; }
 .login-card .demo-access { border-top: 1px solid #dce3ec; padding-top: 23px; margin-top: 27px; }
 .login-card .demo-access>span { font-size: 13px; color: #66758b; }

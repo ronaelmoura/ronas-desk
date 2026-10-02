@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { CirclePlus, MessageSquare, RefreshCw, TicketCheck, X } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import useCompanyBrand from '../../hooks/useCompanyBrand'
+import { usarLogoPadrao } from '../../utils/companyBrand'
 import {
   avaliarChamadoApi,
   buscarMinhaAvaliacaoApi,
@@ -326,7 +327,7 @@ function PortalCliente() {
     <main className="portal-page">
       <header className="portal-header">
         <div className="portal-brand">
-          <img alt="" onError={(event) => { event.currentTarget.src = '/brand-mark.svg' }} src={configuracao.logo_url || '/brand-mark.svg'} />
+          <img alt="" width="42" height="42" onError={usarLogoPadrao} src={configuracao.logo_url || '/brand-mark.svg'} />
           <div><strong>{configuracao.nome_empresa}</strong><span>Portal do Cliente</span></div>
         </div>
         <div className="portal-user"><span>Olá, {usuario.nome.split(' ')[0]}</span><button onClick={logout} type="button">Sair</button></div>
