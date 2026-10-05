@@ -8,6 +8,10 @@ O objetivo não foi apenas criar CRUDs, mas implementar autenticação, autoriza
 
 [Abra a aplicação](https://ronas-desk.onrender.com) e selecione **Acessar demonstração** na tela de login. O ambiente usa dados fictícios e modo somente leitura.
 
+As contas marcadas com `is_demo` recebem dados sintéticos em memória, separados das tabelas operacionais. Clientes, chamados, usuários e relatórios da demonstração não consultam registros reais; downloads, gravações e rotas não previstas são bloqueados. Apenas a identidade da sessão é validada no banco. A configuração pública da empresa continua compartilhada. Não é necessário executar `seed-demo` para preencher a demonstração; `create-demo` continua sendo necessário para provisionar sua conta de acesso. Seeds anteriores não são apagados automaticamente.
+
+O desenvolvimento do backend usa `node --watch` (Node.js 22 ou superior), sem dependência de nodemon.
+
 <img src="frontend/public/ronas-desk-linkedin-preview.png" alt="Painel do Ronas Desk com indicadores de chamados, SLA e status da equipe" width="850" />
 
 ## O que este projeto demonstra

@@ -16,6 +16,7 @@ import avaliacoesRouter from './routes/avaliacoes.routes.js'
 import authMiddleware from './middlewares/authMiddleware.js'
 import errorHandlerMiddleware from './middlewares/errorHandlerMiddleware.js'
 import demoReadOnlyMiddleware from './middlewares/demoReadOnlyMiddleware.js'
+import demoIsolationMiddleware from './middlewares/demoIsolationMiddleware.js'
 import equipeMiddleware from './middlewares/equipeMiddleware.js'
 import portalClienteMiddleware from './middlewares/portalClienteMiddleware.js'
 import { criarLimitadorLogin } from './middlewares/loginRateLimitMiddleware.js'
@@ -71,6 +72,8 @@ export function criarApp({ database = pool, variaveis = process.env } = {}) {
   app.use('/api/auth', authRouter)
   app.use('/api/visitas', visitasRouter)
   app.use('/api/configuracao-empresa', configuracaoEmpresaRouter)
+  // Todas as rotas operacionais, inclusive futuras, passam pelo isolamento.
+  app.use('/api', demoIsolationMiddleware)
   app.use(
     '/api/chamados',
     authMiddleware,
