@@ -120,6 +120,7 @@
 
 .clientes-table {
   width: 100%;
+  min-width: 900px;
   border-collapse: collapse;
   color: #27364a;
 }
@@ -143,6 +144,9 @@
   font-size: var(--text-base);
   vertical-align: middle;
 }
+
+.clientes-table th:nth-child(2) { min-width: 220px; }
+.clientes-search input { font-weight: var(--font-weight-regular); }
 
 .clientes-table tbody tr:last-child td {
   border-bottom: 0;

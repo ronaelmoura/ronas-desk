@@ -12,7 +12,6 @@ import {
   House,
   MessageCircle,
   MessageSquareHeart,
-  MonitorPlay,
   Menu,
   X,
   ChevronRight,
@@ -26,6 +25,7 @@ import {
 } from "lucide-react";
 import "./Dashboard.css";
 import "./Workspace.css";
+import DemoGuide from "./DemoGuide";
 import NewTicketModal from "./NewTicketModal";
 import TicketDetailsModal from "./TicketDetailsModal";
 import AllTickets from "./AllTickets";
@@ -346,7 +346,7 @@ function Dashboard({ onLogout }) {
   }
 
   return (
-    <div className="dashboard-page">
+    <div className={`dashboard-page${somenteLeitura ? " dashboard-page--demo" : ""}`}>
       <a className="skip-link" href="#conteudo-principal">
         Pular para o conteúdo
       </a>
@@ -534,15 +534,10 @@ function Dashboard({ onLogout }) {
           <div className="workspace-breadcrumb"><span>{configuracao.nome_central}</span><ChevronRight size={14} aria-hidden="true" /><strong>{paginas[paginaAtiva]}</strong></div>
           <div className="workspace-identity"><span className="workspace-avatar" aria-hidden="true">{obterIniciais(usuario?.nome)}</span><span>{obterPrimeiroNome(usuario?.nome)}<small>{somenteLeitura ? "Visitante · somente leitura" : usuario?.cargo}</small></span></div>
         </div>
-        {somenteLeitura && (
-          <div className="demo-mode-banner" role="status">
-            <MonitorPlay aria-hidden="true" />
-            <div>
-              <strong>Você está explorando a demonstração</strong>
-              <span>Explore os chamados, clientes e relatórios com dados fictícios, em modo somente leitura.</span>
-            </div>
-          </div>
-        )}
+        {somenteLeitura && <DemoGuide paginaAtiva={paginaAtiva} onNavigate={(pagina) => {
+          if (pagina === "chamados") setFiltroInicialChamados(null);
+          setPaginaAtiva(pagina);
+        }} />}
         {paginaAtiva === "clientes" ? (
           <Clientes
             onSelectTicket={setChamadoSelecionado}
