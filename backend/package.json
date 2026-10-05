@@ -8,7 +8,7 @@
     "test:integration": "node --test \"test-integration/*.integration.js\"",
     "test:coverage": "c8 --config .c8rc.json node --test",
     "test:coverage:ci": "c8 --config .c8rc.json --check-coverage --lines 60 --functions 65 --branches 75 node --test",
-    "dev": "nodemon src/server.js",
+    "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "migrate": "node src/scripts/migrate.js",
     "create-admin": "node src/scripts/createAdmin.js",
@@ -33,7 +33,7 @@
     "express-rate-limit": "^8.6.1",
     "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
-    "multer": "^2.2.0",
+    "multer": "^2.4.0",
     "mysql2": "^3.23.0"
   },
   "devDependencies": {
@@ -42,7 +42,6 @@
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.7.0",
-    "nodemon": "^3.1.14",
     "prettier": "^3.9.6"
   }
 }
