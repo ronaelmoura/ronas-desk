@@ -315,7 +315,9 @@ function Clientes({
                 )}
               </div>
             ) : (
-              <div className="clientes-tabela-wrapper">
+              <>
+              <p className="table-scroll-hint">Deslize a tabela para ver todas as colunas.</p>
+              <div className="clientes-tabela-wrapper" tabIndex={0} role="region" aria-label="Lista de clientes, com rolagem horizontal">
                 <table
                   className="clientes-table"
                   aria-busy={carregandoClientes}
@@ -401,6 +403,7 @@ function Clientes({
                   )}
                 </table>
               </div>
+              </>
             )}
             {!carregandoClientes && !erroClientes && (
               <Paginacao

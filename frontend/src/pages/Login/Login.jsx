@@ -15,8 +15,10 @@ function Login() {
   const [mostrarSenha, setMostrarSenha] = useState(false)
   const [erro, setErro] = useState('')
   const [enviando, setEnviando] = useState(false)
+  const [acessandoDemo, setAcessandoDemo] = useState(false)
 
   async function acessarDemonstracao() {
+    setAcessandoDemo(true)
     setErro('')
     setEnviando(true)
 
@@ -26,6 +28,7 @@ function Login() {
       setErro(error.message)
     } finally {
       setEnviando(false)
+      setAcessandoDemo(false)
     }
   }
 
@@ -186,7 +189,7 @@ function Login() {
               type="submit"
               disabled={enviando}
             >
-              {enviando ? 'Entrando...' : 'Entrar'} <ArrowRight size={18} aria-hidden="true" />
+              {enviando && !acessandoDemo ? 'Entrando...' : 'Entrar'} <ArrowRight size={18} aria-hidden="true" />
             </button>
 
             {erro && (
@@ -206,11 +209,13 @@ function Login() {
               disabled={enviando}
             >
               <MonitorPlay size={19} aria-hidden="true" />
-              {enviando ? 'Acessando...' : 'Acessar demonstração'}
+              {acessandoDemo ? 'Preparando demonstração...' : 'Acessar demonstração'}
             </button>
 
-            <small>Modo seguro: os dados podem ser visualizados, mas não alterados.</small>
+            <small>Sem cadastro. Explore chamados, clientes e relatórios com um roteiro guiado e dados fictícios.</small>
           </div>
+
+          {acessandoDemo && <p className="login-demo-status" role="status">Estamos preparando seu acesso. A primeira conexão pode levar alguns instantes.</p>}
 
           <p className="login-security-note">
             <LockKeyhole size={16} aria-hidden="true" />

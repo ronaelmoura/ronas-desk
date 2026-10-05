@@ -35,6 +35,7 @@
 .login-card .demo-button { min-height: 49px; border: 1px solid #b8cbe3; border-radius: 9px; background: #ecf2fa; color: #245180; font-size: 14px; }
 .login-card .demo-button:hover:not(:disabled) { background: #e0ebf9; }
 .login-card .demo-access small { font-size: 12px; line-height: 1.6; color: #66758b; }
+.login-demo-status { margin-top: 16px; padding: 12px; border-radius: var(--radius-sm); background: var(--color-brand-tint); color: var(--color-text-secondary); font-size: var(--text-sm); line-height: 1.6; }
 .login-card .login-security-note { font-size: 12px; color: #64748b; }
 .login-card .login-privacy-note { font-size: 12px; line-height: 1.7; color: #68758a; }
 @media (max-width: 1100px) and (min-width: 901px) {
