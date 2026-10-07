@@ -5,9 +5,9 @@
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
   --font-weight-extrabold: 800;
-  --brand-primary: #147ee8;
-  --brand-primary-light: #1682ff;
-  --brand-primary-deep: #1475cf;
+  --brand-primary: #0b70cf;
+  --brand-primary-light: #0b70cf;
+  --brand-primary-deep: #0a65bd;
   --brand-sidebar: #081525;
 
   --color-white: #fff;
@@ -16,7 +16,7 @@
   --color-text-secondary: #536176;
   --color-text-muted: #596b85;
   --color-text-muted-2: #65748a;
-  --color-text-faint: #8793a5;
+  --color-text-faint: #66758a;
 
   --color-surface-dark: #17263a;
   --color-surface-darker: #263448;
@@ -106,7 +106,8 @@
   --shadow-sm: 0 8px 24px rgba(20, 40, 70, 0.05);
   --shadow-md: 0 14px 40px rgba(20, 40, 70, 0.05);
   --shadow-lg: 0 24px 70px rgba(5, 15, 30, 0.3);
-  --shadow-brand: 0 12px 30px color-mix(in srgb, var(--brand-primary) 25%, transparent);
+  --shadow-brand: 0 12px 30px
+    color-mix(in srgb, var(--brand-primary) 25%, transparent);
 
   /* --- Foco --------------------------------------------------------------
      Anel único de foco para todo o app. Sempre visível sobre fundo claro e
@@ -212,7 +213,11 @@ p {
   border: 2px solid transparent;
   border-radius: var(--radius-pill);
   background-clip: padding-box;
-  background-color: color-mix(in srgb, var(--color-text-faint) 55%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--color-text-faint) 55%,
+    transparent
+  );
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -292,9 +297,16 @@ p {
   white-space: nowrap;
 }
 
-.table-scroll-hint { display: none; }
+.table-scroll-hint {
+  display: none;
+}
 @media (max-width: 900px) {
-  .table-scroll-hint { display: block; padding: 0 16px 12px; font-size: var(--text-xs); color: var(--color-text-secondary); }
+  .table-scroll-hint {
+    display: block;
+    padding: 0 16px 12px;
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+  }
 }
 
 /* O link de pular navegação fica escondido até receber foco. */
@@ -322,7 +334,7 @@ p {
 /* Alvo mínimo de toque no celular (WCAG 2.5.5). Aplica-se só onde o dedo é o
    ponteiro, para não inflar a densidade das tabelas no desktop. */
 @media (pointer: coarse) {
-  :where(button, [role='button'], a[href], select, summary) {
+  :where(button, [role="button"], a[href], select, summary) {
     min-height: 44px;
   }
 }
@@ -378,11 +390,15 @@ p {
   overflow-wrap: anywhere;
 }
 
-:where(.notifications-empty, .ratings-empty, .clientes-empty-state, .usuarios-empty-state) {
+:where(
+  .notifications-empty,
+  .ratings-empty,
+  .clientes-empty-state,
+  .usuarios-empty-state
+) {
   padding: var(--space-6);
   line-height: var(--leading-normal);
 }
-
 
 /* Botão de ação num cabeçalho flex não encolhe. O padrão do flexbox é o botão
    ceder largura para o título ao lado, e o rótulo quebra dentro do próprio
@@ -393,6 +409,10 @@ p {
    balance` aplicado a `button` mais acima neste arquivo define o longhand
    `text-wrap-mode` com especificidade maior que a de um seletor `:where()`, e
    ganha. O problema também não é de quebra de texto, e sim de largura. */
-:where(.reports-export-button, .btn-novo-cliente, .usuarios-header .botao-primario) {
+:where(
+  .reports-export-button,
+  .btn-novo-cliente,
+  .usuarios-header .botao-primario
+) {
   flex-shrink: 0;
 }

@@ -25,8 +25,8 @@ describe('Guia da demonstração', () => {
     for (const pagina of ['notificacoes', 'chamados', 'clientes', 'visao-geral', 'relatorios']) {
       rerender(<DemoGuide paginaAtiva={pagina} onNavigate={onNavigate} />)
     }
-    expect(screen.getByText('4 de 4 telas visitadas')).toBeInTheDocument()
-    expect(screen.getByText(/Roteiro percorrido/)).toBeInTheDocument()
+    expect(screen.getByText('4/4 visitadas')).toBeInTheDocument()
+    expect(screen.getByText('Roteiro concluído')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Próxima:/ })).not.toBeInTheDocument()
   })
 })

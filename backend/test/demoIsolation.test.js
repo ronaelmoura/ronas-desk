@@ -128,6 +128,7 @@ test('demonstração atende somente dados sintéticos e nunca acessa tabelas ope
 test('dados demo têm vínculos válidos, datas renovadas e nenhuma referência compartilhada', () => {
   const agora = new Date('2026-10-05T12:00:00Z')
   const dados = criarDadosDemo(agora)
+  assert.ok(dados.usuarios.every((usuario) => usuario.cargo === 'Atendente'))
   for (const chamado of dados.chamados) {
     assert.ok(
       dados.clientes.some((cliente) => cliente.id === chamado.cliente_id),

@@ -208,7 +208,10 @@ function Clientes({
                 Carregando chamados...
               </p>
             ) : erroHistorico ? (
-              <div className="historico-mensagem clientes-feedback" role="alert">
+              <div
+                className="historico-mensagem clientes-feedback"
+                role="alert"
+              >
                 <p>{erroHistorico}</p>
                 <button
                   type="button"
@@ -273,14 +276,14 @@ function Clientes({
             </div>
 
             {podeGerenciarClientes && (
-            <button
-              className="btn-novo-cliente"
-              type="button"
-              onClick={abrirCadastro}
-            >
-              <UserPlus size={18} aria-hidden="true" />
-              Novo cliente
-            </button>
+              <button
+                className="btn-novo-cliente"
+                type="button"
+                onClick={abrirCadastro}
+              >
+                <UserPlus size={18} aria-hidden="true" />
+                Novo cliente
+              </button>
             )}
           </header>
 
@@ -306,103 +309,172 @@ function Clientes({
               <div className="clientes-empty-state">
                 <UsersRound size={38} aria-hidden="true" />
                 <strong>Nenhum cliente cadastrado</strong>
-                <p>Cadastre o primeiro cliente para começar a abrir chamados.</p>
+                <p>
+                  Cadastre o primeiro cliente para começar a abrir chamados.
+                </p>
                 {podeGerenciarClientes && (
-                <button type="button" onClick={abrirCadastro}>
-                  <UserPlus size={18} aria-hidden="true" />
-                  Cadastrar cliente
-                </button>
+                  <button type="button" onClick={abrirCadastro}>
+                    <UserPlus size={18} aria-hidden="true" />
+                    Cadastrar cliente
+                  </button>
                 )}
               </div>
             ) : (
               <>
-              <p className="table-scroll-hint">Deslize a tabela para ver todas as colunas.</p>
-              <div className="clientes-tabela-wrapper" tabIndex={0} role="region" aria-label="Lista de clientes, com rolagem horizontal">
-                <table
-                  className="clientes-table"
-                  aria-busy={carregandoClientes}
+                <p className="table-scroll-hint">
+                  Deslize a tabela para ver todas as colunas.
+                </p>
+                <div
+                  className="clientes-tabela-wrapper"
+                  tabIndex={0}
+                  role="region"
+                  aria-label="Lista de clientes, com rolagem horizontal"
                 >
-                  <caption className="clientes-sr-only">
-                    Clientes cadastrados no Ronas Desk
-                  </caption>
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Nome</th>
-                      <th>Email</th>
-                      <th>Telefone</th>
-                      <th>Empresa</th>
-                      <th>Status</th>
-                      {podeGerenciarClientes && <th>Ações</th>}
-                    </tr>
-                  </thead>
+                  <table
+                    className="clientes-table"
+                    aria-busy={carregandoClientes}
+                  >
+                    <caption className="clientes-sr-only">
+                      Clientes cadastrados no Ronas Desk
+                    </caption>
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>Empresa</th>
+                        <th>Status</th>
+                        {podeGerenciarClientes && <th>Ações</th>}
+                      </tr>
+                    </thead>
 
-                  {carregandoClientes ? (
-                    <TabelaSkeleton colunas={podeGerenciarClientes ? 7 : 6} linhas={5} />
-                  ) : (
-                    <tbody>
-                      {clientes.map((cliente) => (
-                        <tr key={cliente.id}>
-                          <td>#{String(cliente.id).padStart(3, "0")}</td>
-                          <td>
-                            <button
-                              className="cliente-link"
-                              type="button"
-                              onClick={() => abrirDetalhesCliente(cliente)}
-                            >
-                              {cliente.nome}
-                            </button>
-                          </td>
-                          <td>{cliente.email}</td>
-                          <td>{cliente.telefone || "—"}</td>
-                          <td>{cliente.empresa || "—"}</td>
-                          <td>
-                            <span
-                              className={`cliente-status ${cliente.ativo ? "ativo" : "inativo"}`}
-                            >
-                              {cliente.ativo ? "Ativo" : "Inativo"}
-                            </span>
-                          </td>
-                          {podeGerenciarClientes && (
+                    {carregandoClientes ? (
+                      <TabelaSkeleton
+                        colunas={podeGerenciarClientes ? 7 : 6}
+                        linhas={5}
+                      />
+                    ) : (
+                      <tbody>
+                        {clientes.map((cliente) => (
+                          <tr key={cliente.id}>
+                            <td>#{String(cliente.id).padStart(3, "0")}</td>
                             <td>
-                              <div className="clientes-acoes">
-                                <button
-                                  className="btn-editar"
-                                  type="button"
-                                  aria-label={`Editar ${cliente.nome}`}
-                                  title="Editar"
-                                  onClick={() => abrirEdicao(cliente)}
-                                >
-                                  <Pencil size={16} aria-hidden="true" />
-                                </button>
-                                <button
-                                  className="btn-desativar"
-                                  type="button"
-                                  aria-label={`Desativar ${cliente.nome}`}
-                                  title={
-                                    cliente.ativo
-                                      ? "Desativar"
-                                      : "Cliente já inativo"
-                                  }
-                                  disabled={
-                                    !cliente.ativo ||
-                                    processandoClienteId === cliente.id
-                                  }
-                                  onClick={() =>
-                                    setClienteParaDesativar(cliente)
-                                  }
-                                >
-                                  <UserMinus size={16} aria-hidden="true" />
-                                </button>
-                              </div>
+                              <button
+                                className="cliente-link"
+                                type="button"
+                                onClick={() => abrirDetalhesCliente(cliente)}
+                              >
+                                {cliente.nome}
+                              </button>
                             </td>
-                          )}
-                        </tr>
-                      ))}
-                    </tbody>
-                  )}
-                </table>
-              </div>
+                            <td>{cliente.email}</td>
+                            <td>{cliente.telefone || "—"}</td>
+                            <td>{cliente.empresa || "—"}</td>
+                            <td>
+                              <span
+                                className={`cliente-status ${cliente.ativo ? "ativo" : "inativo"}`}
+                              >
+                                {cliente.ativo ? "Ativo" : "Inativo"}
+                              </span>
+                            </td>
+                            {podeGerenciarClientes && (
+                              <td>
+                                <div className="clientes-acoes">
+                                  <button
+                                    className="btn-editar"
+                                    type="button"
+                                    aria-label={`Editar ${cliente.nome}`}
+                                    title="Editar"
+                                    onClick={() => abrirEdicao(cliente)}
+                                  >
+                                    <Pencil size={16} aria-hidden="true" />
+                                  </button>
+                                  <button
+                                    className="btn-desativar"
+                                    type="button"
+                                    aria-label={`Desativar ${cliente.nome}`}
+                                    title={
+                                      cliente.ativo
+                                        ? "Desativar"
+                                        : "Cliente já inativo"
+                                    }
+                                    disabled={
+                                      !cliente.ativo ||
+                                      processandoClienteId === cliente.id
+                                    }
+                                    onClick={() =>
+                                      setClienteParaDesativar(cliente)
+                                    }
+                                  >
+                                    <UserMinus size={16} aria-hidden="true" />
+                                  </button>
+                                </div>
+                              </td>
+                            )}
+                          </tr>
+                        ))}
+                      </tbody>
+                    )}
+                  </table>
+                </div>
+                {!carregandoClientes && (
+                  <div
+                    className="clientes-mobile-list"
+                    aria-label="Clientes cadastrados"
+                  >
+                    {clientes.map((cliente) => (
+                      <article className="cliente-mobile-card" key={cliente.id}>
+                        <header>
+                          <span>#{String(cliente.id).padStart(3, "0")}</span>
+                          <span
+                            className={`cliente-status ${cliente.ativo ? "ativo" : "inativo"}`}
+                          >
+                            {cliente.ativo ? "Ativo" : "Inativo"}
+                          </span>
+                        </header>
+                        <button
+                          className="cliente-link"
+                          type="button"
+                          onClick={() => abrirDetalhesCliente(cliente)}
+                        >
+                          {cliente.nome}
+                        </button>
+                        <strong>
+                          {cliente.empresa || "Empresa não informada"}
+                        </strong>
+                        <p>{cliente.email}</p>
+                        <small>
+                          {cliente.telefone || "Telefone não informado"}
+                        </small>
+                        {podeGerenciarClientes && (
+                          <div className="clientes-acoes">
+                            <button
+                              className="btn-editar"
+                              type="button"
+                              aria-label={`Editar ${cliente.nome}`}
+                              onClick={() => abrirEdicao(cliente)}
+                            >
+                              <Pencil size={16} aria-hidden="true" />
+                            </button>
+                            <button
+                              className="btn-desativar"
+                              type="button"
+                              aria-label={`Desativar ${cliente.nome}`}
+                              disabled={
+                                !cliente.ativo ||
+                                processandoClienteId === cliente.id
+                              }
+                              onClick={() => setClienteParaDesativar(cliente)}
+                            >
+                              <UserMinus size={16} aria-hidden="true" />
+                            </button>
+                          </div>
+                        )}
+                      </article>
+                    ))}
+                  </div>
+                )}
               </>
             )}
             {!carregandoClientes && !erroClientes && (

@@ -11,7 +11,7 @@
 
 .settings-header p {
   margin-top: 8px;
-  color: #738197;
+  color: var(--color-text-secondary);
 }
 
 .settings-grid {
@@ -61,7 +61,7 @@
   place-items: center;
   border-radius: 50%;
   background: #edf5ff;
-  font-size: var(--text-xl);
+  color: var(--brand-primary);
 }
 
 .settings-brand-icon {

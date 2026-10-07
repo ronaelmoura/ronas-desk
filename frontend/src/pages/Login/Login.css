@@ -10,8 +10,16 @@
   flex-direction: column;
   padding: 38px clamp(38px, 5vw, 72px);
   background:
-    radial-gradient(circle at 20% 20%, rgba(22, 130, 255, 0.3), transparent 35%),
-    radial-gradient(circle at 80% 80%, rgba(0, 212, 255, 0.12), transparent 35%),
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(22, 130, 255, 0.3),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(0, 212, 255, 0.12),
+      transparent 35%
+    ),
     linear-gradient(145deg, #07101f, #0c1f3c);
   color: var(--color-white);
 }
@@ -109,7 +117,11 @@
   place-items: center;
   padding: 32px;
   background:
-    radial-gradient(circle at 75% 20%, rgba(22, 130, 255, 0.08), transparent 30%),
+    radial-gradient(
+      circle at 75% 20%,
+      rgba(22, 130, 255, 0.08),
+      transparent 30%
+    ),
     linear-gradient(160deg, #f7f9fc, #edf3f9);
 }
 
@@ -295,7 +307,7 @@
   justify-content: center;
   gap: 7px;
   margin: 22px 0 0;
-  color: #718096;
+  color: var(--color-text-secondary);
   font-size: var(--text-sm);
   text-align: center;
 }
@@ -311,7 +323,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #718096;
+  color: var(--color-text-secondary);
   font-size: var(--text-sm);
 }
 
@@ -355,14 +367,14 @@
 }
 
 .demo-access small {
-  color: #718096;
+  color: var(--color-text-secondary);
   font-size: var(--text-xs);
   line-height: 1.45;
 }
 
 .login-privacy-note {
   margin-top: 14px;
-  color: #8995a6;
+  color: var(--color-text-secondary);
   font-size: var(--text-2xs);
   line-height: 1.45;
   text-align: center;

@@ -64,7 +64,7 @@ test('rejeita logo insegura e cores inválidas', () => {
     validarConfiguracaoEmpresa({
       ...base,
       logo_url: 'http://example.com/logo.png',
-      cor_primaria: '#147ee8',
+      cor_primaria: '#0b70cf',
       cor_sidebar: '#081525',
     }),
     'Informe uma URL HTTPS válida para a logo ou deixe o campo vazio.',

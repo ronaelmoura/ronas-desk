@@ -360,7 +360,7 @@
 
 .dashboard-header p {
   margin-top: 8px;
-  color: #738197;
+  color: var(--color-text-secondary);
 }
 
 .new-ticket-button {
@@ -459,7 +459,11 @@
 .primary-metric--total {
   border-color: transparent;
   background:
-    radial-gradient(circle at right top, rgba(116, 209, 255, 0.3), transparent 44%),
+    radial-gradient(
+      circle at right top,
+      rgba(116, 209, 255, 0.3),
+      transparent 44%
+    ),
     linear-gradient(135deg, var(--brand-sidebar), #113d6e);
   color: var(--color-white);
 }
@@ -526,7 +530,7 @@
   padding: 7px 10px;
   border-radius: var(--radius-pill);
   background: #eef7ff;
-  color: #1673ce;
+  color: var(--brand-primary-deep);
   font-size: var(--text-2xs);
   font-weight: 800;
   white-space: nowrap;
@@ -713,7 +717,7 @@
 }
 
 .attention-list small {
-  color: var(--brand-primary);
+  color: var(--brand-primary-deep);
   font-size: var(--text-2xs);
   font-weight: 800;
   white-space: nowrap;
@@ -804,7 +808,7 @@
 
 .summary-card span {
   display: block;
-  color: #748197;
+  color: var(--color-text-secondary);
   font-size: var(--text-sm);
 }
 
@@ -819,7 +823,7 @@
 }
 
 .summary-card small {
-  color: #98a4b5;
+  color: var(--color-text-muted);
   font-size: var(--text-xs);
 }
 
@@ -848,7 +852,7 @@
 
 .panel-header p {
   margin-top: 5px;
-  color: #7e8a9d;
+  color: var(--color-text-secondary);
   font-size: var(--text-base);
 }
 
@@ -918,7 +922,12 @@
 .skeleton-card div span {
   display: block;
   border-radius: var(--radius-sm);
-  background: linear-gradient(90deg, var(--color-border-faint) 25%, #f7f9fb 50%, var(--color-border-faint) 75%);
+  background: linear-gradient(
+    90deg,
+    var(--color-border-faint) 25%,
+    #f7f9fb 50%,
+    var(--color-border-faint) 75%
+  );
   background-size: 200% 100%;
   animation: dashboard-shimmer 1.25s infinite linear;
 }
@@ -1089,7 +1098,7 @@ button:focus-visible {
 
 .priority-media {
   background: #fff6e8;
-  color: #b76800;
+  color: #8a4c00;
 }
 
 .priority-baixa {
@@ -1104,7 +1113,7 @@ button:focus-visible {
 
 .status-em-atendimento {
   background: #fff6e8;
-  color: #b76800;
+  color: #8a4c00;
 }
 
 .status-aguardando-cliente {

@@ -61,7 +61,7 @@
 
 .botao-primario {
   border: 0;
-  background: linear-gradient(90deg, var(--brand-primary), #0098d7);
+  background: var(--brand-primary);
   color: var(--color-white);
   box-shadow: 0 10px 24px rgba(20, 126, 232, 0.2);
 }
@@ -628,7 +628,6 @@ select:focus-visible {
     align-items: stretch;
     flex-direction: column-reverse;
   }
-
 }
 
 @media (prefers-reduced-motion: reduce) {

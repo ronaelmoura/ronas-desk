@@ -115,9 +115,15 @@ function Dashboard({ onLogout }) {
   const [menuAberto, setMenuAberto] = useState(false);
   const menuToggle = useRef(null);
   const paginas = {
-    "visao-geral": "Visão geral", chamados: "Chamados", clientes: "Clientes",
-    usuarios: "Usuários", relatorios: "Relatórios", notificacoes: "Notificações",
-    avaliacoes: "Avaliações", visitas: "Visitas", configuracoes: "Configurações",
+    "visao-geral": "Visão geral",
+    chamados: "Chamados",
+    clientes: "Clientes",
+    usuarios: "Usuários",
+    relatorios: "Relatórios",
+    notificacoes: "Notificações",
+    avaliacoes: "Avaliações",
+    visitas: "Visitas",
+    configuracoes: "Configurações",
   };
   const [toast, setToast] = useState(null);
   const [periodoDashboard, setPeriodoDashboard] = useState({ tipo: "todo" });
@@ -156,8 +162,20 @@ function Dashboard({ onLogout }) {
       classe: "resolvido",
       cor: "#2aa866",
     },
-    { rotulo: "Fechados", total: dashboard.chamados_fechados, status: "Fechado", classe: "fechado", cor: "#7667bc" },
-    { rotulo: "Cancelados", total: dashboard.chamados_cancelados, status: "Cancelado", classe: "cancelado", cor: "#94a3b8" },
+    {
+      rotulo: "Fechados",
+      total: dashboard.chamados_fechados,
+      status: "Fechado",
+      classe: "fechado",
+      cor: "#7667bc",
+    },
+    {
+      rotulo: "Cancelados",
+      total: dashboard.chamados_cancelados,
+      status: "Cancelado",
+      classe: "cancelado",
+      cor: "#94a3b8",
+    },
   ];
   const totalDistribuicaoStatus = distribuicaoStatus.reduce(
     (acumulado, indicador) => acumulado + indicador.total,
@@ -213,10 +231,10 @@ function Dashboard({ onLogout }) {
       periodo.tipo === "7"
         ? 7
         : periodo.tipo === "30"
-        ? 30
-        : periodo.tipo === "90"
-        ? 90
-        : null;
+          ? 30
+          : periodo.tipo === "90"
+            ? 90
+            : null;
 
     if (!dias) {
       return null;
@@ -244,9 +262,7 @@ function Dashboard({ onLogout }) {
   }
 
   function recarregarDashboardAtual() {
-    return carregarDashboardDaApi(
-      normalizarPeriodoDashboard(periodoDashboard),
-    );
+    return carregarDashboardDaApi(normalizarPeriodoDashboard(periodoDashboard));
   }
 
   useEffect(() => {
@@ -316,11 +332,7 @@ function Dashboard({ onLogout }) {
   }
 
   async function atualizarChamado(chamadoAtualizado) {
-    await atualizarChamadoApi(
-      chamadoAtualizado.id,
-      chamadoAtualizado,
-    );
-
+    await atualizarChamadoApi(chamadoAtualizado.id, chamadoAtualizado);
 
     setChamadoSelecionado(null);
     setAtualizacaoChamados((atual) => atual + 1);
@@ -334,7 +346,6 @@ function Dashboard({ onLogout }) {
   async function excluirChamado(id) {
     await excluirChamadoApi(id);
 
-
     setChamadoSelecionado(null);
     setAtualizacaoChamados((atual) => atual + 1);
     recarregarDashboardAtual();
@@ -346,7 +357,9 @@ function Dashboard({ onLogout }) {
   }
 
   return (
-    <div className={`dashboard-page${somenteLeitura ? " dashboard-page--demo" : ""}`}>
+    <div
+      className={`dashboard-page${somenteLeitura ? " dashboard-page--demo" : ""}`}
+    >
       <a className="skip-link" href="#conteudo-principal">
         Pular para o conteúdo
       </a>
@@ -366,15 +379,30 @@ function Dashboard({ onLogout }) {
           </div>
         </div>
 
-        <button className="workspace-menu-toggle" ref={menuToggle} type="button"
-          aria-expanded={menuAberto} aria-controls="workspace-navigation"
-          onClick={() => setMenuAberto((atual) => !atual)}>
-          {menuAberto ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
+        <button
+          className="workspace-menu-toggle"
+          ref={menuToggle}
+          type="button"
+          aria-expanded={menuAberto}
+          aria-controls="workspace-navigation"
+          onClick={() => setMenuAberto((atual) => !atual)}
+        >
+          {menuAberto ? (
+            <X size={20} aria-hidden="true" />
+          ) : (
+            <Menu size={20} aria-hidden="true" />
+          )}
           {menuAberto ? "Fechar menu" : "Abrir menu"}
         </button>
-        <nav id="workspace-navigation" aria-label="Navegação principal" className="sidebar-menu"
+        <nav
+          id="workspace-navigation"
+          aria-label="Navegação principal"
+          className="sidebar-menu"
           onKeyDown={(event) => {
-            if (event.key === "Escape") { setMenuAberto(false); menuToggle.current?.focus(); }
+            if (event.key === "Escape") {
+              setMenuAberto(false);
+              menuToggle.current?.focus();
+            }
           }}
           onClick={(event) => {
             if (event.target.closest("button")) {
@@ -383,7 +411,8 @@ function Dashboard({ onLogout }) {
                 document.getElementById("conteudo-principal")?.focus();
               }
             }
-          }}>
+          }}
+        >
           <button
             className={`menu-item ${
               paginaAtiva === "visao-geral" ? "active" : ""
@@ -452,10 +481,7 @@ function Dashboard({ onLogout }) {
             onClick={() => setPaginaAtiva("relatorios")}
             aria-current={paginaAtiva === "relatorios" ? "page" : undefined}
           >
-            <ChartNoAxesColumn
-              className="menu-item-icon"
-              aria-hidden="true"
-            />
+            <ChartNoAxesColumn className="menu-item-icon" aria-hidden="true" />
             Relatórios
           </button>
 
@@ -468,7 +494,10 @@ function Dashboard({ onLogout }) {
               onClick={() => setPaginaAtiva("avaliacoes")}
               aria-current={paginaAtiva === "avaliacoes" ? "page" : undefined}
             >
-              <MessageSquareHeart className="menu-item-icon" aria-hidden="true" />
+              <MessageSquareHeart
+                className="menu-item-icon"
+                aria-hidden="true"
+              />
               Avaliações
             </button>
           )}
@@ -500,15 +529,17 @@ function Dashboard({ onLogout }) {
 
           {!somenteLeitura && (
             <button
-            className={`menu-item ${
-              paginaAtiva === "configuracoes" ? "active" : ""
-            }`}
-            type="button"
-            onClick={() => setPaginaAtiva("configuracoes")}
-            aria-current={paginaAtiva === "configuracoes" ? "page" : undefined}
-          >
-            <Settings className="menu-item-icon" aria-hidden="true" />
-            Configurações
+              className={`menu-item ${
+                paginaAtiva === "configuracoes" ? "active" : ""
+              }`}
+              type="button"
+              onClick={() => setPaginaAtiva("configuracoes")}
+              aria-current={
+                paginaAtiva === "configuracoes" ? "page" : undefined
+              }
+            >
+              <Settings className="menu-item-icon" aria-hidden="true" />
+              Configurações
             </button>
           )}
         </nav>
@@ -531,13 +562,34 @@ function Dashboard({ onLogout }) {
 
       <main className="dashboard-content" id="conteudo-principal" tabIndex={-1}>
         <div className="workspace-topbar">
-          <div className="workspace-breadcrumb"><span>{configuracao.nome_central}</span><ChevronRight size={14} aria-hidden="true" /><strong>{paginas[paginaAtiva]}</strong></div>
-          <div className="workspace-identity"><span className="workspace-avatar" aria-hidden="true">{obterIniciais(usuario?.nome)}</span><span>{obterPrimeiroNome(usuario?.nome)}<small>{somenteLeitura ? "Visitante · somente leitura" : usuario?.cargo}</small></span></div>
+          <div className="workspace-breadcrumb">
+            <span>{configuracao.nome_central}</span>
+            <ChevronRight size={14} aria-hidden="true" />
+            <strong>{paginas[paginaAtiva]}</strong>
+          </div>
+          <div className="workspace-identity">
+            <span className="workspace-avatar" aria-hidden="true">
+              {obterIniciais(usuario?.nome)}
+            </span>
+            <span>
+              {obterPrimeiroNome(usuario?.nome)}
+              <small>
+                {somenteLeitura
+                  ? "Visitante · somente leitura"
+                  : usuario?.cargo}
+              </small>
+            </span>
+          </div>
         </div>
-        {somenteLeitura && <DemoGuide paginaAtiva={paginaAtiva} onNavigate={(pagina) => {
-          if (pagina === "chamados") setFiltroInicialChamados(null);
-          setPaginaAtiva(pagina);
-        }} />}
+        {somenteLeitura && (
+          <DemoGuide
+            paginaAtiva={paginaAtiva}
+            onNavigate={(pagina) => {
+              if (pagina === "chamados") setFiltroInicialChamados(null);
+              setPaginaAtiva(pagina);
+            }}
+          />
+        )}
         {paginaAtiva === "clientes" ? (
           <Clientes
             onSelectTicket={setChamadoSelecionado}
@@ -626,12 +678,15 @@ function Dashboard({ onLogout }) {
           <>
             <header className="dashboard-header">
               <div>
-                <p className="dashboard-eyebrow">Sua operação, em perspectiva</p>
+                <p className="dashboard-eyebrow">
+                  Sua operação, em perspectiva
+                </p>
 
                 <h1>Visão geral do suporte</h1>
 
                 <p>
-                  Olá, {obterPrimeiroNome(usuario?.nome)}. Veja o que precisa de atenção e acompanhe sua equipe.
+                  Olá, {obterPrimeiroNome(usuario?.nome)}. Veja o que precisa de
+                  atenção e acompanhe sua equipe.
                 </p>
 
                 <div className="dashboard-period-selector">
@@ -725,7 +780,6 @@ function Dashboard({ onLogout }) {
                   + Novo chamado
                 </button>
               )}
-
             </header>
 
             <section
@@ -890,7 +944,10 @@ function Dashboard({ onLogout }) {
               </article>
             </section>
 
-            <section className="summary-grid" aria-label="Indicadores detalhados">
+            <section
+              className="summary-grid"
+              aria-label="Indicadores detalhados"
+            >
               <button
                 className="summary-card"
                 type="button"
@@ -988,12 +1045,7 @@ function Dashboard({ onLogout }) {
                 </div>
               </button>
 
-              <div
-                className="summary-card"
-                aria-label={`Tempo médio de primeira resposta: ${formatarTempoMedio(
-                  dashboard.tempo_medio_primeira_resposta_minutos,
-                )}`}
-              >
+              <div className="summary-card">
                 <div className="summary-icon blue">
                   <MessageCircle aria-hidden="true" />
                 </div>
@@ -1026,7 +1078,12 @@ function Dashboard({ onLogout }) {
                 </button>
               </div>
 
-              <div className="ticket-table-wrapper">
+              <div
+                className="ticket-table-wrapper"
+                role="region"
+                tabIndex="0"
+                aria-label="Últimos chamados, tabela com rolagem horizontal"
+              >
                 <table className="ticket-table">
                   <thead>
                     <tr>
