@@ -48,6 +48,46 @@ function formatarTamanho(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function InformacoesSomenteLeitura({ chamado, onClose }) {
+  const campos = [
+    ["Categoria", chamado.categoria],
+    ["Prioridade", chamado.prioridade],
+    ["Status", chamado.status],
+    ["Responsável", chamado.responsavel_nome || "Não atribuído"],
+  ];
+
+  return (
+    <section className="ticket-details-content ticket-readonly-content">
+      <SlaCard sla={chamado.sla} />
+      <div className="ticket-readonly-summary">
+        <p className="ticket-readonly-label">Resumo do chamado</p>
+        <h3>{chamado.titulo}</h3>
+        <dl className="ticket-readonly-grid">
+          {campos.map(([rotulo, valor]) => (
+            <div key={rotulo}>
+              <dt>{rotulo}</dt>
+              <dd>{valor || "Não informado"}</dd>
+            </div>
+          ))}
+        </dl>
+        <div className="ticket-readonly-description">
+          <span>Descrição</span>
+          <p>{chamado.descricao}</p>
+        </div>
+      </div>
+      <div className="ticket-details-actions">
+        <button
+          className="details-cancel-button"
+          type="button"
+          onClick={onClose}
+        >
+          Fechar
+        </button>
+      </div>
+    </section>
+  );
+}
+
 function TicketDetailsModal({
   chamado,
   onClose,
@@ -219,10 +259,7 @@ function TicketDetailsModal({
     setErro("");
 
     try {
-      const anexo = await criarAnexoChamadoApi(
-        chamado.id,
-        arquivoSelecionado,
-      );
+      const anexo = await criarAnexoChamadoApi(chamado.id, arquivoSelecionado);
       setAnexos((atuais) => [...atuais, anexo]);
       setArquivoSelecionado(null);
       formulario.reset();
@@ -241,10 +278,7 @@ function TicketDetailsModal({
     setErro("");
 
     try {
-      const { url } = await gerarDownloadAnexoChamadoApi(
-        chamado.id,
-        anexo.id,
-      );
+      const { url } = await gerarDownloadAnexoChamadoApi(chamado.id, anexo.id);
 
       if (novaAba) novaAba.location.replace(url);
       else window.location.assign(url);
@@ -389,212 +423,209 @@ function TicketDetailsModal({
           </p>
         )}
 
-        {abaAtiva === "informacoes" && (
-          <form className="ticket-details-content" onSubmit={handleSubmit}>
-            <SlaCard sla={chamado.sla} />
+        {abaAtiva === "informacoes" &&
+          (somenteLeitura ? (
+            <InformacoesSomenteLeitura chamado={chamado} onClose={onClose} />
+          ) : (
+            <form className="ticket-details-content" onSubmit={handleSubmit}>
+              <SlaCard sla={chamado.sla} />
 
-            <div className="ticket-edit-field">
-              <label htmlFor="edit-title">Título do chamado</label>
-              <input
-                id="edit-title"
-                disabled={somenteLeitura}
-                type="text"
-                value={titulo}
-                onChange={(event) => setTitulo(event.target.value)}
-              />
-            </div>
-
-            <div className="ticket-edit-grid">
               <div className="ticket-edit-field">
-                <label htmlFor="edit-category">Categoria</label>
-                <select
-                  id="edit-category"
+                <label htmlFor="edit-title">Título do chamado</label>
+                <input
+                  id="edit-title"
                   disabled={somenteLeitura}
-                  value={categoria}
-                  onChange={(event) => setCategoria(event.target.value)}
+                  type="text"
+                  value={titulo}
+                  onChange={(event) => setTitulo(event.target.value)}
+                />
+              </div>
+
+              <div className="ticket-edit-grid">
+                <div className="ticket-edit-field">
+                  <label htmlFor="edit-category">Categoria</label>
+                  <select
+                    id="edit-category"
+                    disabled={somenteLeitura}
+                    value={categoria}
+                    onChange={(event) => setCategoria(event.target.value)}
+                  >
+                    {categoria && !CATEGORIAS_CHAMADOS.includes(categoria) && (
+                      <option value={categoria}>{categoria}</option>
+                    )}
+                    {CATEGORIAS_CHAMADOS.map((opcao) => (
+                      <option key={opcao} value={opcao}>
+                        {opcao}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="ticket-edit-field">
+                  <label htmlFor="edit-priority">Prioridade</label>
+                  <select
+                    id="edit-priority"
+                    disabled={somenteLeitura}
+                    value={prioridade}
+                    onChange={(event) => setPrioridade(event.target.value)}
+                  >
+                    {PRIORIDADES_CHAMADOS.map((opcao) => (
+                      <option key={opcao} value={opcao}>
+                        {opcao}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="ticket-edit-field">
+                <label htmlFor="edit-responsavel">Responsável</label>
+                <select
+                  id="edit-responsavel"
+                  value={responsavelId}
+                  disabled={carregandoUsuarios || somenteLeitura}
+                  onChange={(event) => setResponsavelId(event.target.value)}
                 >
-                  {categoria && !CATEGORIAS_CHAMADOS.includes(categoria) && (
-                    <option value={categoria}>{categoria}</option>
+                  <option value="">
+                    {carregandoUsuarios
+                      ? "Carregando responsáveis..."
+                      : "Não atribuído"}
+                  </option>
+                  {usuarios.map((usuario) => (
+                    <option key={usuario.id} value={usuario.id}>
+                      {usuario.nome} — {usuario.cargo}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="ticket-edit-field">
+                <label htmlFor="edit-description">Descrição</label>
+                <textarea
+                  id="edit-description"
+                  disabled={somenteLeitura}
+                  rows="6"
+                  value={descricao}
+                  onChange={(event) => setDescricao(event.target.value)}
+                />
+              </div>
+
+              <div className="ticket-edit-field">
+                <label htmlFor="edit-status">Status</label>
+                <select
+                  id="edit-status"
+                  disabled={somenteLeitura}
+                  value={status}
+                  onChange={(event) => setStatus(event.target.value)}
+                >
+                  {STATUS_CHAMADOS.map((opcao) => (
+                    <option key={opcao} value={opcao}>
+                      {opcao}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {confirmandoExclusao && administrador ? (
+                <div className="delete-confirmation">
+                  <div>
+                    <strong>Excluir este chamado?</strong>
+                    <p>Essa ação não poderá ser desfeita.</p>
+                  </div>
+                  <div className="delete-confirmation-actions">
+                    <button
+                      className="delete-cancel-button"
+                      type="button"
+                      disabled={excluindoChamado}
+                      onClick={() => setConfirmandoExclusao(false)}
+                    >
+                      Não, cancelar
+                    </button>
+                    <button
+                      className="delete-confirm-button"
+                      type="button"
+                      disabled={excluindoChamado}
+                      onClick={excluirChamado}
+                    >
+                      {excluindoChamado ? "Excluindo..." : "Sim, excluir"}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="ticket-details-actions">
+                  {administrador && (
+                    <button
+                      className="details-delete-button"
+                      type="button"
+                      disabled={salvando}
+                      onClick={() => setConfirmandoExclusao(true)}
+                    >
+                      Excluir
+                    </button>
                   )}
-                  {CATEGORIAS_CHAMADOS.map((opcao) => (
-                    <option key={opcao} value={opcao}>
-                      {opcao}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="ticket-edit-field">
-                <label htmlFor="edit-priority">Prioridade</label>
-                <select
-                  id="edit-priority"
-                  disabled={somenteLeitura}
-                  value={prioridade}
-                  onChange={(event) => setPrioridade(event.target.value)}
-                >
-                  {PRIORIDADES_CHAMADOS.map((opcao) => (
-                    <option key={opcao} value={opcao}>
-                      {opcao}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="ticket-edit-field">
-              <label htmlFor="edit-responsavel">Responsável</label>
-              <select
-                id="edit-responsavel"
-                value={responsavelId}
-                disabled={carregandoUsuarios || somenteLeitura}
-                onChange={(event) => setResponsavelId(event.target.value)}
-              >
-                <option value="">
-                  {carregandoUsuarios
-                    ? "Carregando responsáveis..."
-                    : "Não atribuído"}
-                </option>
-                {usuarios.map((usuario) => (
-                  <option key={usuario.id} value={usuario.id}>
-                    {usuario.nome} — {usuario.cargo}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="ticket-edit-field">
-              <label htmlFor="edit-description">Descrição</label>
-              <textarea
-                id="edit-description"
-                disabled={somenteLeitura}
-                rows="6"
-                value={descricao}
-                onChange={(event) => setDescricao(event.target.value)}
-              />
-            </div>
-
-            <div className="ticket-edit-field">
-              <label htmlFor="edit-status">Status</label>
-              <select
-                id="edit-status"
-                disabled={somenteLeitura}
-                value={status}
-                onChange={(event) => setStatus(event.target.value)}
-              >
-                {STATUS_CHAMADOS.map((opcao) => (
-                  <option key={opcao} value={opcao}>
-                    {opcao}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {somenteLeitura ? (
-              <div className="ticket-details-actions">
-                <button
-                  className="details-cancel-button"
-                  type="button"
-                  onClick={onClose}
-                >
-                  Fechar
-                </button>
-              </div>
-            ) : confirmandoExclusao && administrador ? (
-              <div className="delete-confirmation">
-                <div>
-                  <strong>Excluir este chamado?</strong>
-                  <p>Essa ação não poderá ser desfeita.</p>
+                  <div className="details-main-actions">
+                    <button
+                      className="details-cancel-button"
+                      type="button"
+                      disabled={salvando}
+                      onClick={onClose}
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      className="details-save-button"
+                      type="submit"
+                      disabled={carregandoUsuarios || salvando}
+                    >
+                      {salvando ? "Salvando..." : "Salvar alterações"}
+                    </button>
+                  </div>
                 </div>
-                <div className="delete-confirmation-actions">
-                  <button
-                    className="delete-cancel-button"
-                    type="button"
-                    disabled={excluindoChamado}
-                    onClick={() => setConfirmandoExclusao(false)}
-                  >
-                    Não, cancelar
-                  </button>
-                  <button
-                    className="delete-confirm-button"
-                    type="button"
-                    disabled={excluindoChamado}
-                    onClick={excluirChamado}
-                  >
-                    {excluindoChamado ? "Excluindo..." : "Sim, excluir"}
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="ticket-details-actions">
-                {administrador && (
-                  <button
-                    className="details-delete-button"
-                    type="button"
-                    disabled={salvando}
-                    onClick={() => setConfirmandoExclusao(true)}
-                  >
-                    Excluir
-                  </button>
-                )}
-                <div className="details-main-actions">
-                  <button
-                    className="details-cancel-button"
-                    type="button"
-                    disabled={salvando}
-                    onClick={onClose}
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    className="details-save-button"
-                    type="submit"
-                    disabled={carregandoUsuarios || salvando}
-                  >
-                    {salvando ? "Salvando..." : "Salvar alterações"}
-                  </button>
-                </div>
-              </div>
-            )}
-          </form>
-        )}
+              )}
+            </form>
+          ))}
 
         {abaAtiva === "comentarios" && (
           <section className="ticket-interactions-content">
             {!somenteLeitura && (
-            <form className="comment-form" onSubmit={adicionarComentario}>
-              <div className="comment-form-header">
-                <label htmlFor="new-comment">Adicionar comentário</label>
-                <label className="comment-type-field">
-                  <span>Visibilidade</span>
-                  <select
-                    value={tipoComentario}
-                    aria-label="Visibilidade do comentário"
-                    onChange={(event) => setTipoComentario(event.target.value)}
+              <form className="comment-form" onSubmit={adicionarComentario}>
+                <div className="comment-form-header">
+                  <label htmlFor="new-comment">Adicionar comentário</label>
+                  <label className="comment-type-field">
+                    <span>Visibilidade</span>
+                    <select
+                      value={tipoComentario}
+                      aria-label="Visibilidade do comentário"
+                      onChange={(event) =>
+                        setTipoComentario(event.target.value)
+                      }
+                    >
+                      <option value="INTERNO">Interno</option>
+                      <option value="PUBLICO">Público</option>
+                    </select>
+                  </label>
+                </div>
+                <textarea
+                  id="new-comment"
+                  rows="4"
+                  maxLength="2000"
+                  value={novoComentario}
+                  placeholder="Registre uma atualização para a equipe..."
+                  onChange={(event) => setNovoComentario(event.target.value)}
+                />
+                <div>
+                  <small>{novoComentario.length}/2000</small>
+                  <button
+                    className="details-save-button"
+                    type="submit"
+                    disabled={enviandoComentario || !novoComentario.trim()}
                   >
-                    <option value="INTERNO">Interno</option>
-                    <option value="PUBLICO">Público</option>
-                  </select>
-                </label>
-              </div>
-              <textarea
-                id="new-comment"
-                rows="4"
-                maxLength="2000"
-                value={novoComentario}
-                placeholder="Registre uma atualização para a equipe..."
-                onChange={(event) => setNovoComentario(event.target.value)}
-              />
-              <div>
-                <small>{novoComentario.length}/2000</small>
-                <button
-                  className="details-save-button"
-                  type="submit"
-                  disabled={enviandoComentario || !novoComentario.trim()}
-                >
-                  {enviandoComentario ? "Publicando..." : "Publicar comentário"}
-                </button>
-              </div>
-            </form>
+                    {enviandoComentario
+                      ? "Publicando..."
+                      : "Publicar comentário"}
+                  </button>
+                </div>
+              </form>
             )}
 
             {carregandoInteracoes ? (
@@ -647,29 +678,29 @@ function TicketDetailsModal({
         {abaAtiva === "anexos" && (
           <section className="ticket-interactions-content">
             {!somenteLeitura && (
-            <form className="attachment-form" onSubmit={adicionarAnexo}>
-              <div>
-                <label htmlFor="ticket-attachment">Adicionar anexo</label>
-                <p>Imagens ou PDF, com no máximo 10 MB.</p>
-              </div>
-              <input
-                id="ticket-attachment"
-                type="file"
-                accept=".jpg,.jpeg,.png,.webp,.gif,.pdf,image/jpeg,image/png,image/webp,image/gif,application/pdf"
-                disabled={enviandoAnexo}
-                onChange={(event) =>
-                  setArquivoSelecionado(event.target.files?.[0] || null)
-                }
-              />
-              <button
-                className="details-save-button"
-                type="submit"
-                disabled={enviandoAnexo || !arquivoSelecionado}
-              >
-                <Upload size={17} aria-hidden="true" />
-                {enviandoAnexo ? "Enviando..." : "Enviar arquivo"}
-              </button>
-            </form>
+              <form className="attachment-form" onSubmit={adicionarAnexo}>
+                <div>
+                  <label htmlFor="ticket-attachment">Adicionar anexo</label>
+                  <p>Imagens ou PDF, com no máximo 10 MB.</p>
+                </div>
+                <input
+                  id="ticket-attachment"
+                  type="file"
+                  accept=".jpg,.jpeg,.png,.webp,.gif,.pdf,image/jpeg,image/png,image/webp,image/gif,application/pdf"
+                  disabled={enviandoAnexo}
+                  onChange={(event) =>
+                    setArquivoSelecionado(event.target.files?.[0] || null)
+                  }
+                />
+                <button
+                  className="details-save-button"
+                  type="submit"
+                  disabled={enviandoAnexo || !arquivoSelecionado}
+                >
+                  <Upload size={17} aria-hidden="true" />
+                  {enviandoAnexo ? "Enviando..." : "Enviar arquivo"}
+                </button>
+              </form>
             )}
 
             {carregandoAnexos ? (
@@ -784,7 +815,9 @@ function TicketDetailsModal({
                 disabled={gerandoResumoIa}
               >
                 <Sparkles size={17} aria-hidden="true" />
-                {gerandoResumoIa ? "Analisando chamado..." : "Gerar resumo com IA"}
+                {gerandoResumoIa
+                  ? "Analisando chamado..."
+                  : "Gerar resumo com IA"}
               </button>
             </div>
 

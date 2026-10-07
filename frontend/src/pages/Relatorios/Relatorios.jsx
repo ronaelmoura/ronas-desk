@@ -127,6 +127,7 @@ function Relatorios() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(1);
+  const [detalhesExpandidos, setDetalhesExpandidos] = useState(false);
 
   async function carregarRelatorio(periodo = filtros, pagina = paginaAtual) {
     setCarregando(true);
@@ -144,6 +145,7 @@ function Relatorios() {
         },
       );
       setRelatorio(dados);
+      setDetalhesExpandidos(false);
     } catch (error) {
       setErro(error.message);
     } finally {
@@ -211,6 +213,9 @@ function Relatorios() {
 
   const resumo = relatorio.resumo;
   const chamadosVisiveis = relatorio.dados;
+  const chamadosMoveis = detalhesExpandidos
+    ? chamadosVisiveis
+    : chamadosVisiveis.slice(0, 5);
 
   return (
     <section className="reports-page">
@@ -218,9 +223,7 @@ function Relatorios() {
         <div>
           <p className="dashboard-eyebrow">Análise operacional</p>
           <h1>Relatórios</h1>
-          <p>
-            Analise os chamados criados no período e exporte os resultados.
-          </p>
+          <p>Analise os chamados criados no período e exporte os resultados.</p>
         </div>
 
         <button
@@ -389,7 +392,14 @@ function Relatorios() {
             </article>
           </section>
 
-          <section className="reports-charts">
+          <section
+            className="reports-charts"
+            aria-label="Distribuições do relatório"
+            tabIndex="0"
+          >
+            <p className="reports-mobile-hint">
+              Deslize para comparar as distribuições.
+            </p>
             <Distribuicao
               titulo="Chamados por status"
               itens={relatorio.distribuicoes.status}
@@ -456,6 +466,55 @@ function Relatorios() {
                 </tbody>
               </table>
             </div>
+            <section
+              className="reports-mobile-list"
+              aria-label="Detalhamento dos chamados"
+            >
+              {chamadosMoveis.map((chamado) => (
+                <article key={chamado.id}>
+                  <header>
+                    <span>#{String(chamado.id).padStart(3, "0")}</span>
+                    <strong>{chamado.status}</strong>
+                  </header>
+                  <h3>{chamado.titulo}</h3>
+                  <p>
+                    {chamado.categoria} ·{" "}
+                    {chamado.responsavel_nome || "Não atribuído"}
+                  </p>
+                  <dl>
+                    <div>
+                      <dt>Prioridade</dt>
+                      <dd>{chamado.prioridade}</dd>
+                    </div>
+                    <div>
+                      <dt>SLA</dt>
+                      <dd>{chamado.sla_status || "Sem dados"}</dd>
+                    </div>
+                    <div>
+                      <dt>Criado em</dt>
+                      <dd>{formatarDataHora(chamado.created_at)}</dd>
+                    </div>
+                  </dl>
+                </article>
+              ))}
+              {!chamadosMoveis.length && (
+                <p className="reports-mobile-empty">
+                  Nenhum chamado criado neste período.
+                </p>
+              )}
+              {chamadosVisiveis.length > 5 && (
+                <button
+                  className="reports-mobile-toggle"
+                  type="button"
+                  aria-expanded={detalhesExpandidos}
+                  onClick={() => setDetalhesExpandidos((atual) => !atual)}
+                >
+                  {detalhesExpandidos
+                    ? "Mostrar menos"
+                    : `Ver todos os ${chamadosVisiveis.length} registros`}
+                </button>
+              )}
+            </section>
           </section>
           <Paginacao
             paginaAtual={relatorio.paginacao.pagina}

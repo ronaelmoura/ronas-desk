@@ -13,7 +13,7 @@ export function criarDadosDemo(agora = new Date()) {
     ...usuario,
     email: `atendente${index + 1}@ronas.example`,
     id: index + 1,
-    cargo: 'Técnico',
+    cargo: 'Atendente',
     ativo: true,
     is_demo: false,
     cliente_id: null,

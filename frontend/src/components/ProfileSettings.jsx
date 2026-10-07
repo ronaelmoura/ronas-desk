@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import useCompanyBrand from "../hooks/useCompanyBrand";
 import CompanyBrandSettings from "./CompanyBrandSettings";
+import { LockKeyhole } from "lucide-react";
 import { usarLogoPadrao } from "../utils/companyBrand";
 import "./ProfileSettings.css";
 
@@ -191,7 +192,7 @@ function ProfileSettings() {
           <form className="settings-card" onSubmit={handleSenhaSubmit}>
             <div className="settings-card-header">
               <div className="settings-security-icon" aria-hidden="true">
-                🔒
+                <LockKeyhole size={25} />
               </div>
 
               <div>
