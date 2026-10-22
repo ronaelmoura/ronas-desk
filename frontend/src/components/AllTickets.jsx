@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CirclePlus, SearchX, SlidersHorizontal } from "lucide-react";
+import { CirclePlus, SearchX, SlidersHorizontal, X, CircleAlert, LoaderCircle } from "lucide-react";
 import {
   CATEGORIAS_CHAMADOS,
   classeChamado,
@@ -34,6 +34,7 @@ function AllTickets({
   const [totalPaginas, setTotalPaginas] = useState(1);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
+  const [tentativa, setTentativa] = useState(0);
 
   useEffect(() => {
     setBusca(filtrosIniciais?.busca ?? "");
@@ -76,6 +77,7 @@ function AllTickets({
     };
   }, [
     atualizacao,
+    tentativa,
     busca,
     filtroCategoria,
     filtroDataFim,
@@ -123,6 +125,17 @@ function AllTickets({
     Boolean(filtroDataFim),
     ordenacao !== "recentes",
   ].filter(Boolean).length;
+
+  const filtrosAtivos = [
+    busca && { label: `Busca: ${busca}`, limpar: () => setBusca("") },
+    filtroStatus !== "Todos" && { label: `Status: ${filtroStatus}`, limpar: () => setFiltroStatus("Todos") },
+    filtroPrioridade !== "Todas" && { label: `Prioridade: ${filtroPrioridade}`, limpar: () => setFiltroPrioridade("Todas") },
+    filtroCategoria !== "Todas" && { label: `Categoria: ${filtroCategoria}`, limpar: () => setFiltroCategoria("Todas") },
+    filtroSla !== "Todos" && { label: `SLA: ${filtroSla}`, limpar: () => setFiltroSla("Todos") },
+    filtroDataInicio && { label: `Desde: ${filtroDataInicio.split("-").reverse().join("/")}`, limpar: () => setFiltroDataInicio("") },
+    ordenacao !== "recentes" && { label: `Ordem: ${ordenacao === "antigos" ? "Mais antigos" : "Maior prioridade"}`, limpar: () => setOrdenacao("recentes") },
+    filtroDataFim && { label: `Até: ${filtroDataFim.split("-").reverse().join("/")}`, limpar: () => setFiltroDataFim("") },
+  ].filter(Boolean);
 
   const primeiroResultado = total
     ? (paginaAtual - 1) * ITENS_POR_PAGINA + 1
@@ -259,16 +272,21 @@ function AllTickets({
               </select>
             </div>
           </div>
-          <button
-            className="all-clear-button"
-            type="button"
-            onClick={limparFiltros}
-          >
-            Limpar
-          </button>
         </div>
+        {filtrosAtivos.length > 0 && (
+          <div className="all-active-filters" aria-label="Filtros aplicados">
+            <span>Filtros ativos</span>
+            {filtrosAtivos.map((filtro) => (
+              <button key={filtro.label} type="button" onClick={filtro.limpar}
+                aria-label={`Remover filtro ${filtro.label}`}>
+                {filtro.label}<X size={14} aria-hidden="true" />
+              </button>
+            ))}
+            <button type="button" className="all-reset-filters" onClick={limparFiltros}>Limpar filtros</button>
+          </div>
+        )}
         <div className="all-tickets-result" role="status" aria-live="polite">
-          {total ? (
+          {carregando ? "Atualizando lista de chamados…" : erro ? "Não foi possível atualizar a lista." : total ? (
             <>
               Exibindo <strong>{primeiroResultado}</strong>–
               <strong>{ultimoResultado}</strong> de <strong>{total}</strong>{" "}
@@ -278,7 +296,20 @@ function AllTickets({
             "Nenhum chamado encontrado"
           )}
         </div>
-        {!erro && !carregando && !chamados.length ? (
+        {erro ? (
+          <div className="all-tickets-empty all-tickets-error" role="alert">
+            <CircleAlert size={32} aria-hidden="true" />
+            <strong>Não foi possível carregar os chamados</strong>
+            <p>{erro}</p>
+            <button className="all-clear-button" type="button" onClick={() => setTentativa((valor) => valor + 1)}>Tentar novamente</button>
+          </div>
+        ) : carregando ? (
+          <div className="all-tickets-empty all-tickets-loading" aria-hidden="true">
+            <LoaderCircle size={28} />
+            <strong>Carregando chamados…</strong>
+            <p>Organizando as solicitações para você.</p>
+          </div>
+        ) : !chamados.length ? (
           <div className="all-tickets-empty">
             <SearchX size={32} aria-hidden="true" />
             <strong>Nenhum chamado encontrado</strong>
@@ -322,19 +353,7 @@ function AllTickets({
                   </tr>
                 </thead>
                 <tbody>
-                  {erro ? (
-                    <tr>
-                      <td className="empty-table" colSpan="8">
-                        {erro}
-                      </td>
-                    </tr>
-                  ) : carregando ? (
-                    <tr>
-                      <td className="empty-table" colSpan="8">
-                        Carregando chamados...
-                      </td>
-                    </tr>
-                  ) : chamados.length ? (
+                  {chamados.length ? (
                     chamados.map((chamado) => (
                       <tr key={chamado.id}>
                         <td className="ticket-id">
@@ -428,12 +447,12 @@ function AllTickets({
             )}
           </div>
         )}
-        <Paginacao
+        {!erro && !carregando && total > 0 && <Paginacao
           paginaAtual={paginaAtual}
           totalPaginas={totalPaginas}
           onChange={setPaginaAtual}
           ariaLabel="Paginação da lista de chamados"
-        />
+        />}
       </section>
     </section>
   );

@@ -217,3 +217,13 @@
 - Login, clientes, usuários, chamados e detalhes validados em produção
 - Dashboard, filtros, relatórios e exportação CSV validados em produção
 - Versão `1.0.0` marcada como estável na documentação
+
+
+## 2026-10-22 — Experiência de consulta de chamados
+
+- Barra principal de filtros compacta, com controles avançados expansíveis também no desktop.
+- Critérios aplicados visíveis e removíveis individualmente, mantendo os demais filtros.
+- Carregamento e erro fora da tabela: permanecem disponíveis no celular, com nova tentativa sem limpar filtros.
+- Paginação ocultada durante carregamento/erro e quebra de títulos longos nos cartões móveis.
+- Validação local: 62 testes de frontend, lint e build aprovados. Sem mudanças de API, banco ou permissões.
+- Pendente: conferência visual no navegador em desktop e celular; o navegador remoto não acessou o servidor local.
